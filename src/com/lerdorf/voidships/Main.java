@@ -123,7 +123,7 @@ public class Main extends JavaPlugin implements Listener {
 			    		e.printStackTrace();
 			    	}
 			  }
-			}, 0L, 2L);
+			}, 0L, 1L);
 
 		//executor = Executors.newScheduledThreadPool(1);
 		//executor.scheduleAtFixedRate(mainLoop, 0, 50, TimeUnit.MILLISECONDS);

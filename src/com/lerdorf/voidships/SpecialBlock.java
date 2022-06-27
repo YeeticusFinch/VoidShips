@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -181,6 +182,15 @@ public class SpecialBlock implements Serializable {
 					if (p.orbitDist > maxD)
 						maxD = p.orbitDist;
 				for (CosmicBody p : s.planets) {
+					for (int i = 0; i < 10; i++) {
+						p.orbit(LocalDateTime.now().toLocalTime().toSecondOfDay() - 15000*i);
+						Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(155, 155, 155), 0.1f - 0.008f*i);
+						
+						double px = x + 0.5 + (h * p.x)/(maxD);
+						double py = y + h*2*0.707 + 0.1 + (h * (p.y*0.707+p.z*0.707))/(maxD);
+						double pz = z + 0.5 + (h * (p.z*0.707-p.y*0.707))/(maxD);
+						Bukkit.getWorld(world).spawnParticle(Particle.REDSTONE, px, py, pz, 0, 0, 0, 0, dust);
+					}
 					p.orbit();
 					Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(155, 155, 255), 0.2f);
 					
@@ -188,7 +198,9 @@ public class SpecialBlock implements Serializable {
 					double py = y + h*2*0.707 + 0.1 + (h * (p.y*0.707+p.z*0.707))/(maxD);
 					double pz = z + 0.5 + (h * (p.z*0.707-p.y*0.707))/(maxD);
 					Bukkit.getWorld(world).spawnParticle(Particle.REDSTONE, px, py, pz, 0, 0, 0, 0, dust);
-	                //System.out.println("dust for " + p.name + " at " + p.x + " " + p.y + " " + p.z);
+	                
+					
+					//System.out.println("dust for " + p.name + " at " + p.x + " " + p.y + " " + p.z);
 	                if (playerNear) {
 	                	//Ray ray = Ray.from(player);
 	                	Vector dir = player.getEyeLocation().getDirection();
@@ -376,6 +388,8 @@ public class SpecialBlock implements Serializable {
 				localMap = !localMap;
 				lastMapSwitch = System.currentTimeMillis();
 			}
+			break;
+		case TERMINAL:
 			break;
 		}
 	}

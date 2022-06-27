@@ -118,11 +118,22 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit() { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
-		double time = LocalDateTime.now().toLocalTime().toSecondOfDay() * 10;
-		x = orbitDist * Math.cos(2*Math.PI*(mass+time) / orbitPeriod);
-		y = orbitDist * Math.sin(2*Math.PI*(mass+time) / orbitPeriod);
-		System.out.println(name + " " + knickname + " " + x + " " + y);
-		System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay() + " " + time + " " + x + " " + y);
+		double time = LocalDateTime.now().toLocalTime().toSecondOfDay() / 1200;
+		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
+		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
+		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
+		//System.out.println(name + " " + knickname + " " + x + " " + y);
+		//System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay() + " " + time + " " + x + " " + y);
+	}
+	
+	public void orbit(long t) { // 1.2 * Math.pow(10,6) milliseconds in a day
+		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
+		double time = t / 1200;
+		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
+		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
+		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
+		//System.out.println(name + " " + knickname + " " + x + " " + y);
+		//System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay() + " " + time + " " + x + " " + y);
 	}
 
 	// Depricated
