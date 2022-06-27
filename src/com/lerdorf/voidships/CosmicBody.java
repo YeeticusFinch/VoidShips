@@ -1,6 +1,7 @@
 package com.lerdorf.voidships;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 //import org.bukkit.Location;
 
@@ -116,10 +117,12 @@ public class CosmicBody implements Serializable {
 	}
 	
 	public void orbit() { // 1.2 * Math.pow(10,6) milliseconds in a day
-		x = orbitDist * Math.cos(2*Math.PI*(mass+System.currentTimeMillis()/(1.2*Math.pow(10,1))) / orbitPeriod);
-		y = orbitDist * Math.sin(2*Math.PI*(mass+System.currentTimeMillis()/(1.2*Math.pow(10,1))) / orbitPeriod);
+		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
+		double time = LocalDateTime.now().toLocalTime().toSecondOfDay();
+		x = orbitDist * Math.cos(2*Math.PI*(mass+time) / orbitPeriod);
+		y = orbitDist * Math.sin(2*Math.PI*(mass+time) / orbitPeriod);
 		System.out.println(name + " " + knickname + " " + x + " " + y);
-		System.out.println("Current time " + System.currentTimeMillis());
+		System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay());
 	}
 
 	// Depricated
