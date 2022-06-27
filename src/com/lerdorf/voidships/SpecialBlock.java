@@ -19,6 +19,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class SpecialBlock implements Serializable {
@@ -390,6 +392,10 @@ public class SpecialBlock implements Serializable {
 			}
 			break;
 		case TERMINAL:
+			// number must be multiple of 9
+			Inventory inventory = Bukkit.createInventory(null, 27, "Ship Terminal");
+			inventory.setItem(0, new ItemStack(Material.DIAMOND));
+			player.openInventory(inventory);
 			break;
 		}
 	}

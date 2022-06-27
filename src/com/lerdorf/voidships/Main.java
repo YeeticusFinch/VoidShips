@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -209,6 +210,21 @@ public class Main extends JavaPlugin implements Listener {
 		event.getPlayer().sendMessage("Good to be back!");
 	}
 
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+	    if (event.getWhoClicked() instanceof Player) {
+	        Player player = (Player) event.getWhoClicked();
+	        if (event.getClickedInventory() != null) {
+	            if (event.getView().getTitle().equals("Ship Terminal")) {
+	                if (event.isRightClick()) {
+	                    event.setCancelled(true);
+	                    //PianoManager.play(player, event.getCurrentItem(), false);
+	                }
+	            }
+	        }
+	    }
+	}
+	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Location loc = event.getBlock().getLocation();
