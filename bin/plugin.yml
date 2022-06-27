@@ -1,0 +1,128 @@
+main: com.lerdorf.voidships.Main
+name: VoidShips
+version: 1
+api-version: 1.16
+
+commands:
+   voidset:
+      description: Sets region to void
+      usage: /voidset x1 y1 z1 x2 y2 z2
+      permission: VoidShips.voidset
+   invoid:
+      description: Lists all voids you are currently within
+      usage: /invoid
+      permission: VoidShips.invoid
+   voidlist:
+      description: Gets a list of all voids
+      usage: /voidlist
+      permission: VoidShips.voidlist
+   delvoid:
+      description: Deletes a void by index
+      usage: /delvoid [index]
+      permission: VoidShips.delvoid
+   voidload:
+      description: Loads saved void files
+      usage: /voidload
+      permission: VoidShips.voidload
+   airsource:
+      description: Creates an air source
+      usage: /airsource [amount of air in blocks]
+      permission: VoidShips.airsource
+   air:
+      description: Creates an air source
+      usage: /air [amount of air in blocks]
+      permission: VoidShips.airsource
+   newship:
+      description: Creates a new ship, with the spawnpoint where you are standing
+      usage: /newship [name]
+      permission: VoidShips.newship
+   newsystem:
+      description: Creates a new solar system, any missing args will be randomly generated, -n [name (star)], -kn [knickname (star)], -id [system id], -c [x y z coords in lightyears], -d [distance from sun in lightyears], -t [type of star], -r [solar-radius of star], -m [solar-mass of star], 
+      usage: /newsystem [args]
+      permission: VoidShips.newsystem
+   newplanet:
+      description: Creates a new planet, any missing args will be randomly generated, -n [name], -kn [knickname], -d [distance from star in km], -s [star (name)], -o [orbital period (days-per-year)], -r [radius relative to earth], -m [mass (relative to earth], -h (if habitable)
+      usage: /newplanet [args]
+      permission: VoidShips.newplanet
+   delship:
+      description: Deletes a ship by index
+      usage: /delship [index]
+      permission: VoidShips.delship
+   delsystem:
+      description: Deletes a solar system by index and all its respective planets 
+      usage: /delsystem [index]
+      permission: VoidShips.delsystem
+   delplanet:
+      description: Deletes a planet by solar-system index and by planet index
+      usage: /delplanet [system index] [planet index]
+      permission: VoidShips.delplanet
+   ships:
+      description: Lists all ships
+      usage: /ships
+      permission: VoidShips.ships
+   systems:
+      description: Lists all solar systems
+      usage: /systems
+      permission: VoidShips.systems
+   planets:
+      description: Lists all planets within a solar system
+      usage: /planets [system name]
+      permission: VoidShips.planets
+   ship:
+      description: Returns the nearest ship within 500 blocks
+      usage: /ship
+      permission: VoidShips.ship
+   system:
+      description: Returns the system your ship is currently within
+      usage: /system
+      permission: VoidShips.system
+   planet:
+      description: Returns the nearest planet to your ship
+      usage: /planet
+      permission: VoidShips.planet
+   door:
+      description: Creates a door based off a WorldEdit selection
+      usage: /door
+      permission: VoidShips.door
+   detector:
+      description: Creates an atmosphere detector where you are looking 
+      usage: /detector
+      permission: VoidShips.detector
+   blocks:
+      description: Lists all special blocks
+      usage: /blocks
+      permission: VoidShips.blocks
+   delblock:
+      description: Deletes a special block by ship-index and block-index
+      usage: /delblock [ship index] [block-index]
+      permission: VoidShips.delblock
+   deltank:
+      description: Deletes an air tank by ship-index and block-index
+      usage: /deltank [ship index] [block-index]
+      permission: VoidShips.deltank
+   gravity:
+      description: Creates a gravity based off a WorldEdit selection
+      usage: /gravity
+      permission: VoidShips.gravity
+   terminal:
+      description: Creates a terminal for your ship on the block you are looking at
+      usage: /terminal
+      permission: VoidShips.terminal
+   map:
+      description: Creates a map for your ship on the block you are looking at
+      usage: /map
+      permission: VoidShips.map
+   pump:
+      description: Creates an air pump for your ship on the block you are looking at
+      usage: /pump [name]
+      permission: VoidShips.pump
+   tank:
+      description: Creates an air tank for your ship on the block you are looking at
+      usage: /tank
+      permission: VoidShips.tank
+   setsystem:
+      description: Sets the current ship's system
+      usage: /setsystem
+      permission: VoidShips.setsystem
+      
+      
