@@ -142,6 +142,15 @@ public class SpecialBlock implements Serializable {
 				dead = false;
 			}
 			break;
+		case TERMINAL:
+			if (new Location(Bukkit.getWorld(world), x, y, z).getBlock().getType() != getMaterial()) {
+				if (!dead) Bukkit.getServer().broadcastMessage("Ship terminal destroyed");
+				dead = true;
+			} else {
+				if (dead) Bukkit.getServer().broadcastMessage("Ship terminal repaired");
+				dead = false;
+			}
+			break;
 		}
 	}
 	
