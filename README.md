@@ -26,9 +26,10 @@ If you have SecSystems enabled, then you will be alerted if you were tagged by a
 
 Say you're 1 AU away from the enemy ship. It will take them 6.6 seconds of game time (8 real-world minutes) to lock on to your ship with WeaponTargetSystems, and you will be alerted of that as soon as it happens. You could temporarily confuse their WeaponTargetSystems by launching flares, potentially giving your ship enough time to target lock and fire, or you could wait until after they fire and change your ship's course to dodge (it will take the projectile at least 6.6 seconds to get here. Additionally, you could put your WeaponTargetSystems into trophy mode, which will automatically intercept incomming fire with it's own, and it can stop all incomming fire.
 
-Or you could attempt to get close enough to board their ship, but good luck. At 1 AU (150 million km) you'll have 6.6 seconds to react to any dangers, as you get closer things are going to happen a lot faster.
+Or you could attempt to get close enough to board their ship, but good luck. At 1 AU (150 million km) you'll have 6.6 seconds (minimum) to react to any dangers, as you get closer things are going to happen a lot faster.
 
 So what are the strategies? 
 You could turn off everything and become practically invisible, and then get close enough to strike by surprise.
 You could go in full offenseive mode, long-range mapping scanners plus WeaponTargetSystems, and put them on the defensive so that they can't counterattack.
 Or perhaps you would prefer to alternate between defending and attacking, and hope the enemy makes a careless mistake before you do (very likely if you get close to them), or hope their fuel runs out before yours does.
+Might add some dogfighting stuff.
