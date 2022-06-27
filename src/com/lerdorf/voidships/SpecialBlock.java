@@ -58,6 +58,8 @@ public class SpecialBlock implements Serializable {
 	String[][][] materials;
 	String[][][] datas;
 	
+	String name;
+	
 	public SpecialBlock(Block block, int type, Spaceship ship) {
 		Location loc = block.getLocation();
 		x = loc.getBlockX();
@@ -258,6 +260,10 @@ public class SpecialBlock implements Serializable {
 			}
 		}
 	}
+	
+	public Block getBlock() {
+		return new Location(Bukkit.getWorld(world), x, y, z).getBlock();
+	}
 
 	double dist(double x, double y, double z, double x2, double y2, double z2) {
 		return Math.sqrt( Math.pow(x-x2,2) + Math.pow(y-y2,2) + Math.pow(z-z2,2) );
@@ -375,8 +381,12 @@ public class SpecialBlock implements Serializable {
 		
 		switch (type) {
 		case AIR_TANK:
+			player.sendMessage("Air: " + air);
 			break;
 		case AIR_PUMP:
+			System.out.println("Opening Air Pump menu");
+			event.setCancelled(true);
+			Main.openMenu(player, ship, this, 2);
 			break;
 		case DOOR:
 			if (!open)
@@ -393,9 +403,7 @@ public class SpecialBlock implements Serializable {
 			break;
 		case TERMINAL:
 			// number must be multiple of 9
-			Inventory inventory = Bukkit.createInventory(null, 27, "Ship Terminal");
-			inventory.setItem(0, new ItemStack(Material.DIAMOND));
-			player.openInventory(inventory);
+			Main.openMenu(player, ship, 0);
 			break;
 		}
 	}

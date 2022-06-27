@@ -103,9 +103,14 @@ public class BlockShit implements CommandExecutor {
 				Main.blocks.add(newBlock);
 			sender.sendMessage("Successfully created new map" + ((s != null) ? " and added it to " + s.name : "."));
 		} else if (cmd.getName().equalsIgnoreCase("pump") && player != null) {
+			if (args.length != 1) {
+				sender.sendMessage("Expecting 1 argument");
+				return false;
+			}
 			Block b = player.getTargetBlock(null, 200);
 			Spaceship s = Main.getCurrentShip(player);
 			SpecialBlock newBlock = new SpecialBlock(b, SpecialBlock.AIR_PUMP, s);
+			newBlock.name = args[0];
 			if (s != null) {
 				s.addBlock(newBlock);
 				s.save();
@@ -124,6 +129,11 @@ public class BlockShit implements CommandExecutor {
 			else
 				Main.blocks.add(newBlock);
 			sender.sendMessage("Successfully created new air tank" + ((s != null) ? " and added it to " + s.name : "."));
+		} else if (cmd.getName().equalsIgnoreCase("refuel") && player != null) {
+			sender.sendMessage("Refilling air tanks");
+			Spaceship s = Main.getCurrentShip(player);
+			s.addAir(999999999);
+			sender.sendMessage("Air tanks refilled");
 		}
 		return true;
 	}

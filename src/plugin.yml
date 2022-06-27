@@ -124,5 +124,9 @@ commands:
       description: Sets the current ship's system
       usage: /setsystem
       permission: VoidShips.setsystem
+   refuel:
+      description: Fully refuels the ship you are in
+      usage: /refuel
+      permission: VoidShips.refuel
       
       

@@ -3,6 +3,8 @@ package com.lerdorf.voidships;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.command.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -19,6 +22,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -42,6 +48,10 @@ public class Main extends JavaPlugin implements Listener {
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
 	public static ArrayList<SpecialEntity> entities = new ArrayList<SpecialEntity>();
 	public static ArrayList<SolarSystem> systems = new ArrayList<SolarSystem>();
+	
+	public static HashMap<Player, SpecialBlock> interact = new HashMap<Player, SpecialBlock>();
+	
+	public static HashMap<Block, Integer> blockTags = new HashMap<Block, Integer>();
 
 	ScheduledExecutorService executor;
 	
@@ -97,7 +107,10 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("gravity").setExecutor(new BlockShit());
 		this.getCommand("terminal").setExecutor(new BlockShit());
 		this.getCommand("map").setExecutor(new BlockShit());
+		this.getCommand("pump").setExecutor(new BlockShit());
+		this.getCommand("tank").setExecutor(new BlockShit());
 		this.getCommand("setsystem").setExecutor(new VoidQuery());
+		this.getCommand("refuel").setExecutor(new BlockShit());
 		
 		loadSaves();
 
@@ -215,14 +228,139 @@ public class Main extends JavaPlugin implements Listener {
 	    if (event.getWhoClicked() instanceof Player) {
 	        Player player = (Player) event.getWhoClicked();
 	        if (event.getClickedInventory() != null) {
-	            if (event.getView().getTitle().equals("Ship Terminal")) {
-	                if (event.isRightClick()) {
+	            if (event.getView().getTitle().indexOf("Ship Terminal") != -1) {
+	                if (event.isRightClick() || event.isLeftClick()) {
 	                    event.setCancelled(true);
+	                    ItemStack item = event.getCurrentItem();
+	                    if (item.getItemMeta().getDisplayName().indexOf("Oxygen Control") != -1) {
+	                    	openMenu(player, getCurrentShip(player), 1);
+	                    	System.out.println("Opened Oxygen Control");
+	                    }
+	                    //PianoManager.play(player, event.getCurrentItem(), false);
+	                }
+	            } else if (event.getView().getTitle().indexOf("Air Pump") != -1) {
+	                if (event.isRightClick() || event.isLeftClick()) {
+	                    event.setCancelled(true);
+	                    ItemStack item = event.getCurrentItem();
+	                    if (item.getItemMeta().getDisplayName().indexOf("Depressurize") != -1) {
+	                    	player.sendMessage("Attempting to depressurize");
+	                    	Spaceship ship = getCurrentShip(player);
+	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
+
+	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
+	                    	int a = countAir(player.getLocation(), 2000);
+	                    	player.sendMessage("Regaining " + a + " cubic meters of air");
+	                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
+	                    	//setVoidAir(loc.getBlock());
+	                    	ship.addAir(a);
+	                    	player.sendMessage("Successfully reclaimed " + a + " cubic meters of air");
+	                    	//player.getLocation 
+	                    } else if (item.getItemMeta().getDisplayName().indexOf("Pressurize") != -1) {	
+	                    	player.sendMessage("Attempting to pressurize");
+	                    	Spaceship ship = getCurrentShip(player);
+	                    	int a = countVacuum(player.getLocation(), 2000);
+	                    	player.sendMessage("Expending " + a + " cubic meters of air");
+	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
+	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
+	                        //directional.getFacing();
+	                    	if (a <= ship.countAir()) {
+	                    		//if (airSource(2000, interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection()), null)) {
+		                    		player.sendMessage("Successfully pressurized room");
+
+		                    	replace(loc, 2000, Material.COARSE_DIRT, Material.CAVE_AIR, 0);
+		                    		ship.removeAir(a);
+	                    		//} else
+	                    		//	player.sendMessage("Fatal pressurization error");
+	                    	} else {
+
+		                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
+		                    	player.sendMessage("Fatal pressurization error"); 
+	                    	}
+	                    }
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
 	            }
 	        }
 	    }
+	}
+	
+	/*
+	 * Terminal
+	 * 	- Ship Status
+	 * 	- Oxygen (control for each pump, how many tanks, how much air remains)
+	 * 	- SecSystems (on/off)
+	 * 	- WeaponDefenseSystems (on/off)
+	 * 	- Long-range mapping scan (on/off + list of scanned ships)
+	 * 	- PilotSystems
+	 * 		- Set Course (list of planets to orbit, and how much time and fuel required to get there)
+	 * 		- Manual Control
+	 * 	- WeaponTargetSystems
+	 * 		- Attack
+	 * 		- Defend (on/off)
+	 */
+	
+	public static void openMenu(Player player, Spaceship ship, int n) {
+		if (n == 0) { // Main Terminal
+			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
+			
+			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f")));
+			inventory.setItem(2, createItem(Material.DISPENSER, "§fOxygen Control", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air", "Click to access Oxygen Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
+			inventory.setItem(3, createItem(Material.OBSERVER, "§3SecSystems", Arrays.asList("Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
+			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2WeaponDefenseSystems", Arrays.asList("Click to toggle WeaponDefenseSystems", "§7§oAutonomous defense against light weaponry")));
+			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeaponTargetSystems", Arrays.asList("§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bLong-Range Mapping Scanner", Arrays.asList("§fClick to access the Mapping Scanner", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
+			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dPilotSystems", Arrays.asList("§fClick to access PilotSystems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
+			player.openInventory(inventory);
+		} 
+		else if (n == 1) {
+			Inventory inventory = Bukkit.createInventory(null, 3*9, "Ship Terminal: Oxygen Control");
+			
+			inventory.setItem(4, createItem(Material.POLISHED_BASALT, ship.airTanks.length, "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			
+			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
+			
+			for (int i = 0; i < pumps.length; i++) {
+				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Left-click to evacuate air", "Right-click to dispense air")));
+			}
+			
+			player.openInventory(inventory);
+		}
+	}
+	
+	public static void openMenu(Player player, Spaceship ship, SpecialBlock b, int n) {
+
+		if (interact.keySet().contains(player))
+			interact.remove(player);
+		interact.put(player, b);
+		if (n == 2) {
+			Inventory inventory = Bukkit.createInventory(null, 1*9, b.name + " Air Pump");
+			
+			inventory.setItem(0, createItem(Material.POLISHED_BASALT, ship.airTanks.length, "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "§4Depressurize", Arrays.asList("§7§oClick to turn the room into a vacuum")));
+			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "§2Pressurize", Arrays.asList("§7§oClick to fill the room with air")));
+			
+			player.openInventory(inventory);
+		}
+	}
+	
+	public static ItemStack createItem(Material mat, String name, List<String> lore) {
+		ItemStack item = new ItemStack(mat);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(name);
+		if (lore != null)
+			meta.setLore(lore);
+		item.setItemMeta(meta);
+		return item;
+	}
+	
+	public static ItemStack createItem(Material mat, int count, String name, List<String> lore) {
+		ItemStack item = new ItemStack(mat, count);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(name);
+		if (lore != null)
+			meta.setLore(lore);
+		item.setItemMeta(meta);
+		return item;
 	}
 	
 	@EventHandler
@@ -396,6 +534,7 @@ public class Main extends JavaPlugin implements Listener {
 			Material ogMat = loc.getBlock().getType();
 			air--;
 			loc.getBlock().setType(Material.COARSE_DIRT);
+			blockTags.put(loc.getBlock(), 0);
 			if (airSource(air, loc.clone().add(new Vector(1, 0, 0)))
 					&& airSource(air, loc.clone().add(new Vector(-1, 0, 0)))
 					&& airSource(air, loc.clone().add(new Vector(0, 1, 0)))
@@ -422,9 +561,10 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public static int failedAirSource(Location loc) {
-		if (loc.getBlock().getType() == Material.COARSE_DIRT) {
+		if (loc.getBlock().getType() == Material.COARSE_DIRT && blockTags.keySet().contains(loc.getBlock()) && blockTags.get(loc.getBlock()) == 0) {
 			// Material ogMat = loc.getBlock().getType();\
 			loc.getBlock().setType(Material.VOID_AIR);
+			blockTags.remove(loc.getBlock());
 			return 1 + failedAirSource(loc.clone().add(new Vector(1, 0, 0)))
 					+ failedAirSource(loc.clone().add(new Vector(-1, 0, 0)))
 					+ failedAirSource(loc.clone().add(new Vector(0, 1, 0)))
@@ -441,9 +581,10 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public static int successAirSource(Location loc) {
-		if (loc.getBlock().getType() == Material.COARSE_DIRT) {
+		if (loc.getBlock().getType() == Material.COARSE_DIRT && blockTags.keySet().contains(loc.getBlock()) && blockTags.get(loc.getBlock()) == 0) {
 			// Material ogMat = loc.getBlock().getType();\
 			loc.getBlock().setType(Material.CAVE_AIR);
+			blockTags.remove(loc.getBlock());
 			return 1 + successAirSource(loc.clone().add(new Vector(1, 0, 0)))
 					+ successAirSource(loc.clone().add(new Vector(-1, 0, 0)))
 					+ successAirSource(loc.clone().add(new Vector(0, 1, 0)))
@@ -459,10 +600,40 @@ public class Main extends JavaPlugin implements Listener {
 		// System.out.println("WE GOT A FALSE");
 	}
 	
+	public static int replace(Location loc, int l, Material mat1, Material mat2) {
+		if (loc.getBlock().getType() == mat1 && l > 0) {
+			loc.getBlock().setType(mat2);
+			return 1 + replace(loc.clone().add(new Vector(1, 0, 0)), l-1, mat1, mat2)
+			+ replace(loc.clone().add(new Vector(-1, 0, 0)), l-1, mat1, mat2)
+			+ replace(loc.clone().add(new Vector(0, 1, 0)), l-1, mat1, mat2)
+			+ replace(loc.clone().add(new Vector(0, -1, 0)), l-1, mat1, mat2)
+			+ replace(loc.clone().add(new Vector(0, 0, 1)), l-1, mat1, mat2)
+			+ replace(loc.clone().add(new Vector(0, 0, -1)), l-1, mat1, mat2);
+		}
+		return 0;
+	}
+	
+	public static int replace(Location loc, int l, Material mat1, Material mat2, int tag) {
+		if (loc.getBlock().getType() == mat1 && l > 0 && blockTags.keySet().contains(loc.getBlock()) && blockTags.get(loc.getBlock()) == tag) {
+			blockTags.remove(loc.getBlock());
+			loc.getBlock().setType(mat2);
+			return 1 + replace(loc.clone().add(new Vector(1, 0, 0)), l-1, mat1, mat2, tag)
+			+ replace(loc.clone().add(new Vector(-1, 0, 0)), l-1, mat1, mat2, tag)
+			+ replace(loc.clone().add(new Vector(0, 1, 0)), l-1, mat1, mat2, tag)
+			+ replace(loc.clone().add(new Vector(0, -1, 0)), l-1, mat1, mat2, tag)
+			+ replace(loc.clone().add(new Vector(0, 0, 1)), l-1, mat1, mat2, tag)
+			+ replace(loc.clone().add(new Vector(0, 0, -1)), l-1, mat1, mat2, tag);
+		}
+		return 0;
+	}
+	
 	public static int countAir(Location loc, int l) {
 		if (loc.getBlock().getType() == Material.CAVE_AIR && l > 0) {
-
+			
+			loc.getWorld().spawnParticle(Particle.DOLPHIN, loc, 5);
+			//System.out.println(l);
 			loc.getBlock().setType(Material.COARSE_DIRT);
+			blockTags.put(loc.getBlock(), 0);
 			int r = 1 + countAir(loc.clone().add(new Vector(1, 0, 0)), l-1)
 					+ countAir(loc.clone().add(new Vector(-1, 0, 0)), l-1)
 					+ countAir(loc.clone().add(new Vector(0, 1, 0)), l-1)
@@ -470,18 +641,19 @@ public class Main extends JavaPlugin implements Listener {
 					+ countAir(loc.clone().add(new Vector(0, 0, 1)), l-1)
 					+ countAir(loc.clone().add(new Vector(0, 0, -1)), l-1);
 
-			loc.getBlock().setType(Material.CAVE_AIR);
+			//loc.getBlock().setType(Material.CAVE_AIR);
 			return r;
 
 		}
-		return -1000000;
-		// System.out.println("WE GOT A FALSE");
+		//System.out.println("WE GOT A FALSE");
+		return 0;
 	}
 	
 	public static int countVacuum(Location loc, int l) {
 		if (loc.getBlock().getType() == Material.VOID_AIR && l > 0) {
 
 			loc.getBlock().setType(Material.COARSE_DIRT);
+			blockTags.put(loc.getBlock(), 0);
 			int r = 1 + countVacuum(loc.clone().add(new Vector(1, 0, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(-1, 0, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, 1, 0)), l-1)
@@ -489,12 +661,13 @@ public class Main extends JavaPlugin implements Listener {
 					+ countVacuum(loc.clone().add(new Vector(0, 0, 1)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, 0, -1)), l-1);
 
-			loc.getBlock().setType(Material.VOID_AIR);
+			//loc.getBlock().setType(Material.VOID_AIR);
 			return r;
 
 		} else if (loc.getBlock().getType() == Material.AIR && l > 0) {
 
 			loc.getBlock().setType(Material.COARSE_DIRT);
+			blockTags.put(loc.getBlock(), 0);
 			int r = 1 + countVacuum(loc.clone().add(new Vector(1, 0, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(-1, 0, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, 1, 0)), l-1)
@@ -502,11 +675,11 @@ public class Main extends JavaPlugin implements Listener {
 					+ countVacuum(loc.clone().add(new Vector(0, 0, 1)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, 0, -1)), l-1);
 
-			loc.getBlock().setType(Material.AIR);
+			//loc.getBlock().setType(Material.AIR);
 			return r;
 
 		}
-		return -1000000;
+		return 0;
 		// System.out.println("WE GOT A FALSE");
 	}
 

@@ -96,6 +96,19 @@ public class Spaceship implements Serializable {
 		}
 	}
 
+	public SpecialBlock[] getBlocksOfType(int type) {
+		ArrayList<SpecialBlock> r = new ArrayList<SpecialBlock>();
+		
+		for (SpecialBlock e : blocks)
+			if (e.type == type)
+				r.add(e);
+		
+		SpecialBlock[] yeet = new SpecialBlock[r.size()];
+		
+		yeet = r.toArray(yeet);
+		return yeet;
+	}
+	
 	public void removeAir(int amount) {
 		for (int i = 0; i < airTanks.length && amount > 0; i++) {
 			airTanks[i].air -= amount;
