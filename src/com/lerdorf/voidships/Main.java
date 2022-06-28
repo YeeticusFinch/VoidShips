@@ -886,13 +886,30 @@ public class Main extends JavaPlugin implements Listener {
 	
 	void asyncFillUpdate() {
 		if (asyncFill.size() > 0) {
-			for (Location[] key : asyncFill.keySet()) {
+			/*for (Location[] key : asyncFill.keySet()) {
 				if (key[1].getBlockX() <= key[2].getBlockX()) {
 					key[1].getBlock().setType(asyncFill.get(key));
 					key[1].add(new Vector(1, 0, 0));
 				} else if (key[1].getBlockY() < key[2].getBlockY()) {
 					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[1].getBlockY()+1, key[1].getBlockZ());
 				} else if (key[1].getBlockZ() < key[2].getBlockZ()) {
+					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[0].getBlockY(), key[1].getBlockZ()+1);
+				} else {
+					getServer().broadcastMessage("Async fill complete!");
+					asyncFill.remove(key);
+				}
+			} */
+			
+			for (Location[] key : asyncFill.keySet()) {
+				while (key[1].getBlockY() < key[2].getBlockY()) {
+					if (key[1].getBlockX() <= key[2].getBlockX()) {
+						key[1].getBlock().setType(asyncFill.get(key));
+						key[1].add(new Vector(1, 0, 0));
+					} else if (key[1].getBlockY() < key[2].getBlockY()) {
+						key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[1].getBlockY()+1, key[1].getBlockZ());
+					}
+				}
+				if (key[1].getBlockZ() < key[2].getBlockZ()) {
 					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[0].getBlockY(), key[1].getBlockZ()+1);
 				} else {
 					getServer().broadcastMessage("Async fill complete!");
