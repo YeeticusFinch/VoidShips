@@ -91,6 +91,11 @@ public class SpecialBlock implements Serializable {
 	public SpecialBlock(String filepath) {
 		load(filepath);
 	}
+	
+	public void initRefs() {
+		if (ship != null)
+			ship = Main.getShip(ship.name);
+	}
 
 	public void update() {
 		if (world == null)

@@ -48,6 +48,25 @@ public class Spaceship implements Serializable {
 		return new Location(Bukkit.getWorld(world), sx, sy, sz);
 	}
 
+	public void initRefs() {
+		if (system != null)
+			system = Main.getSystem( system.getName() );
+		if (orbiting != null && system.planets != null) {
+			for (CosmicBody p : system.planets) {
+				if (p != null && ((p.name != null && orbiting.name != null && p.name == orbiting.name) || (p.knickname != null && orbiting.knickname != null && p.knickname == orbiting.knickname) || (p.id != null && orbiting.id != null && p.id == orbiting.id))) {
+					orbiting = p;
+				}
+			}
+		}
+		if (airTanks != null)
+			for (SpecialBlock b : airTanks)
+				b.initRefs();
+
+		if (blocks != null)
+			for (SpecialBlock b : blocks)
+				b.initRefs();
+	}
+	
 	public void save(String filename) {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
@@ -87,6 +106,8 @@ public class Spaceship implements Serializable {
 			airTanks = yeet.airTanks;
 			blocks = yeet.blocks;
 			this.filepath = filepath;
+			
+			initRefs();
 
 		} catch (IOException ex) {
 			ex.printStackTrace();

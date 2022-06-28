@@ -56,6 +56,8 @@ public class SolarSystem implements Serializable {
 				return sun.knickname;
 			else if (sun.name != null)
 				return sun.name;
+			else if (sun.id != null)
+				return sun.id;
 		}
 		return ":unnamed star:";
 	}

@@ -52,6 +52,8 @@ public class Main extends JavaPlugin implements Listener {
 	public static HashMap<Player, SpecialBlock> interact = new HashMap<Player, SpecialBlock>();
 	
 	public static HashMap<Block, Integer> blockTags = new HashMap<Block, Integer>();
+	
+	public static HashMap<Location[], Material> asyncFill = new HashMap<Location[], Material>();
 
 	ScheduledExecutorService executor;
 	
@@ -111,6 +113,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("tank").setExecutor(new BlockShit());
 		this.getCommand("setsystem").setExecutor(new VoidQuery());
 		this.getCommand("refuel").setExecutor(new BlockShit());
+		this.getCommand("asyncFill").setExecutor(new VoidSet());
 		
 		loadSaves();
 
@@ -132,6 +135,7 @@ public class Main extends JavaPlugin implements Listener {
 				  try {
 						specialBlockUpdate();
 						fastBlockUpdate(null);
+						asyncFillUpdate();
 						//System.out.println("Main loop");
 			    	} catch (Exception e) {
 			    		e.printStackTrace();
@@ -235,6 +239,10 @@ public class Main extends JavaPlugin implements Listener {
 	                    if (item.getItemMeta().getDisplayName().indexOf("Oxygen Control") != -1) {
 	                    	openMenu(player, getCurrentShip(player), 1);
 	                    	System.out.println("Opened Oxygen Control");
+	                    } else if (item.getType() == Material.DISPENSER && event.getView().getTitle().indexOf("Oxygen Control") != -1) {
+	                    	Spaceship ship = getCurrentShip(player);
+	                    	SpecialBlock pump = ship.getBlocksOfType(SpecialBlock.AIR_PUMP)[event.getSlot()-9];
+	                    	openMenu(player, ship, pump, 2);
 	                    }
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
@@ -246,9 +254,8 @@ public class Main extends JavaPlugin implements Listener {
 	                    	player.sendMessage("Attempting to depressurize");
 	                    	Spaceship ship = getCurrentShip(player);
 	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
-
 	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
-	                    	int a = countAir(player.getLocation(), 2000);
+	                    	int a = countAir(loc, 2000);
 	                    	player.sendMessage("Regaining " + a + " cubic meters of air");
 	                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
 	                    	//setVoidAir(loc.getBlock());
@@ -258,10 +265,10 @@ public class Main extends JavaPlugin implements Listener {
 	                    } else if (item.getItemMeta().getDisplayName().indexOf("Pressurize") != -1) {	
 	                    	player.sendMessage("Attempting to pressurize");
 	                    	Spaceship ship = getCurrentShip(player);
-	                    	int a = countVacuum(player.getLocation(), 2000);
-	                    	player.sendMessage("Expending " + a + " cubic meters of air");
 	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
 	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
+	                    	int a = countVacuum(loc, 2000);
+	                    	player.sendMessage("Expending " + a + " cubic meters of air");
 	                        //directional.getFacing();
 	                    	if (a <= ship.countAir()) {
 	                    		//if (airSource(2000, interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection()), null)) {
@@ -300,6 +307,7 @@ public class Main extends JavaPlugin implements Listener {
 	 */
 	
 	public static void openMenu(Player player, Spaceship ship, int n) {
+		ship = getCurrentShip(player);
 		if (n == 0) { // Main Terminal
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
@@ -315,7 +323,7 @@ public class Main extends JavaPlugin implements Listener {
 		else if (n == 1) {
 			Inventory inventory = Bukkit.createInventory(null, 3*9, "Ship Terminal: Oxygen Control");
 			
-			inventory.setItem(4, createItem(Material.POLISHED_BASALT, ship.airTanks.length, "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
 			
 			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
 			
@@ -329,13 +337,14 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public static void openMenu(Player player, Spaceship ship, SpecialBlock b, int n) {
 
+		ship = getCurrentShip(player);
 		if (interact.keySet().contains(player))
 			interact.remove(player);
 		interact.put(player, b);
 		if (n == 2) {
 			Inventory inventory = Bukkit.createInventory(null, 1*9, b.name + " Air Pump");
 			
-			inventory.setItem(0, createItem(Material.POLISHED_BASALT, ship.airTanks.length, "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			inventory.setItem(0, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
 			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "§4Depressurize", Arrays.asList("§7§oClick to turn the room into a vacuum")));
 			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "§2Pressurize", Arrays.asList("§7§oClick to fill the room with air")));
 			
@@ -793,6 +802,28 @@ public class Main extends JavaPlugin implements Listener {
 		return block.getType() == Material.CAVE_AIR ;
 	}
 	
+	public static SolarSystem getSystem(String name) {
+		if (Main.systems.size() > 0) {
+			for (SolarSystem s : Main.systems) {
+				if (s != null && (s.sun != null && ((s.sun.name != null && s.sun.name.equals(name)) || (s.sun.knickname != null && s.sun.knickname.equals(name)) || (s.sun.id != null && s.sun.id.equals(name))))) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static Spaceship getShip(String name) {
+		if (Main.ships.size() > 0) {
+			for (Spaceship s : Main.ships) {
+				if (s != null && s.name.equals(name)) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public static Spaceship getCurrentShip(Player player) {
 		if (Main.ships.size() > 0) {
 			Location loc = player.getLocation();
@@ -851,5 +882,28 @@ public class Main extends JavaPlugin implements Listener {
 		    }
 		}
 		return false;
+	}
+	
+	void asyncFillUpdate() {
+		if (asyncFill.size() > 0) {
+			for (Location[] key : asyncFill.keySet()) {
+				if (key[1].getBlockX() <= key[2].getBlockX()) {
+					key[1].getBlock().setType(asyncFill.get(key));
+					key[1].add(new Vector(1, 0, 0));
+				} else if (key[1].getBlockY() < key[2].getBlockY()) {
+					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[1].getBlockY()+1, key[1].getBlockZ());
+				} else if (key[1].getBlockZ() < key[2].getBlockZ()) {
+					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[0].getBlockY(), key[1].getBlockZ()+1);
+				} else {
+					getServer().broadcastMessage("Async fill complete!");
+					asyncFill.remove(key);
+				}
+			}
+		}
+	}
+	
+	public static void fillAsync(String world, int x1, int y1, int z1, int x2, int y2, int z2, Material mat) {
+		World w = Bukkit.getWorld(world);
+		asyncFill.put(new Location[] {new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.max(x1,x2), Math.max(y1,y2), Math.max(z1,z2))}, mat);
 	}
 }

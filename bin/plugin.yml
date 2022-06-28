@@ -128,5 +128,9 @@ commands:
       description: Fully refuels the ship you are in
       usage: /refuel
       permission: VoidShips.refuel
+   asyncFill:
+      description: Fills a worldedit area asynchronously
+      usage: /asyncFill [block]
+      permission: VoidShips.asyncFill
       
       

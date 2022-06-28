@@ -5,12 +5,19 @@ import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.bukkit.BukkitPlayer;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 
 public class VoidSet implements CommandExecutor {
 
@@ -64,15 +71,42 @@ public class VoidSet implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("voidset")) {
-			if (args.length != 6)
+			if (args.length != 6 && args.length != 0)
 				player.sendMessage("Incorrect number of args for /voidset (expected 6)");
-			else {
+			else if (args.length == 0) {
+				
+			} else {
 				try {
 					Main.voids.add(new Void(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), player.getLocation().getWorld()));
 					Main.voids.get(Main.voids.size()-1).save("void" + (Main.voids.size()-1) + ".dat");
 				} catch (Exception e) {
 					player.sendMessage("Something went wrong:\n" + e.getMessage() + "\n" + e.getStackTrace());
 				}
+			}
+		} else if (cmd.getName().equalsIgnoreCase("voidcreate")) {
+			if (args.length != 6)
+				player.sendMessage("Incorrect number of args for /voidset (expected 6)");
+			else {
+				try {
+					Main.voids.add(new Void(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), player.getLocation().getWorld()));
+					Void v = Main.voids.get(Main.voids.size()-1);
+					v.save("void" + (Main.voids.size()-1) + ".dat");
+				} catch (Exception e) {
+					player.sendMessage("Something went wrong:\n" + e.getMessage() + "\n" + e.getStackTrace());
+				}
+			}
+		} else if (cmd.getName().equalsIgnoreCase("asyncFill")) { 
+			try {
+				Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
+			
+				sender.sendMessage("Successfully aquired WorldEdit selection");
+	
+				BlockVector3 min = r.getMinimumPoint();
+				BlockVector3 max = r.getMaximumPoint();
+				Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), Material.valueOf(args[0].toUpperCase()));
+				sender.sendMessage("Started async fill");
+			} catch (IncompleteRegionException e) {
+				sender.sendMessage("Incomplete worldedit selection");
 			}
 		} else if (cmd.getName().equalsIgnoreCase("newship")) {
 			if (args.length != 1) {
