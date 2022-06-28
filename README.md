@@ -7,6 +7,15 @@ The universe is composed of numerous solar systems, and planets (their distances
 
 Time runs just as fast as in Minecraft, one day in minecraft is 20 minutes, and thus one earth-day is 20 minutes, meaning time runs 72x faster.
 
+# Features
+
+## AsyncFill
+Unfortunately the worldedit plugin would crash on my server when filling large amounts of blocks (>2.6 million blocks), and I need to fill a lot more blocks than that. So I created a function to asynchronously fill the blocks. One block per tick was too slow, a 700x255x700 block area would take 1.6 years assuming no lag. So I decided to go one vertical planar slice at a time (vertical dimension has a constraint, a maximum of 255 blocks). Thus in theory a 700x255x700 block area could be completed in 25 seconds assuming no lag. Unfortunately it would be placing 128k blocks per tick, which would lag the server during that time, and thus it isn't completely asynchronous.
+![image](https://user-images.githubusercontent.com/50182007/176157768-2ac0b4ab-5609-48cd-86b9-1906c15b68df.png)
+x-axis is the quantity of blocks being changed, y-axis is the amount of time in seconds it takes (on my server) for my asyncFill function to run.
+
+# Detailed Overview
+
 When battling another ship, the first step is to find that ship. Scans can only travel at the speed of light, so if you're tracking a ship on the opposite side of the solar system, the signal might take 15 minutes to get there, and then 15 minutes to return, so a 30 minute round trip, which would be 25 seconds in-game.
 So you would know where that ship was 25 seconds ago.
 
