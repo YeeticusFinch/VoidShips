@@ -114,6 +114,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("setsystem").setExecutor(new VoidQuery());
 		this.getCommand("refuel").setExecutor(new BlockShit());
 		this.getCommand("asyncFill").setExecutor(new VoidSet());
+		this.getCommand("voidcreate").setExecutor(new VoidSet());
 		
 		loadSaves();
 
@@ -721,9 +722,13 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public boolean inVoid(Location loc) {
-		for (Void v : voids)
-			if (loc.getWorld().getName().equals(v.world) && v.within(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
-				return true;
+		for (Void v : voids) {
+			if (loc.getWorld().getName().equals(v.world)) {
+				if (v.voidWorld || (loc.getWorld().getName().equals(v.world)
+						&& v.within(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())))
+					return true;
+			}
+		}
 		return false;
 	}
 
@@ -915,11 +920,14 @@ public class Main extends JavaPlugin implements Listener {
 					getServer().broadcastMessage("Async fill complete!");
 					asyncFill.remove(key);
 				}
+				//break;
 			}
 		}
 	}
 	
 	public static void fillAsync(String world, int x1, int y1, int z1, int x2, int y2, int z2, Material mat) {
+
+		System.out.println("Commencing asyc fill for " + (Math.abs(x1-x2)*Math.abs(y1-y2)*Math.abs(z1-z2)) + " blocks, " + Math.abs(x1-x2) + "x" + Math.abs(y1-y2) + "x" + Math.abs(z1-z2));
 		World w = Bukkit.getWorld(world);
 		asyncFill.put(new Location[] {new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.max(x1,x2), Math.max(y1,y2), Math.max(z1,z2))}, mat);
 	}

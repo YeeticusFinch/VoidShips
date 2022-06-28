@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
@@ -71,11 +72,27 @@ public class VoidSet implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("voidset")) {
-			if (args.length != 6 && args.length != 0)
-				player.sendMessage("Incorrect number of args for /voidset (expected 6)");
-			else if (args.length == 0) {
-				
-			} else {
+			if (args.length == 0) {
+				try {
+					Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
+					
+					sender.sendMessage("Successfully aquired WorldEdit selection");
+		
+					BlockVector3 min = r.getMinimumPoint();
+					BlockVector3 max = r.getMaximumPoint();
+					
+					Main.voids.add(new Void(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), player.getLocation().getWorld()));
+					Main.voids.get(Main.voids.size()-1).save("void" + (Main.voids.size()-1) + ".dat");
+				} catch (Exception e) {
+					sender.sendMessage("Ruh roh something went wrong (either make a worldedit selection, or pass in coords)");
+				}
+			
+			} else if (args.length == 1) {
+				Main.voids.add(new Void(Bukkit.getWorld(args[0])));
+				Main.voids.get(Main.voids.size()-1).save("void" + (Main.voids.size()-1) + ".dat");
+			} else if (args.length != 6)
+					player.sendMessage("Incorrect number of args for /voidset (expected 6)");
+			else {
 				try {
 					Main.voids.add(new Void(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), player.getLocation().getWorld()));
 					Main.voids.get(Main.voids.size()-1).save("void" + (Main.voids.size()-1) + ".dat");
@@ -84,7 +101,41 @@ public class VoidSet implements CommandExecutor {
 				}
 			}
 		} else if (cmd.getName().equalsIgnoreCase("voidcreate")) {
-			if (args.length != 6)
+			if (args.length == 0) {
+				try {
+					Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
+					
+					sender.sendMessage("Successfully aquired WorldEdit selection");
+		
+					BlockVector3 min = r.getMinimumPoint();
+					BlockVector3 max = r.getMaximumPoint();
+					
+					//Vector min = new Vector(Math.min(min2.getX(), max2.getX()), Math.min(min2.getY(), max2.getY()), Math.min(min2.getZ(), max2.getZ()));
+					//Vector max = new Vector(Math.max(min2.getX(), max2.getX()), Math.max(min2.getY(), max2.getY()), Math.max(min2.getZ(), max2.getZ()));
+					
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()+1, min.getY()+1, min.getZ()+1, max.getX()-1, max.getY()-1, max.getZ()-1, Material.AIR);
+					
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), min.getZ(), Material.BARRIER);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), min.getY(), min.getZ(), min.getX(), max.getY(), max.getZ(), Material.BARRIER);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), min.getY(), min.getZ(), max.getX(), min.getY(), max.getZ(), Material.BARRIER);
+					Main.fillAsync(player.getLocation().getWorld().getName(), max.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), Material.BARRIER);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), max.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), Material.BARRIER);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX(), min.getY(), max.getZ(), max.getX(), max.getY(), max.getZ(), Material.BARRIER);
+
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()-1, min.getY()-1, min.getZ()-1, max.getX()+1, max.getY()+1, min.getZ()-1, Material.BLACK_CONCRETE);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()-1, min.getY()-1, min.getZ()-1, min.getX()-1, max.getY()+1, max.getZ()+1, Material.BLACK_CONCRETE);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()-1, min.getY()-1, min.getZ()-1, max.getX()+1, min.getY()-1, max.getZ()+1, Material.BLACK_CONCRETE);
+					Main.fillAsync(player.getLocation().getWorld().getName(), max.getX()+1, min.getY()-1, min.getZ()-1, max.getX()+1, max.getY()+1, max.getZ()+1, Material.BLACK_CONCRETE);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()-1, max.getY()+1, min.getZ()-1, max.getX()+1, max.getY()+1, max.getZ()+1, Material.BLACK_CONCRETE);
+					Main.fillAsync(player.getLocation().getWorld().getName(), min.getX()-1, min.getY()-1, max.getZ()+1, max.getX()+1, max.getY()+1, max.getZ()+1, Material.BLACK_CONCRETE);
+					
+					Main.voids.add(new Void(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), player.getLocation().getWorld()));
+					Main.voids.get(Main.voids.size()-1).save("void" + (Main.voids.size()-1) + ".dat");
+				} catch (Exception e) {
+					sender.sendMessage("Ruh roh something went wrong (either make a worldedit selection, or pass in coords)");
+				}
+			}
+			else if (args.length != 6)
 				player.sendMessage("Incorrect number of args for /voidset (expected 6)");
 			else {
 				try {

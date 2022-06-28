@@ -132,5 +132,9 @@ commands:
       description: Fills a worldedit area asynchronously
       usage: /asyncFill [block]
       permission: VoidShips.asyncFill
+   voidcreate:
+      description: Creates new void, and generates enclosure, based on worldedit selection
+      usage: /voidcreate
+      permission: VoidShips.voidcreate
       
       

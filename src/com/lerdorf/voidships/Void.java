@@ -15,6 +15,8 @@ public class Void implements Serializable {
 
 	public int x1, y1, z1, x2, y2, z2;
 	public String world;
+	
+	public boolean voidWorld = false;
 
 	public Void(int x1, int y1, int z1, int x2, int y2, int z2, World world) {
 		this.x1 = x1;
@@ -25,18 +27,22 @@ public class Void implements Serializable {
 		this.z2 = z2;
 		this.world = world.getName();
 	}
+	
+	public Void(World world) {
+		voidWorld = true;
+		this.world = world.getName();
+	}
 
 	public Void(String filename) {
 		load(filename);
 	}
 
 	public boolean within(Location loc) {
-		return within(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()) && loc.getWorld().getName().equals(world);
+		return within(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()) && loc.getWorld().getName().equals(world);
 	}
 	
-	public boolean within(int x, int y, int z) {
-		if (x >= Math.min(x1, x2) && x <= Math.max(x1, x2) && y >= Math.min(y1, y2) && y <= Math.max(y1, y2)
-				&& z >= Math.min(z1, z2) && z <= Math.max(z1, z2))
+	public boolean within(String world, int x, int y, int z) {
+		if (this.world.equals(world) && (voidWorld || (x >= Math.min(x1, x2) && x <= Math.max(x1, x2) && y >= Math.min(y1, y2) && y <= Math.max(y1, y2)&& z >= Math.min(z1, z2) && z <= Math.max(z1, z2))))
 			return true;
 		return false;
 	}
@@ -70,6 +76,9 @@ public class Void implements Serializable {
 			z1 = yeet.z1;
 			z2 = yeet.z2;
 			world = yeet.world;
+			if (world == null)
+				world = "starships";
+			voidWorld = yeet.voidWorld;
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
