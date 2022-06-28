@@ -901,13 +901,13 @@ public class Main extends JavaPlugin implements Listener {
 			} */
 			
 			for (Location[] key : asyncFill.keySet()) {
-				while (key[1].getBlockY() < key[2].getBlockY()) {
+				while (key[1].getBlockY() <= key[2].getBlockY()) {
 					if (key[1].getBlockX() <= key[2].getBlockX()) {
 						key[1].getBlock().setType(asyncFill.get(key));
 						key[1].add(new Vector(1, 0, 0));
-					} else if (key[1].getBlockY() < key[2].getBlockY()) {
+					} else
 						key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[1].getBlockY()+1, key[1].getBlockZ());
-					}
+
 				}
 				if (key[1].getBlockZ() < key[2].getBlockZ()) {
 					key[1] = new Location(key[1].getWorld(), key[0].getBlockX(), key[0].getBlockY(), key[1].getBlockZ()+1);

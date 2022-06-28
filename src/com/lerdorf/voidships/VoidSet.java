@@ -96,6 +96,10 @@ public class VoidSet implements CommandExecutor {
 				}
 			}
 		} else if (cmd.getName().equalsIgnoreCase("asyncFill")) { 
+			if (args.length != 1) {
+				sender.sendMessage("Expected 1 arg");
+				return false;
+			}
 			try {
 				Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
 			
