@@ -173,6 +173,8 @@ public class SpecialBlock implements Serializable {
 	
 	public void scroll(int prev, int next, Player player) {
 		if (type == MAP) {
+			if (prev == 8 && next < 5) prev = -1;
+			else if (prev == 0  && next > 4) prev = 9;
 			zoom *= Math.pow(1.6,(next-prev));
 			player.sendMessage("Set map zoom to " + ((int)(zoom*100))/100.0 + "x");
 		}
