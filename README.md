@@ -7,6 +7,9 @@ The universe is composed of numerous solar systems, and planets (their distances
 
 Time runs just as fast as in Minecraft, one day in minecraft is 20 minutes, and thus one earth-day is 20 minutes, meaning time runs 72x faster.
 
+![image](https://user-images.githubusercontent.com/50182007/176383163-8b14fea9-815f-4e45-a49a-8eece19a0a20.png)
+![image](https://user-images.githubusercontent.com/50182007/176383190-8d1fbe99-6da6-4e01-9b4d-99382e9c6917.png)
+
 # Features
 
 ## AsyncFill
