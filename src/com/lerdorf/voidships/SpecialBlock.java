@@ -169,6 +169,15 @@ public class SpecialBlock implements Serializable {
 			mapDisplay(p, ship);
 	}
 	
+	public void scroll(int prev, int next, Player player) {
+		if (type == MAP) {
+			zoom *= 1.6*(next-prev);
+			player.sendMessage("Set map zoom to " + ((int)(zoom*100))/100.0 + "x");
+		}
+	}
+	
+	double zoom = 1;
+	
 	public void mapDisplay(Player player, Spaceship ship) {
 		if (dead || !Main.playerNearby(world, x, y, z, 10))
 			return;
@@ -190,6 +199,7 @@ public class SpecialBlock implements Serializable {
 				for (CosmicBody p : s.planets)
 					if (p.orbitDist > maxD)
 						maxD = p.orbitDist;
+				maxD *= zoom;
 				for (CosmicBody p : s.planets) {
 					for (int i = 0; i < 10; i++) {
 						p.orbit(LocalDateTime.now().toLocalTime().toSecondOfDay() - 15000*i);
@@ -201,7 +211,7 @@ public class SpecialBlock implements Serializable {
 						Bukkit.getWorld(world).spawnParticle(Particle.REDSTONE, px, py, pz, 0, 0, 0, 0, dust);
 					}
 					p.orbit();
-					Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(155, 155, 255), 0.2f);
+					Particle.DustOptions dust = new Particle.DustOptions(p.habitable ? Color.fromRGB(155, 255, 155) : Color.fromRGB(155, 155, 255), 0.2f);
 					
 					double px = x + 0.5 + (h * p.x)/(maxD);
 					double py = y + h*2*0.707 + 0.1 + (h * (p.y*0.707+p.z*0.707))/(maxD);

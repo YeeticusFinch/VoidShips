@@ -414,6 +414,30 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+
+	@EventHandler
+	public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+		Player player = event.getPlayer();
+		if (inVoid(player.getLocation())) {
+			boolean yeeted = false;
+			Block target = player.getTargetBlock(null, 10);
+			for (SpecialBlock b : blocks) {
+				if (b != null && b.checkMaterial(target.getType()) && b.compareLocation(target.getLocation())) {
+					b.scroll(event.getPreviousSlot(), event.getNewSlot(), player);
+					yeeted = true;
+				}
+			}
+			if (yeeted == false) {
+				for (Spaceship s : ships) {
+					if (s != null && s.blocks != null && s.blocks.length > 0)
+						for (SpecialBlock b : s.blocks)
+							if (b != null && b.checkMaterial(target.getType()) && b.compareLocation(target.getLocation()))
+								b.scroll(event.getPreviousSlot(), event.getNewSlot(), player);
+				}
+			}
+		}
+	}
+	
 	long lastBlockUpdate = 0;
 	long lastGravUpdate = 0;
 
