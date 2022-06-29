@@ -244,6 +244,30 @@ public class Main extends JavaPlugin implements Listener {
 	                    	Spaceship ship = getCurrentShip(player);
 	                    	SpecialBlock pump = ship.getBlocksOfType(SpecialBlock.AIR_PUMP)[event.getSlot()-9];
 	                    	openMenu(player, ship, pump, 2);
+	                    } else if (item.getItemMeta().getDisplayName().indexOf("Cleanup Debris") != -1) {
+	                    	player.sendMessage("§oDeleting broken blocks from the systems...");
+	                    	int c = 0;
+	                    	int d = 0;
+	                    	Spaceship s = getCurrentShip(player);
+							if (s != null) {
+								if (s.blocks != null && s.blocks.length > 0) {
+									for (int i = 0; i < s.blocks.length; i++) {
+										if (s.blocks[i] != null && s.blocks[i].dead) {
+											s.delBlock(i);
+											c++;
+										}
+									}
+								}
+								if (s.airTanks != null && s.airTanks.length > 0) {
+									for (int i = 0; i < s.airTanks.length; i++) {
+										if (s.airTanks[i] != null && s.airTanks[i].dead) {
+											s.delAirTank(i);
+											d++;
+										}
+									}
+								}
+							}
+							player.sendMessage("Deleted " + c + " blocks and " + d + " air tanks");
 	                    }
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
@@ -284,31 +308,7 @@ public class Main extends JavaPlugin implements Listener {
 		                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
 		                    	player.sendMessage("Fatal pressurization error"); 
 	                    	}
-	                    } else if (item.getItemMeta().getDisplayName().indexOf("Cleanup Debris") != -1) {
-	                    	player.sendMessage("§oDeleting broken blocks from the systems...");
-	                    	int c = 0;
-	                    	int d = 0;
-	                    	Spaceship s = getCurrentShip(player);
-							if (s != null) {
-								if (s.blocks != null && s.blocks.length > 0) {
-									for (int i = 0; i < s.blocks.length; i++) {
-										if (s.blocks[i] != null && s.blocks[i].dead) {
-											s.delBlock(i);
-											c++;
-										}
-									}
-								}
-								if (s.airTanks != null && s.airTanks.length > 0) {
-									for (int i = 0; i < s.airTanks.length; i++) {
-										if (s.airTanks[i] != null && s.airTanks[i].dead) {
-											s.delAirTank(i);
-											d++;
-										}
-									}
-								}
-							}
-							player.sendMessage("Deleted " + c + " blocks and " + d + " air tanks");
-	                    }
+	                    } 
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
 	            }
