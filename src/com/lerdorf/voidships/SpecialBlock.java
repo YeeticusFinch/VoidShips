@@ -173,7 +173,7 @@ public class SpecialBlock implements Serializable {
 	
 	public void scroll(int prev, int next, Player player) {
 		if (type == MAP) {
-			zoom *= 1.6*(next-prev);
+			zoom *= Math.pow(1.6,(next-prev));
 			player.sendMessage("Set map zoom to " + ((int)(zoom*100))/100.0 + "x");
 		}
 	}
@@ -203,7 +203,7 @@ public class SpecialBlock implements Serializable {
 				for (CosmicBody p : s.planets)
 					if (p.orbitDist > maxD)
 						maxD = p.orbitDist;
-				maxD *= zoom;
+				maxD /= zoom;
 				for (CosmicBody p : s.planets) {
 					for (int i = 0; i < 10; i++) {
 						p.orbit(LocalDateTime.now().toLocalTime().toSecondOfDay() - 15000*i);

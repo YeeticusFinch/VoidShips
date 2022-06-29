@@ -319,6 +319,8 @@ public class Main extends JavaPlugin implements Listener {
 			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeaponTargetSystems", Arrays.asList("§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
 			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bLong-Range Mapping Scanner", Arrays.asList("§fClick to access the Mapping Scanner", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
 			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dPilotSystems", Arrays.asList("§fClick to access PilotSystems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
+			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList("§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
+			
 			player.openInventory(inventory);
 		} 
 		else if (n == 1) {
