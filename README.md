@@ -17,6 +17,14 @@ Unfortunately the worldedit plugin would crash on my server when filling large a
 ![image](https://user-images.githubusercontent.com/50182007/176157768-2ac0b4ab-5609-48cd-86b9-1906c15b68df.png)
 x-axis is the quantity of blocks being changed, y-axis is the amount of time in seconds it takes (on my server) for my asyncFill function to run.
 
+## Block-Ships
+Larger ships made out of blocks, you can walk around in them, build in them, and most of the plugin revolves around them.
+
+# Planned Features
+
+## Entity-Ships
+Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship.
+
 # Detailed Overview
 
 When battling another ship, the first step is to find that ship. Scans can only travel at the speed of light, so if you're tracking a ship on the opposite side of the solar system, the signal might take 15 minutes to get there, and then 15 minutes to return, so a 30 minute round trip, which would be 25 seconds in-game.
@@ -45,3 +53,4 @@ You could turn off everything and become practically invisible, and then get clo
 You could go in full offenseive mode, long-range mapping scanners plus WeaponTargetSystems, and put them on the defensive so that they can't counterattack.
 Or perhaps you would prefer to alternate between defending and attacking, and hope the enemy makes a careless mistake before you do (very likely if you get close to them), or hope their fuel runs out before yours does.
 Might add some dogfighting stuff.
+Perhaps if you can sneak something small past their radar, you can send in a starfighter to attack the enemy ship.
