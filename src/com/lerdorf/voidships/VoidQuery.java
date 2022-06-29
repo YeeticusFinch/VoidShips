@@ -314,6 +314,9 @@ public class VoidQuery implements CommandExecutor {
 				}
 				
 			}
+		} else if (cmd.getName().equalsIgnoreCase("shiptp") ) {
+			player.sendMessage("Opening ship teleporter");
+			Main.openMenu(player, null, 3);
 		}
 		return true;
 	}

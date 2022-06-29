@@ -183,7 +183,7 @@ public class VoidSet implements CommandExecutor {
 			} // Spaceship(String name, double x, double y, double z, Void space, CosmicBody orbiting, SolarSystem system, int sx, int sy, int sz, String world)
 			SolarSystem s = Main.systems.get((int)(Math.random()*Main.systems.size()));
 			Main.ships.add(new Spaceship(args[0].replace('_', ' '), (Math.random()-0.5)*5.9091*Math.pow(10,9), (Math.random()-0.5)*5.9091*Math.pow(10,9), (Math.random()-0.5)*5.9091*Math.pow(10,9), v, null, s, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName() ));
-			Main.ships.get(Main.ships.size()-1).save("ship" + (Main.voids.size()-1) + ".dat");
+			Main.ships.get(Main.ships.size()-1).save("ship" + (Main.ships.size()-1) + ".dat");
 			player.sendMessage("Successfully created ship " + args[0].replace('_', ' ') + " in system " + s.getName());
 		} else if (cmd.getName().equalsIgnoreCase("newplanet")) { 
             String name = null;

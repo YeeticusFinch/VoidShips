@@ -115,6 +115,8 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("refuel").setExecutor(new BlockShit());
 		this.getCommand("asyncFill").setExecutor(new VoidSet());
 		this.getCommand("voidcreate").setExecutor(new VoidSet());
+
+		this.getCommand("shiptp").setExecutor(new VoidQuery());
 		
 		loadSaves();
 
@@ -280,7 +282,7 @@ public class Main extends JavaPlugin implements Listener {
 	                    	Spaceship ship = getCurrentShip(player);
 	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
 	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
-	                    	int a = countAir(loc, 2000);
+	                    	int a = countAir(loc, 300);
 	                    	player.sendMessage("Regaining " + a + " cubic meters of air");
 	                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
 	                    	//setVoidAir(loc.getBlock());
@@ -292,25 +294,29 @@ public class Main extends JavaPlugin implements Listener {
 	                    	Spaceship ship = getCurrentShip(player);
 	                    	Directional directional = (Directional) interact.get(player).getBlock().getBlockData();
 	                    	Location loc = interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection());
-	                    	int a = countVacuum(loc, 2000);
+	                    	int a = countVacuum(loc, 300);
 	                    	player.sendMessage("Expending " + a + " cubic meters of air");
 	                        //directional.getFacing();
 	                    	if (a <= ship.countAir()) {
 	                    		//if (airSource(2000, interact.get(player).getBlock().getLocation().clone().add(directional.getFacing().getDirection()), null)) {
 		                    		player.sendMessage("Successfully pressurized room");
 
-		                    	replace(loc, 2000, Material.COARSE_DIRT, Material.CAVE_AIR, 0);
+		                    	replace(loc, 300, Material.COARSE_DIRT, Material.CAVE_AIR, 0);
 		                    		ship.removeAir(a);
 	                    		//} else
 	                    		//	player.sendMessage("Fatal pressurization error");
 	                    	} else {
 
-		                    	replace(loc, 2000, Material.COARSE_DIRT, Material.VOID_AIR, 0);
+		                    	replace(loc, 300, Material.COARSE_DIRT, Material.VOID_AIR, 0);
 		                    	player.sendMessage("Fatal pressurization error"); 
 	                    	}
 	                    } 
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
+	            } else if (event.getView().getTitle().indexOf("Ship Selector") != -1) {
+	            	Spaceship ship = ships.get(event.getSlot());
+	            	player.sendMessage("Teleporting to " + ship.name);
+	            	player.teleport(new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz));
 	            }
 	        }
 	    }
@@ -355,7 +361,18 @@ public class Main extends JavaPlugin implements Listener {
 			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
 			
 			for (int i = 0; i < pumps.length; i++) {
-				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Left-click to evacuate air", "Right-click to dispense air")));
+				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
+			}
+			
+			player.openInventory(inventory);
+		}
+		else if (n == 3) {
+			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(ships.size()/9.0))*9, "Ship Selector");
+			
+			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			
+			for (int i = 0; i < ships.size(); i++) {
+				inventory.setItem(i, createItem(Material.DRAGON_HEAD, "§6"+ships.get(i).name, Arrays.asList("§7§oClick to teleport")));
 			}
 			
 			player.openInventory(inventory);
@@ -906,7 +923,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static boolean within(Player p, String world, int x, int y, int z, int x2, int y2, int z2) {
         Location loc = p.getLocation();
         if (!loc.getWorld().getName().equalsIgnoreCase(world)) return false;
-        if (Math.ceil(loc.getX()) >= Math.min(x,x2) && Math.floor(loc.getX()) <= Math.max(x,x2) && Math.ceil(loc.getY()) >= Math.min(y,y2) && Math.floor(loc.getY()) <= Math.max(y,y2) && Math.ceil(loc.getZ()) >= Math.min(z,z2) && Math.floor(loc.getZ()) <= Math.max(z,z2)) {
+        if (Math.round(loc.getX()) >= Math.min(x,x2) && Math.round(loc.getX()) <= Math.max(x,x2) && Math.ceil(loc.getY()+0.5) >= Math.min(y,y2) && Math.floor(loc.getY()+0.5) <= Math.max(y,y2) && Math.round(loc.getZ()) >= Math.min(z,z2) && Math.round(loc.getZ()) <= Math.max(z,z2)) {
         	return true;
         }
     	return false;

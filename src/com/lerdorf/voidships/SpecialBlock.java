@@ -383,7 +383,11 @@ public class SpecialBlock implements Serializable {
 					Location loc = new Location(Bukkit.getWorld(world), i, j, k);
 					if (Main.isSomeAir(loc.getBlock())) {
 						//loc.getBlock().setType(Material.valueOf(materials[i-minX][j-minY][k-minZ]));
-						loc.getBlock().setBlockData(Bukkit.createBlockData(datas[i-minX][j-minY][k-minZ]));
+						if (datas[i-minX][j-minY][k-minZ].indexOf("minecraft:air") != -1 || datas[i-minX][j-minY][k-minZ].indexOf("minecraft:void_air") != -1)
+							loc.getBlock().setType(Material.CAVE_AIR);
+						else
+							loc.getBlock().setBlockData(Bukkit.createBlockData(datas[i-minX][j-minY][k-minZ]));
+						//if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.VOID_AIR) loc.getBlock().setType(Material.CAVE_AIR);
 						loc.getWorld().spawnParticle(Particle.CRIT, loc, 5);
 						loc.getWorld().playSound(loc, Sound.BLOCK_PISTON_CONTRACT, 1, 0.6f);
 					}

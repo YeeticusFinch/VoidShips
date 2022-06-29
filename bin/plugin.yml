@@ -136,5 +136,10 @@ commands:
       description: Creates new void, and generates enclosure, based on worldedit selection
       usage: /voidcreate
       permission: VoidShips.voidcreate
+   shiptp:
+      description: Opens the ship teleport menu
+      usage: /shiptp
+      permission: VoidShips.shiptp
+      
       
       
