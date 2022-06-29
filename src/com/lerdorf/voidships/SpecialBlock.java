@@ -169,6 +169,8 @@ public class SpecialBlock implements Serializable {
 			mapDisplay(p, ship);
 	}
 	
+	double zoom = 1;
+	
 	public void scroll(int prev, int next, Player player) {
 		if (type == MAP) {
 			zoom *= 1.6*(next-prev);
@@ -176,11 +178,13 @@ public class SpecialBlock implements Serializable {
 		}
 	}
 	
-	double zoom = 1;
 	
 	public void mapDisplay(Player player, Spaceship ship) {
 		if (dead || !Main.playerNearby(world, x, y, z, 10))
 			return;
+
+		if (zoom < 0.001)
+			zoom = 1;
 		boolean playerNear = player != null && 6 > dist( player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), x, y, z );
 		if (localMap) {
 			SolarSystem s = ship.system;
