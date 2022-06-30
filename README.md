@@ -19,11 +19,47 @@ x-axis is the quantity of blocks being changed, y-axis is the amount of time in 
 
 ## Block-Ships
 Larger ships made out of blocks, you can walk around in them, build in them, and most of the plugin revolves around them.
+To create a new spaceship, use ```/newship [name]``` while standing in the location within the ship you wish to be the player spawnpoint for that ship. The ship will be placed in a random solar system. Use ```/setsystem [name of star]``` to change the location of the ship.
+Do ```/ships``` to see a list of all spaceships on your server.
+
+### Ship Terminal
+An inventory menu featuring the controls for the ship, allowing access to Navigation, Scanning, Atmosphere, Weapons, Defense, Security Systems (I'm a Systems Engineering Student, everything must be a 'system'). Currently the only thing that works is Atmosphere Systems, which allows the user to pressurize or depressurize any room in the ship (so long as there is an oxygen pump pointing in to that room).
+To create a terminal, use ```/terminal``` while looking at dark oak stairs, you need to be within a spaceship to do this.
+
+### Oxygen Pump
+Looks like a dispensor, right-click to pressurize or depressurize the room. It will automatically connect to the ship's terminal via Atmosphere Systems (unless the signal is jammed), allowing for remote access from the terminal.
+To create a pump, use ```/pump [room name]``` while looking at a dispensor, you need to be within a spaceship to do this, and the dispensor needs to be facing an empty air block.
+
+### Atmosphere Detector
+A redstone lamp that detects for an atmosphere in the adjacent blocks. If no adjacent blocks are vacuums, then the lamp will be lit.
+To create an atmosphere detector, use ```/detector``` while looking at a redstone lamp.
+
+### Cosmic Map
+A smooth stone slab that displays a 3D holographic map above. Right clicking the slab will switch the display between displaying the current solar system, and displaying a map of the nearby stars. Scrolling between inventory slots while looking at the slab will zoom in or zoom out on the map.
+To create a cosmic map display, use ```/map``` while looking at a smooth stone slab to make a map, you need to be within a spaceship to do this.
+
+### Anti Gravity and Artificial Gravity
+There is no gravity in space, so gravity is disabled by default (except if you are in creative mode).
+To add artificial gravity to your ship, make a world edit selection around the parts you wish to contain gravity, and do ```/gravity```
+
+### Door
+A door is a region of blocks that will disapear for 2 seconds upon right click.
+To create a door, make a WorldEdit selection and do ```/door```
+The door will only overwrite air blocks when closing, so any blocks placed while the door is open will become incorporated into the door. (I might fix this)
+
+## Cosmology
+
+### Solar Systems
+Do ```/systems``` to see a list of all solar systems on your server.
+Do ```/newsystem [args]``` to create a new solar system. Use ```/help newsystem``` for a list of the possible args. For example, ```/newsystem -n 40_Eridani_A -kn Keid -d 16.34 -m 0.84 -r 0.81``` will create a new solar system with a star named "40 Eridani A" (underscores are replaced by spaces), a knickname of "Keid", a distance of 16.34 light years from our sun, a solar mass of 0.84 (our sun has a solar mass of 1), and a solar radius of 0.81 (our sun has a solar radius of 1). Any details that aren't provided will be randomly generated based on the provided information. Returning to the provided example, it will probably choose the star to be a main sequence star such as a yellow/orange dwarf or a red giant, because those are likely options given the provided radius and mass (40 Eridani A is an orange dwarf). 
+
+### Planets
+Do ```/planets [name of system]``` to get a list of planets in the provided solar system. The name of the system is the same as the name of the star, or the id, or the knickname, whichever identifier is provided, they will (should) all work. Do ```/newplanet [args]``` to create a new planet. Same deal as for creating a new solar system, except the ```-s [name of system]``` arg is mandatory, there is no support for rogue planets (at least not yet).
 
 # Planned Features
 
 ## Entity-Ships
-Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship.
+Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship. Block-Ships will also have turrets that are similar in principle to entity-ships, except they don't fly around and are tied to a block.
 
 # Detailed Overview
 
