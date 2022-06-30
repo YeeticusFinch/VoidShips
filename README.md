@@ -54,9 +54,11 @@ Do ```/systems``` to see a list of all solar systems on your server.
 Do ```/newsystem [args]``` to create a new solar system. Use ```/help newsystem``` for a list of the possible args. For example, ```/newsystem -n 40_Eridani_A -kn Keid -d 16.34 -m 0.84 -r 0.81``` will create a new solar system with a star named "40 Eridani A" (underscores are replaced by spaces), a knickname of "Keid", a distance of 16.34 light years from our sun, a solar mass of 0.84 (our sun has a solar mass of 1), and a solar radius of 0.81 (our sun has a solar radius of 1). Any details that aren't provided will be randomly generated based on the provided information. Returning to the provided example, it will probably choose the star to be a main sequence star such as a yellow/orange dwarf or a red giant, because those are likely options given the provided radius and mass (40 Eridani A is an orange dwarf). 
 
 ### Planets
-Do ```/planets [name of system]``` to get a list of planets in the provided solar system. The name of the system is the same as the name of the star, or the id, or the knickname, whichever identifier is provided, they will (should) all work. Do ```/newplanet [args]``` to create a new planet. Same deal as for creating a new solar system, except the ```-s [name of system]``` arg is mandatory, there is no support for rogue planets (at least not yet).
+Do ```/planets [name of system]``` to get a list of planets in the provided solar system. The name of the system is the same as the name of the star, or the id, or the knickname, whichever identifier is provided, they will (should) all work. Do ```/newplanet [args]``` to create a new planet. Same deal as for creating a new solar system, except the ```-s [name of system]``` arg is mandatory, there is no support for rogue planets (at least not yet). If you really want a rogue planet, you can use the ```-t [type]``` argument on the ```/newsystem``` to set the type as a planet, or rogue planet. For example ```/newsystem -n Look_ma,_no_star! -t Rogue_planet```
 
 # Planned Features
+
+ToDo List: https://docs.google.com/document/d/1mwkHu0kTy9LCB7z1kaila9Fu1oxkFkfhTGh7txD13RU/edit?usp=sharing
 
 ## Entity-Ships
 Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship. Block-Ships will also have turrets that are similar in principle to entity-ships, except they don't fly around and are tied to a block.
