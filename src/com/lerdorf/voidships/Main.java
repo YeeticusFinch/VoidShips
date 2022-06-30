@@ -247,7 +247,7 @@ public class Main extends JavaPlugin implements Listener {
 	                    	SpecialBlock pump = ship.getBlocksOfType(SpecialBlock.AIR_PUMP)[event.getSlot()-9];
 	                    	openMenu(player, ship, pump, 2);
 	                    } else if (item.getItemMeta().getDisplayName().indexOf("Cleanup Debris") != -1) {
-	                    	player.sendMessage("§oDeleting broken blocks from the systems...");
+	                    	player.sendMessage("Â§oDeleting broken blocks from the systems...");
 	                    	int c = 0;
 	                    	int d = 0;
 	                    	Spaceship s = getCurrentShip(player);
@@ -342,26 +342,26 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 0) { // Main Terminal
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
-			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f")));
-			inventory.setItem(2, createItem(Material.DISPENSER, "§fOxygen Control", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air", "Click to access Oxygen Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
-			inventory.setItem(3, createItem(Material.OBSERVER, "§3SecSystems", Arrays.asList("Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
-			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2WeaponDefenseSystems", Arrays.asList("Click to toggle WeaponDefenseSystems", "§7§oAutonomous defense against light weaponry")));
-			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeaponTargetSystems", Arrays.asList("§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
-			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bLong-Range Mapping Scanner", Arrays.asList("§fClick to access the Mapping Scanner", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
-			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dPilotSystems", Arrays.asList("§fClick to access PilotSystems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
-			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList("§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
+			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("Â§6"+ship.name+"Â§f")));
+			inventory.setItem(2, createItem(Material.DISPENSER, "Â§fOxygen Control", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air", "Click to access Oxygen Control", "Â§7Â§oFill a room with oxygen,", "Â§7Â§oor turn a room into a vacuum")));
+			inventory.setItem(3, createItem(Material.OBSERVER, "Â§3SecSystems", Arrays.asList("Click to access SecSystems", "Â§7Â§oAlerts and alarms regarding scans, target locks,", "Â§7Â§oand incomming attacks")));
+			inventory.setItem(4, createItem(Material.BREWING_STAND, "Â§2WeaponDefenseSystems", Arrays.asList("Click to toggle WeaponDefenseSystems", "Â§7Â§oAutonomous defense against light weaponry")));
+			inventory.setItem(5, createItem(Material.TARGET, "Â§4Â§lWeaponTargetSystems", Arrays.asList("Â§fClick to access WeaponTargetSystems", "Â§7Â§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "Â§bLong-Range Mapping Scanner", Arrays.asList("Â§fClick to access the Mapping Scanner", "Â§7Â§oScan for other ships within your system,", "Â§7Â§oor send a probe to scan another system")));
+			inventory.setItem(7, createItem(Material.NETHER_STAR, "Â§dPilotSystems", Arrays.asList("Â§fClick to access PilotSystems", "Â§7Â§oSet course for a destination,", "Â§7Â§oor pilot the ship manually")));
+			inventory.setItem(8, createItem(Material.HOPPER, "Â§4Cleanup Debris", Arrays.asList("Â§fClick to cleanup broken modules", "Â§7Â§oAll broken special blocks will", "Â§7Â§obe deleted from the system")));
 			
 			player.openInventory(inventory);
 		} 
 		else if (n == 1) {
 			Inventory inventory = Bukkit.createInventory(null, 3*9, "Ship Terminal: Oxygen Control");
 			
-			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
 			
 			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
 			
 			for (int i = 0; i < pumps.length; i++) {
-				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
+				inventory.setItem(9+i, createItem(Material.DISPENSER, "Â§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
 			}
 			
 			player.openInventory(inventory);
@@ -369,10 +369,10 @@ public class Main extends JavaPlugin implements Listener {
 		else if (n == 3) {
 			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(ships.size()/9.0))*9, "Ship Selector");
 			
-			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
 			
 			for (int i = 0; i < ships.size(); i++) {
-				inventory.setItem(i, createItem(Material.DRAGON_HEAD, "§6"+ships.get(i).name, Arrays.asList("§7§oClick to teleport")));
+				inventory.setItem(i, createItem(Material.DRAGON_HEAD, "Â§6"+ships.get(i).name, Arrays.asList("Â§7Â§oClick to teleport")));
 			}
 			
 			player.openInventory(inventory);
@@ -388,9 +388,9 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 2) {
 			Inventory inventory = Bukkit.createInventory(null, 1*9, b.name + " Air Pump");
 			
-			inventory.setItem(0, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
-			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "§4Depressurize", Arrays.asList("§7§oClick to turn the room into a vacuum")));
-			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "§2Pressurize", Arrays.asList("§7§oClick to fill the room with air")));
+			inventory.setItem(0, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
+			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "Â§4Depressurize", Arrays.asList("Â§7Â§oClick to turn the room into a vacuum")));
+			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "Â§2Pressurize", Arrays.asList("Â§7Â§oClick to fill the room with air")));
 			
 			player.openInventory(inventory);
 		}
@@ -481,13 +481,47 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	public double clamp(double a, double b, double c) {
+		return Math.min(Math.max(b, c), Math.max(a, Math.min(b, c)));
+	}
+	
 	long lastBlockUpdate = 0;
 	long lastGravUpdate = 0;
-
+	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
-		if (inVoid(p.getLocation()) && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)) {
+		if (player.getVehicle() != null) {
+			//event.setCancelled(true);
+			//getFrom(); // Location the player moved from
+			//getTo(); // Location the player moved to
+			Entity v = p.getVehicle();
+			String[] tags = new String[v.getScoreboardTags().size()];
+			tags = v.getScoreboardTags().toArray(tags);
+			int tagIndex = -1;
+			for (int i = 0; i < tags.length; i++)
+				if (tags[i].indexOf("entity") != -1)
+					tagIndex = i;
+			if (tagIndex > -1) {
+				for (SpecialEntity e : entities) {
+					if (tags[i].equals(e.tag)) {
+						Vector f = p.getEyeLocation().getDirection();
+						v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this teleport function to the SpecialEntity class so that it can call it asynchronously
+								v.getLocation().getY(), v.getLocation().getZ(), 
+								v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.getEyeLocation().getPitch(), e.turnSpeed), 
+								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), e.turnSpeed),
+								));
+						e.setTargetDirection(f);
+						v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
+						p.setFallDistance(0.0F);
+						v.setFallDistance(0.0F);
+						
+						break;
+					}
+				}
+			}
+		}
+		else if (inVoid(p.getLocation()) && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)) {
 			
 			if (System.currentTimeMillis()-lastGravUpdate > 300 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				boolean yeet = false;
@@ -514,12 +548,12 @@ public class Main extends JavaPlugin implements Listener {
 				//p.sendMessage("Setting flight to " + !p.getScoreboardTags().contains("grav"));
 			}
 			
-			if (!p.getScoreboardTags().contains("vac") && isAir(p.getLocation().getBlock())) {
+			if (!p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
 				p.addScoreboardTag("vac");
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 9, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 3, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 1, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
 			} else if (!p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 9, false, false));
@@ -528,7 +562,7 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (p.getFlySpeed() != 0.1f)
 			p.setFlySpeed(0.1f);
 		if (p.getScoreboardTags().contains("vac")
-				&& (isCaveAir(p.getLocation().getBlock()) || !inVoid(p.getLocation()))) {
+				&& (isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1 0)).getBlock()) || !inVoid(p.getLocation()))) {
 			p.removeScoreboardTag("vac");
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
 			p.removePotionEffect(PotionEffectType.WITHER);
