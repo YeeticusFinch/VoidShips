@@ -31,6 +31,9 @@ public class SpecialEntity implements Serializable {
 	String world;
 	public double turnSpeed;
 	public String tag;
+	
+	public boolean turret = false;
+	public boolean vehicle = false;
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -38,6 +41,15 @@ public class SpecialEntity implements Serializable {
 		y = loc.getBlockY();
 		z = loc.getBlockZ();
 		this.ship = ship;
+		this.type = type;
+	}
+	
+	public SpecialEntity(Location loc, int type, Spaceship ship) {
+		x = loc.getBlockX();
+		y = loc.getBlockY();
+		z = loc.getBlockZ();
+		this.ship = ship;
+		this.type = type;
 	}
 
 	public SpecialEntity(String filepath) {
@@ -48,6 +60,10 @@ public class SpecialEntity implements Serializable {
 		
 	}
 
+	public void initRefs(Spaceship ship) {
+		this.ship = ship;
+	}
+	
 	public void save(String filename) {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
@@ -74,6 +90,10 @@ public class SpecialEntity implements Serializable {
 			ship = yeet.ship;
 			type = yeet.type;
 			world = yeet.world;
+			turnSpeed = yeet.turnSpeed;
+			tag = yeet.tag;
+			turret = yeet.turret;
+			vehicle = yeet.vehicle;
 
 		} catch (IOException ex) {
 			ex.printStackTrace();

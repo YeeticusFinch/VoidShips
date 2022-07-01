@@ -241,14 +241,16 @@ public class VoidQuery implements CommandExecutor {
 			for (Spaceship s : Main.ships) {
 				if (s != null && ((s.blocks != null && s.blocks.length > 0) || (s.airTanks != null && s.airTanks.length > 0)))
 					sender.sendMessage("In ship §6" + s.name + "§f");
+				int i = 0;
 				if (s != null && s.blocks != null && s.blocks.length > 0)
 					for (SpecialBlock b : s.blocks)
 						if (b != null)
-							sender.sendMessage(b.toString());
+							sender.sendMessage((i++) + " " + b.toString());
+				i = 0;
 				if (s != null && s.airTanks != null && s.airTanks.length > 0)
 					for (SpecialBlock b : s.airTanks) 
 						if (b != null)
-							sender.sendMessage(b.toString());
+							sender.sendMessage((i++) + " " + b.toString());
 			}
 		} else if (cmd.getName().equalsIgnoreCase("delblock")) {
 			if (args.length == 1) {

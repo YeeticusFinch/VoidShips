@@ -144,6 +144,18 @@ commands:
       description: Sets spawnpoint of the current ship
       usage: /shipspawn
       permission: VoidShips.shipspawn
+   vehicle:
+      description: Spawns a vehicle, enter the name of the vehicle (ie. /vehicle tie_fighter)
+      usage: /vehicle [type]
+      permission: VoidShips.vehicle
+   entities:
+      description: Returns a list of entities
+      usage: /entities
+      permission: VoidShips.entities
+   delentity:
+      description: Deletes an entity by index
+      usage: /delentity [index]
+      permission: VoidShips.delentity
       
       
       

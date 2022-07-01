@@ -24,6 +24,7 @@ public class Spaceship implements Serializable {
 	String name;
 	SpecialBlock[] airTanks;
 	SpecialBlock[] blocks;
+	SpecialEntity[] entities;
 	String filepath;
 	
 	public Spaceship(String name, double x, double y, double z, Void space, CosmicBody orbiting, SolarSystem system, int sx, int sy, int sz, String world) {
@@ -65,6 +66,10 @@ public class Spaceship implements Serializable {
 		if (blocks != null)
 			for (SpecialBlock b : blocks)
 				b.initRefs();
+		
+		if (entities != null)
+			for (SpecialEntity e : entities)
+				e.initRefs(this);
 	}
 	
 	public void save(String filename) {
@@ -106,6 +111,7 @@ public class Spaceship implements Serializable {
 			airTanks = yeet.airTanks;
 			blocks = yeet.blocks;
 			this.filepath = filepath;
+			entities = yeet.entities;
 			
 			initRefs();
 
@@ -200,5 +206,31 @@ public class Spaceship implements Serializable {
 				yeet[i] = airTanks[i];
 		}
 		airTanks = yeet;
+	}
+	
+	public void addEntity(SpecialEntity entity) {
+		SpecialEntity[] yeet;
+		if (true) {
+			if (entities != null) {
+				yeet = new SpecialEntity[entities.length+1];
+				for (int i = 0; i < entities.length; i++)
+					yeet[i] = entities[i];
+				yeet[entities.length] = entity;
+			} else yeet = new SpecialEntity[] { entity };
+			entities = yeet;
+		}
+	}
+	
+	public void delEntity(int index) {
+		if (index >= entities.length)
+			return;
+		SpecialEntity[] yeet = new SpecialEntity[entities.length-1];
+		for (int i = 0; i < yeet.length; i++) {
+			if (i >= index)
+				yeet[i] = entities[i+1];
+			else
+				yeet[i] = entities[i];
+		}
+		entities = yeet;
 	}
 }

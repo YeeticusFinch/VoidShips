@@ -118,6 +118,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		this.getCommand("shiptp").setExecutor(new VoidQuery());
 		this.getCommand("shipspawn").setExecutor(new VoidQuery());
+		this.getCommand("newvehicle").setExecutor(new EntityShit());
 		
 		loadSaves();
 
@@ -443,7 +444,7 @@ public class Main extends JavaPlugin implements Listener {
 				        		        double dz = loc.getZ() - entity.getLocation().getZ();
 				        		        double d = Math.sqrt(dx*dz + dy*dy + dz*dz);
 					        		    if(d < 5 && !entity.getScoreboardTags().contains("SpecialEntity") && entity.getType() != EntityType.ARMOR_STAND && ( isAir(entity.getLocation().getBlock()) || isAir(entity.getLocation().clone().add(new Vector(0, 1, 0)).getBlock() ))) {
-					        		        double v = 5;
+					        		        double v = 2;
 					        		        dx = v*dx/d;
 					        		        dy = v*dy/d;
 					        		        dz = v*dz/d;
