@@ -185,7 +185,7 @@ public class SpecialBlock implements Serializable {
 		if (dead || !Main.playerNearby(world, x, y, z, 10))
 			return;
 
-		if (zoom < 0.001)
+		if (zoom < 0.001 || zoom > 1000000)
 			zoom = 1;
 		boolean playerNear = player != null && 6 > dist( player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), x, y, z );
 		if (localMap) {
