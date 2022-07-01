@@ -426,6 +426,36 @@ public class Main extends JavaPlugin implements Listener {
 			// getServer().broadcastMessage("BlockBreakEvent");
 			// loc.getBlock().setBlockData(new
 			// BlockData("CraftBlockData{minecraft:cave_air}"));
+			if (Main.isAir(loc.clone().add(new Vector(1, 0, 0)).getBlock()) || Main.isAir(loc.clone().add(new Vector(-1, 0, 0)).getBlock()) ||  Main.isAir(loc.clone().add(new Vector(0, 1, 0)).getBlock()) || Main.isAir(loc.clone().add(new Vector(0, -1, 0)).getBlock()) || Main.isAir(loc.clone().add(new Vector(0, 0, 1)).getBlock()) || Main.isAir(loc.clone().add(new Vector(0, 0, -1)).getBlock()))
+			{	
+				if (isCaveAir(loc.clone().add(new Vector(1, 0, 0)).getBlock()) || isCaveAir(loc.clone().add(new Vector(-1, 0, 0)).getBlock()) ||  isCaveAir(loc.clone().add(new Vector(0, 1, 0)).getBlock()) || isCaveAir(loc.clone().add(new Vector(0, -1, 0)).getBlock()) || isCaveAir(loc.clone().add(new Vector(0, 0, 1)).getBlock()) || isCaveAir(loc.clone().add(new Vector(0, 0, -1)).getBlock())) {
+					getServer().broadcastMessage("Breach in the hull!");
+					loc.getWorld().spawnParticle(Particle.FLAME, loc, 5);
+					new java.util.Timer().schedule( 
+					        new java.util.TimerTask() {
+					            @Override
+					            public void run() {
+					                // your code here
+					            	List<Entity> near = loc.getWorld().getEntities();
+					        		for(Entity entity : near) {
+					        			double dx = loc.getX() - entity.getLocation().getX();
+				        		        double dy = loc.getY() - entity.getLocation().getY();
+				        		        double dz = loc.getZ() - entity.getLocation().getZ();
+				        		        double d = Math.sqrt(dx*dz + dy*dy + dz*dz);
+					        		    if(d < 5 && !entity.getScoreboardTags().contains("SpecialEntity") && ( isAir(entity.getLocation().getBlock()) || isAir(entity.getLocation().clone().add(new Vector(0, 1, 0)).getBlock() ))) {
+					        		        double v = 5;
+					        		        dx = v*dx/d;
+					        		        dy = v*dy/d;
+					        		        dz = v*dz/d;
+					        		        entity.setVelocity(entity.getVelocity().add(new Vector(dx, dy, dz)));
+					        		    }
+					        		}
+					            }
+					        }, 
+					        200 
+					);
+				}
+			}
 		}
 		// event.getPlayer().sendMessage( "Welcome to the Yeet Squad Minecraft
 		// Server!\nEnjoy your stay!" );
