@@ -43,6 +43,8 @@ import org.bukkit.event.block.Action;
 
 public class Main extends JavaPlugin implements Listener {
 
+	public static Main instance;
+	
 	public static ArrayList<Void> voids = new ArrayList<Void>();
 	public static ArrayList<Spaceship> ships = new ArrayList<Spaceship>();
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
@@ -118,7 +120,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		this.getCommand("shiptp").setExecutor(new VoidQuery());
 		this.getCommand("shipspawn").setExecutor(new VoidQuery());
-		this.getCommand("newvehicle").setExecutor(new EntityShit());
+		this.getCommand("vehicle").setExecutor(new EntityShit());
 		
 		loadSaves();
 
@@ -152,7 +154,7 @@ public class Main extends JavaPlugin implements Listener {
 		//executor.scheduleAtFixedRate(mainLoop, 0, 50, TimeUnit.MILLISECONDS);
 		//mainLoop.runTaskTimer(this, 2L, 3L);
 		//execut
-		
+		instance = this;
 		getServer().broadcastMessage("VoidShips enabled!");
 	}
 	
