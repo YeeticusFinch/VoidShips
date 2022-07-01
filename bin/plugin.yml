@@ -140,6 +140,10 @@ commands:
       description: Opens the ship teleport menu
       usage: /shiptp
       permission: VoidShips.shiptp
+   shipspawn:
+      description: Sets spawnpoint of the current ship
+      usage: /shipspawn
+      permission: VoidShips.shipspawn
       
       
       

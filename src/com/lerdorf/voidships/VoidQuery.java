@@ -317,6 +317,15 @@ public class VoidQuery implements CommandExecutor {
 		} else if (cmd.getName().equalsIgnoreCase("shiptp") ) {
 			player.sendMessage("Opening ship teleporter");
 			Main.openMenu(player, null, 3);
+		} else if (cmd.getName().equalsIgnoreCase("shipspawn")) {
+
+			Spaceship ship = Main.getCurrentShip(player);
+
+			ship.sx = player.getLocation().getBlockX();
+			ship.sy = player.getLocation().getBlockY();
+			ship.sz = player.getLocation().getBlockZ();
+
+			sender.sendMessage("Set spawnpoint of " + ship.name + " to " + ship.sx + " " + ship.sy + " " + ship.sz);
 		}
 		return true;
 	}
