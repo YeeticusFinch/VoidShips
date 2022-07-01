@@ -491,11 +491,11 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
-		if (player.getVehicle() != null) {
+		if (p.getVehicle() != null) {
 			//event.setCancelled(true);
 			//getFrom(); // Location the player moved from
 			//getTo(); // Location the player moved to
-			Entity v = p.getVehicle();
+			LivingEntity v = (LivingEntity) p.getVehicle();
 			String[] tags = new String[v.getScoreboardTags().size()];
 			tags = v.getScoreboardTags().toArray(tags);
 			int tagIndex = -1;
@@ -504,12 +504,12 @@ public class Main extends JavaPlugin implements Listener {
 					tagIndex = i;
 			if (tagIndex > -1) {
 				for (SpecialEntity e : entities) {
-					if (tags[i].equals(e.tag)) {
+					if (tags[tagIndex].equals(e.tag)) {
 						Vector f = p.getEyeLocation().getDirection();
 						v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this teleport function to the SpecialEntity class so that it can call it asynchronously
 								v.getLocation().getY(), v.getLocation().getZ(), 
-								v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.getEyeLocation().getPitch(), e.turnSpeed), 
-								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), e.turnSpeed),
+								v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.getEyeLocation().getPitch(), -e.turnSpeed, e.turnSpeed), 
+								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed)
 								));
 						e.setTargetDirection(f);
 						v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
@@ -562,7 +562,7 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (p.getFlySpeed() != 0.1f)
 			p.setFlySpeed(0.1f);
 		if (p.getScoreboardTags().contains("vac")
-				&& (isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1 0)).getBlock()) || !inVoid(p.getLocation()))) {
+				&& (isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
 			p.removeScoreboardTag("vac");
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
 			p.removePotionEffect(PotionEffectType.WITHER);

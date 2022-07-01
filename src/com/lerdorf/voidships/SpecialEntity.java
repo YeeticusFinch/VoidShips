@@ -22,9 +22,15 @@ public class SpecialEntity implements Serializable {
 
 	Spaceship ship;
 
-	public static final int AIR_DETECTOR = 0;
+	public static final int TIE_FIGHTER = 0;
+	public static final int ESCAPE_POD = 1;
+	public static final int ESCAPE_POD_GUN = 2;
+	public static final int SMALL_TURRET = 3;
+	public static final int MEDIUM_TURRET = 4;
 
 	String world;
+	public double turnSpeed;
+	public String tag;
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -39,18 +45,7 @@ public class SpecialEntity implements Serializable {
 	}
 
 	public void update() {
-		switch (type) {
-			case AIR_DETECTOR:
-				Location[] locs = {
-						new Location(Bukkit.getWorld(world), x+1, y, z),
-						new Location(Bukkit.getWorld(world), x-1, y, z),
-						new Location(Bukkit.getWorld(world), x, y+1, z),
-						new Location(Bukkit.getWorld(world), x, y-1, z),
-						new Location(Bukkit.getWorld(world), x, y, z+1),
-						new Location(Bukkit.getWorld(world), x, y, z-1)
-				};
-				break;
-		}
+		
 	}
 
 	public void save(String filename) {
@@ -86,6 +81,16 @@ public class SpecialEntity implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void setTargetDirection(Vector f) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Vector getVelocity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
