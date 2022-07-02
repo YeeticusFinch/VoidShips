@@ -31,6 +31,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
@@ -59,9 +60,14 @@ public class Main extends JavaPlugin implements Listener {
 
 	ScheduledExecutorService executor;
 	
+	Ride ride;
+	
 	@Override
 	public void onEnable() {
 		System.out.println("Starting VoidShips");
+		
+		ride = new Ride();
+		ride.onEnable();
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -158,6 +164,16 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().broadcastMessage("VoidShips enabled!");
 	}
 	
+	 @EventHandler
+	 public void onDismount(EntityDismountEvent e) {
+		 ride.onDismount(e);
+	 }
+	 
+	 @EventHandler
+	  public void onQuit(PlayerQuitEvent e) {
+		 ride.onQuit(e);
+	 }
+	
 	public static WorldEditPlugin getWorldEdit() {
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
 		if (p instanceof WorldEditPlugin) return ((WorldEditPlugin) p);
@@ -232,6 +248,11 @@ public class Main extends JavaPlugin implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		// System.out.println("Player joined");
 		event.getPlayer().sendMessage("Good to be back!");
+	}
+	
+	@EventHandler
+	public void RightClick(PlayerInteractEntityEvent event) {
+		ride.RightClick(event);
 	}
 
 	@EventHandler
@@ -321,6 +342,16 @@ public class Main extends JavaPlugin implements Listener {
 	            	Spaceship ship = ships.get(event.getSlot());
 	            	player.sendMessage("Teleporting to " + ship.name);
 	            	player.teleport(new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz));
+	            	new java.util.Timer().schedule( 
+	            	        new java.util.TimerTask() {
+	            	            @Override
+	            	            public void run() {
+	            	                // your code here
+	            	            	player.teleport(new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz));
+	            	            }
+	            	        }, 
+	            	        500 
+	            	);
 	            }
 	        }
 	    }
