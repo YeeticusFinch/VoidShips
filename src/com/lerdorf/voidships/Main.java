@@ -66,7 +66,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		System.out.println("Starting VoidShips");
 		
-		ride = new Ride();
+		ride = new Ride((Plugin)this);
 		ride.onEnable();
 
 		getServer().getPluginManager().registerEvents(this, this);
@@ -163,6 +163,11 @@ public class Main extends JavaPlugin implements Listener {
 		instance = this;
 		getServer().broadcastMessage("VoidShips enabled!");
 	}
+	
+	/*
+	public static Plugin getPlugin() {
+		return (Plugin)this;
+	}*/
 	
 	 @EventHandler
 	 public void onDismount(EntityDismountEvent e) {
