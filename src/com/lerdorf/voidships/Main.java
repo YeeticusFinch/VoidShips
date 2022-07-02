@@ -50,6 +50,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static ArrayList<Spaceship> ships = new ArrayList<Spaceship>();
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
 	public static ArrayList<SpecialEntity> entities = new ArrayList<SpecialEntity>();
+	public static HashMap<String, LivingEntity> livingEntities = new HashMap<String, LivingEntity>();
 	public static ArrayList<SolarSystem> systems = new ArrayList<SolarSystem>();
 	
 	public static HashMap<Player, SpecialBlock> interact = new HashMap<Player, SpecialBlock>();
@@ -570,7 +571,7 @@ public class Main extends JavaPlugin implements Listener {
 			tags = v.getScoreboardTags().toArray(tags);
 			int tagIndex = -1;
 			for (int i = 0; i < tags.length; i++)
-				if (tags[i].indexOf("entity") != -1)
+				if (tags[i].indexOf("entity-") != -1)
 					tagIndex = i;
 			if (tagIndex > -1) {
 				for (SpecialEntity e : entities) {

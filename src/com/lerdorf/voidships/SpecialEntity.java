@@ -64,6 +64,22 @@ public class SpecialEntity implements Serializable {
 		this.ship = ship;
 	}
 	
+	public String getName() {
+		switch (type) {
+		case TIE_FIGHTER:
+			return "Tie Fighter";
+		case ESCAPE_POD:
+			return "Escape Pod";
+		case ESCAPE_POD_GUN:
+			return "Escape Pod Gun";
+		case SMALL_TURRET:
+			return "Small Turret";
+		case MEDIUM_TURRET:
+			return "Medium Turret";
+		}
+		return "";
+	}
+	
 	public void save(String filename) {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
