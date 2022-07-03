@@ -132,7 +132,7 @@ public class SpecialEntity implements Serializable {
 		}
 	}
 	
-	 public void shootParticle(Location loc, Vector dir, Particle particle, double velocity) {
+	 public void shootParticle(Vector loc, Vector dir, Particle particle, double velocity) {
 	        //Location location = player.getEyeLocation();
 	        //Vector direction = location.getDirection();
 	        Bukkit.getWorld(world).spawnParticle(particle, loc.getX(), loc.getY(), loc.getZ(), 0, (float) dir.getX(), (float) dir.getY(), (float) dir.getZ(),velocity , null);
@@ -148,10 +148,17 @@ public class SpecialEntity implements Serializable {
 			vx += dir.getX();
 			vy += dir.getY();
 			vz += dir.getZ();
-			shootParticle(Main.standEntities.get(tag).getLocation(), dir.multiply(-1), Particle.FLAME, thrust*5);
+			Location loc = Main.standEntities.get(tag).getEyeLocation();
+			shootParticle(loc.toVector().add(getUp(loc).multiply(0.6f)).add(loc.getDirection().multiply(-2)), dir.multiply(-1), Particle.FLAME, thrust*100);
 		} else {
 			System.out.println("Not enough fuel: " + fuelNeeded);
 		}
+	}
+	
+	public Vector getUp(Location loc) {
+		Location loc2 = loc.clone();
+		loc2.setPitch(loc2.getPitch()-90);
+		return loc2.getDirection();
 	}
 	
 	public void initRefs(Spaceship ship) {
