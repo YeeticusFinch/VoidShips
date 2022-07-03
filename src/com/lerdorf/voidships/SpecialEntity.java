@@ -112,7 +112,7 @@ public class SpecialEntity implements Serializable {
 	}
 
 	public void addVelocity(Vector dir) {
-		dir = dir.normalize().multiply(thrust);
+		//dir = dir.normalize().multiply(thrust);
 		double diff = 20*getVelocity().distance(dir); // velocity is in meters per tick, there are 20 ticks in 1 second
 		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff;
 		if (fuelNeeded < fuel) {
@@ -133,12 +133,13 @@ public class SpecialEntity implements Serializable {
 			customModelData = 1;
 			turnSpeed = 6; // very fast maneuverability
 			mass = 10000;
-			fuelMass = 5*Math.pow(10,-8); // TIE Fighters have ion engines which run on electricity, but they still use an oxidizer
-			thrust = 2011;
+			fuelMass = 5*Math.pow(10,-8); // TIE Fighters have ion engines which run on electricity, but they still use some fuel
+			thrust = 0.2;
 			break;
 		case MEDIUM_TURRET:
 			customModelData = 2;
 			turnSpeed = 2;
+			thrust = 0;
 			break;
 		}
 	}
@@ -168,11 +169,11 @@ public class SpecialEntity implements Serializable {
 		return "";
 	} //t = sqrt(2d/a)
 
-	public void save(String filename) {
+	public void save() {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
-			(new File(world + "/VoidShips/" + filename)).createNewFile();
-			FileOutputStream fos = new FileOutputStream(world + "/VoidShips/" + filename);
+			(new File(world + "/VoidShips/" + tag + ".dat")).createNewFile();
+			FileOutputStream fos = new FileOutputStream(world + "/VoidShips/" + tag + ".dat");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 			// write object to file
@@ -228,6 +229,17 @@ public class SpecialEntity implements Serializable {
 	public Vector getVelocity() {
 		// TODO Auto-generated method stub
 		return new Vector(vx, vy, vz);
+	}
+	
+	public Vector getDir() {
+		return Main.livingEntities.get(tag).getEyeLocation().getDirection();
+		//return null;
+	}
+
+	public void doThrust(int forward, int up, int left) {
+		// TODO Auto-generated method stub
+		Vector dir = getDir().normalize();
+		addVelocity(dir.multiply(forward*thrust));
 	}
 
 }

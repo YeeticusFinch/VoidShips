@@ -49,7 +49,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static ArrayList<Void> voids = new ArrayList<Void>();
 	public static ArrayList<Spaceship> ships = new ArrayList<Spaceship>();
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
-	public static ArrayList<SpecialEntity> entities = new ArrayList<SpecialEntity>();
+	public static HashMap<LivingEntity, SpecialEntity> entities = new HashMap<LivingEntity, SpecialEntity>();
 	public static HashMap<String, LivingEntity> livingEntities = new HashMap<String, LivingEntity>();
 	public static ArrayList<SolarSystem> systems = new ArrayList<SolarSystem>();
 	
@@ -152,6 +152,7 @@ public class Main extends JavaPlugin implements Listener {
 						specialBlockUpdate();
 						fastBlockUpdate(null);
 						asyncFillUpdate();
+						entityUpdate();
 						//System.out.println("Main loop");
 			    	} catch (Exception e) {
 			    		e.printStackTrace();
@@ -199,6 +200,23 @@ public class Main extends JavaPlugin implements Listener {
 		 * e.substring(0,4)); if (e.length() > 4 && e.substring(0,4).equals("void")) {
 		 * System.out.println("Loading " + e); voids.add(new Void(e)); } } } }
 		 */
+		
+
+		for (World world : Bukkit.getWorlds()) {
+			List<LivingEntity> mobs = world.getLivingEntities();
+			for (LivingEntity mob : mobs) {
+				if (mob.getScoreboardTags().contains("SpecialEntity")) {
+					String[] tags = new String[mob.getScoreboardTags().size()];
+					tags = mob.getScoreboardTags().toArray(tags);
+					for (String s : tags) {
+						if (s.contains("entity-")) {
+							livingEntities.put(s, mob);
+						}
+					}
+				}
+			}
+		}
+		
 		File f = new File("plugins/.."); // How else do you get the current directory?
 		if (f != null) {
 			String[] list = f.list();
@@ -227,11 +245,13 @@ public class Main extends JavaPlugin implements Listener {
 								int n = Integer.parseInt(e2.substring(5, e2.indexOf('.')));
 								while (blocks.size() <= n) blocks.add(null);
 								blocks.set(n, new SpecialBlock(e + "/VoidShips/" + e2));
-							} else if (e2.length() > 6 && e2.substring(0, 6).equals("entity")) {
+							} else if (e2.length() > 6 && e2.substring(0, 7).equals("entity-")) {
 								System.out.println("Loading " + e2);
-								int n = Integer.parseInt(e2.substring(6, e2.indexOf('.')));
-								while (entities.size() <= n) entities.add(null);
-								entities.set(n, new SpecialEntity(e + "/VoidShips/" + e2));
+									
+								String tag = e2.substring(7, e2.indexOf(".dat"));
+								LivingEntity le = livingEntities.get(tag);
+								entities.put(le, new SpecialEntity(e + "/VoidShips/" + e2));
+								
 							} else if (e2.length() > 6 && e2.substring(0, 6).equals("system")) {
 								System.out.println("Loading " + e2);
 								int n = Integer.parseInt(e2.substring(6, e2.indexOf('.')));
@@ -576,7 +596,7 @@ public class Main extends JavaPlugin implements Listener {
 				if (tags[i].indexOf("entity-") != -1)
 					tagIndex = i;
 			if (tagIndex > -1) {
-				for (SpecialEntity e : entities) {
+				for (SpecialEntity e : entities.values()) {
 					if (tags[tagIndex].equals(e.tag)) {
 						//Vector f = p.getEyeLocation().getDirection();
 						/*v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this teleport function to the SpecialEntity class so that it can call it asynchronously
@@ -646,6 +666,25 @@ public class Main extends JavaPlugin implements Listener {
 		fastBlockUpdate(p);
 	}
 
+	public void entityUpdate() {
+		for (Spaceship s : ships) {
+			if (s.entities.length > 0) {
+				for (SpecialEntity e : s.entities) {
+					if (e != null) {
+						e.update();
+					}
+				}
+			}
+		}
+		if (entities.size() > 0) {
+			for (SpecialEntity e : entities.values()) {
+				if (e != null) {
+					e.update();
+				}
+			}
+		}
+	}
+	
 	public void specialBlockUpdate() {
 		if (System.currentTimeMillis()-lastBlockUpdate > 300) {
 			if (asyncTP.size() > 0) {
