@@ -13,11 +13,18 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 public class SpecialEntity implements Serializable {
 
 	public int x, y, z;
+	public int vx, vy, vz;
+	// public double dirX, dirY, dirZ;
+	// public double tDirX, tDirY, tDirZ;
+	public float yaw, pitch;
+	public float tYaw, tPitch;
+	public double sysX, sysY, sysZ;
 	public int type;
 
 	Spaceship ship;
@@ -31,9 +38,16 @@ public class SpecialEntity implements Serializable {
 	String world;
 	public double turnSpeed;
 	public String tag;
-	
+
 	public boolean turret = false;
 	public boolean vehicle = false;
+
+	public int customModelData = -1;
+
+	public double fuel = 0; // joules
+	public double fuelMass = 0; // kg per joule
+	public int radius; // m
+	public int mass; // kg
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -42,28 +56,84 @@ public class SpecialEntity implements Serializable {
 		z = loc.getBlockZ();
 		this.ship = ship;
 		this.type = type;
+		setupShit();
 	}
-	
+
 	public SpecialEntity(Location loc, int type, Spaceship ship) {
 		x = loc.getBlockX();
 		y = loc.getBlockY();
 		z = loc.getBlockZ();
 		this.ship = ship;
 		this.type = type;
+		setupShit();
 	}
 
 	public SpecialEntity(String filepath) {
 		load(filepath);
 	}
 
+	double clamp(double a, double b, double c) {
+		return Math.min(Math.max(b, c), Math.max(a, Math.min(b, c)));
+	}
+
+	double delYaw = 0;
+	double delPitch = 0;
+
 	public void update() {
-		
+		LivingEntity v = Main.livingEntities.get(tag);
+		if (v != null) {
+			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
+			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
+			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329
+					* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
+			if (fuelNeeded < fuel) {
+				fuel -= fuelNeeded;
+				delYaw = newDelYaw;
+				delPitch = newDelPitch;
+			}
+			yaw += delYaw;
+			pitch += delPitch;
+			v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
+					v.getLocation().getZ(), pitch, yaw));
+			/*
+			 * v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this
+			 * teleport function to the SpecialEntity class so that it can call it
+			 * asynchronously v.getLocation().getY(), v.getLocation().getZ(),
+			 * v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.
+			 * getEyeLocation().getPitch(), -e.turnSpeed, e.turnSpeed),
+			 * v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.
+			 * getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed) ));
+			 */
+		}
 	}
 
 	public void initRefs(Spaceship ship) {
 		this.ship = ship;
 	}
-	
+
+	public void setupShit() {
+		switch (type) {
+		case TIE_FIGHTER:
+			customModelData = 1;
+			turnSpeed = 5;
+			mass = 10000;
+			break;
+		case MEDIUM_TURRET:
+			customModelData = 2;
+			turnSpeed = 2;
+			break;
+		}
+	}
+
+	public void refuel() {
+		switch (type) {
+		case TIE_FIGHTER:
+			break;
+		case MEDIUM_TURRET:
+			break;
+		}
+	}
+
 	public String getName() {
 		switch (type) {
 		case TIE_FIGHTER:
@@ -79,7 +149,7 @@ public class SpecialEntity implements Serializable {
 		}
 		return "";
 	}
-	
+
 	public void save(String filename) {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
@@ -103,6 +173,17 @@ public class SpecialEntity implements Serializable {
 			x = yeet.x;
 			y = yeet.y;
 			z = yeet.z;
+			/*
+			 * dirX = yeet.dirX; dirY = yeet.dirY; dirZ = yeet.dirZ; dirX = yeet.tDirX; dirY
+			 * = yeet.tDirY; dirZ = yeet.tDirZ;
+			 */
+			pitch = yeet.pitch;
+			tPitch = yeet.tPitch;
+			yaw = yeet.yaw;
+			tYaw = yeet.tYaw;
+			sysX = yeet.sysX;
+			sysY = yeet.sysY;
+			sysZ = yeet.sysZ;
 			ship = yeet.ship;
 			type = yeet.type;
 			world = yeet.world;
@@ -110,6 +191,7 @@ public class SpecialEntity implements Serializable {
 			tag = yeet.tag;
 			turret = yeet.turret;
 			vehicle = yeet.vehicle;
+			setupShit();
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -119,14 +201,15 @@ public class SpecialEntity implements Serializable {
 		}
 	}
 
-	public void setTargetDirection(Vector f) {
+	public void setTargetDirection(float pitch, float yaw) {
 		// TODO Auto-generated method stub
-		
+		tPitch = pitch;
+		tYaw = yaw;
 	}
 
 	public Vector getVelocity() {
 		// TODO Auto-generated method stub
-		return null;
+		return new Vector(vx, vy, vz);
 	}
 
 }
