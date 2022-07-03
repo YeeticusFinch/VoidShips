@@ -50,7 +50,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static ArrayList<Spaceship> ships = new ArrayList<Spaceship>();
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
 	public static HashMap<String, SpecialEntity> entities = new HashMap<String, SpecialEntity>();
-	public static HashMap<String, LivingEntity> livingEntities = new HashMap<String, LivingEntity>();
+	public static HashMap<String, ArmorStand> standEntities = new HashMap<String, ArmorStand>();
 	public static ArrayList<SolarSystem> systems = new ArrayList<SolarSystem>();
 	
 	public static HashMap<Player, SpecialBlock> interact = new HashMap<Player, SpecialBlock>();
@@ -131,6 +131,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("shipspawn").setExecutor(new VoidQuery());
 		this.getCommand("vehicle").setExecutor(new EntityShit());
 		this.getCommand("entities").setExecutor(new EntityShit());
+		this.getCommand("delentity").setExecutor(new EntityShit());
 		
 		loadSaves();
 
@@ -204,14 +205,14 @@ public class Main extends JavaPlugin implements Listener {
 		
 
 		for (World world : Bukkit.getWorlds()) {
-			List<LivingEntity> mobs = world.getLivingEntities();
-			for (LivingEntity mob : mobs) {
+			List<Entity> mobs = world.getEntities();
+			for (Entity mob : mobs) {
 				if (mob.getScoreboardTags().contains("SpecialEntity")) {
 					String[] tags = new String[mob.getScoreboardTags().size()];
 					tags = mob.getScoreboardTags().toArray(tags);
 					for (String s : tags) {
 						if (s.contains("entity-")) {
-							livingEntities.put(s, mob);
+							standEntities.put(s, (ArmorStand)mob);
 						}
 					}
 				}
@@ -249,8 +250,8 @@ public class Main extends JavaPlugin implements Listener {
 							} else if (e2.length() > 6 && e2.substring(0, 7).equals("entity-")) {
 								System.out.println("Loading " + e2);
 									
-								String tag = e2.substring(7, e2.indexOf(".dat"));
-								LivingEntity le = livingEntities.get(tag);
+								String tag = e2.substring(0, e2.indexOf(".dat"));
+								//LivingEntity le = livingEntities.get(tag);
 								entities.put(tag, new SpecialEntity(e + "/VoidShips/" + e2));
 								
 							} else if (e2.length() > 6 && e2.substring(0, 6).equals("system")) {
@@ -274,7 +275,7 @@ public class Main extends JavaPlugin implements Listener {
 			tags = e.getScoreboardTags().toArray(tags);
 			for (String s : tags) {
 				if (s.contains("entity-")) {
-					System.out.println("Found tag! " + s);
+					//System.out.println("Found tag! " + s);
 					return entities.get(s);
 				}
 			}
@@ -282,6 +283,11 @@ public class Main extends JavaPlugin implements Listener {
 		return null;
 	}
 
+	@EventHandler
+	public void playerRightClicksAtEntity(PlayerInteractAtEntityEvent event) {
+		ride.playerRightClicksAtEntity(event);
+	}
+	
 	@Override
 	public void onDisable() {
 		System.out.println("Disabling VoidShips");
@@ -614,30 +620,19 @@ public class Main extends JavaPlugin implements Listener {
 			//event.setCancelled(true);
 			//getFrom(); // Location the player moved from
 			//getTo(); // Location the player moved to
-			LivingEntity v = (LivingEntity) p.getVehicle();
+			//System.out.println("Player steered vehicle");
+			ArmorStand v = (ArmorStand) p.getVehicle();
 			String[] tags = new String[v.getScoreboardTags().size()];
 			tags = v.getScoreboardTags().toArray(tags);
 			int tagIndex = -1;
 			for (int i = 0; i < tags.length; i++)
-				if (tags[i].indexOf("entity-") != -1)
+				if (tags[i].contains("entity-"))
 					tagIndex = i;
 			if (tagIndex > -1) {
-				for (SpecialEntity e : entities.values()) {
-					if (tags[tagIndex].equals(e.tag)) {
-						//Vector f = p.getEyeLocation().getDirection();
-						/*v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this teleport function to the SpecialEntity class so that it can call it asynchronously
-								v.getLocation().getY(), v.getLocation().getZ(), 
-								v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.getEyeLocation().getPitch(), -e.turnSpeed, e.turnSpeed), 
-								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed)
-								));*/
-						e.setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
-						//v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
-						p.setFallDistance(0.0F);
-						v.setFallDistance(0.0F);
-						
-						break;
-					}
-				}
+				//System.out.println("Found entity tag, setting pitch to " + p.getEyeLocation().getPitch() + " and yaw to " + p.getEyeLocation().getYaw());
+				entities.get(tags[tagIndex]).setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+				p.setFallDistance(0.0F);
+				v.setFallDistance(0.0F);
 			}
 		}
 		else if (inVoid(p.getLocation()) && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)) {

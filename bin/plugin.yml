@@ -153,8 +153,8 @@ commands:
       usage: /entities
       permission: VoidShips.entities
    delentity:
-      description: Deletes an entity by index
-      usage: /delentity [index]
+      description: Deletes an entity by tag
+      usage: /delentity [tag]
       permission: VoidShips.delentity
       
       

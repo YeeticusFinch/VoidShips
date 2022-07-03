@@ -12,14 +12,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 public class SpecialEntity implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5487114141445842249l;;
 	public int x, y, z;
-	public int vx, vy, vz; // m / tick
+	public float vx = 0, vy = 0, vz = 0; // m / tick
 	// public double dirX, dirY, dirZ;
 	// public double tDirX, tDirY, tDirZ;
 	public float yaw, pitch;
@@ -44,7 +50,7 @@ public class SpecialEntity implements Serializable {
 
 	public int customModelData = -1;
 
-	public double fuel = 0; // joules
+	public double fuel = Math.pow(10, 12); // joules
 	public double fuelMass = 0; // kg per joule
 	public int radius; // m
 	public int mass; // kg
@@ -67,6 +73,7 @@ public class SpecialEntity implements Serializable {
 		this.ship = ship;
 		this.type = type;
 		setupShit();
+		world = loc.getWorld().getName();
 	}
 
 	public SpecialEntity(String filepath) {
@@ -81,8 +88,11 @@ public class SpecialEntity implements Serializable {
 	double delPitch = 0;
 
 	public void update() {
-		LivingEntity v = Main.livingEntities.get(tag);
+		ArmorStand v = Main.standEntities.get(tag);
 		if (v != null) {
+			LivingEntity p = (LivingEntity)v.getPassenger();
+			if (p != null)
+				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
@@ -93,8 +103,13 @@ public class SpecialEntity implements Serializable {
 			}
 			yaw += delYaw;
 			pitch += delPitch;
-			v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
-					v.getLocation().getZ(), pitch, yaw));
+			v.setHeadPose(new EulerAngle((float)(pitch*0.01745329f), (float)(yaw*0.01745329f), 0));
+			//v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
+			//		v.getLocation().getZ(), (float)yaw, (float)pitch));
+			//System.out.println(tag + " pitch = " + pitch + "  yaw = " + yaw);
+			//System.out.println("entity pitch " + v.getLocation().getPitch() + "  yaw" + v.getLocation().getYaw());
+			//v.getEyeLocation().setPitch(pitch);
+			//v.getEyeLocation().setYaw(yaw);
 			//v.setLocation(v.getLocation().setYaw(yaw));
 			//v.setPitch(pitch);
 			/*
@@ -106,8 +121,11 @@ public class SpecialEntity implements Serializable {
 			 * v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.
 			 * getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed) ));
 			 */
-			
+			//if (vx != 0 || vy != 0 || vz != 0)
+			//	System.out.println("Setting velocity for " + tag + " to " + vx + " " + vy + " " + vz);
 			v.setVelocity(getVelocity());
+		} else {
+			System.out.println("ERROR: LIVING ENTITY IS NULL FOR " + tag);
 		}
 	}
 
@@ -115,11 +133,14 @@ public class SpecialEntity implements Serializable {
 		//dir = dir.normalize().multiply(thrust);
 		double diff = 20*getVelocity().distance(dir); // velocity is in meters per tick, there are 20 ticks in 1 second
 		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff;
+		//System.out.println("Adding velocity " + diff + " " + fuelNeeded + "/" + fuel + "  " + dir.getX() + " " + dir.getY() + " " + dir.getZ());
 		if (fuelNeeded < fuel) {
 			fuel -= fuelNeeded;
 			vx += dir.getX();
 			vy += dir.getY();
 			vz += dir.getZ();
+		} else {
+			System.out.println("Not enough fuel: " + fuelNeeded);
 		}
 	}
 	
@@ -134,7 +155,7 @@ public class SpecialEntity implements Serializable {
 			turnSpeed = 6; // very fast maneuverability
 			mass = 10000;
 			fuelMass = 5*Math.pow(10,-8); // TIE Fighters have ion engines which run on electricity, but they still use some fuel
-			thrust = 0.2;
+			thrust = 0.008;
 			break;
 		case MEDIUM_TURRET:
 			customModelData = 2;
@@ -210,6 +231,10 @@ public class SpecialEntity implements Serializable {
 			tag = yeet.tag;
 			turret = yeet.turret;
 			vehicle = yeet.vehicle;
+			fuel = Math.pow(10, 12);
+			vx = 0;
+			vy = 0;
+			vz = 0;
 			setupShit();
 
 		} catch (IOException ex) {
@@ -232,13 +257,18 @@ public class SpecialEntity implements Serializable {
 	}
 	
 	public Vector getDir() {
-		return Main.livingEntities.get(tag).getEyeLocation().getDirection();
+		Location loc = Main.standEntities.get(tag).getLocation().clone();
+		loc.setPitch(pitch);
+		loc.setYaw(yaw);
+		return loc.getDirection();
+		//return Main.standEntities.get(tag).getEyeLocation().getDirection();
 		//return null;
 	}
 
 	public void doThrust(int forward, int up, int left) {
 		// TODO Auto-generated method stub
 		Vector dir = getDir().normalize();
+		//System.out.println("Thrusting " + forward + " " + up + " " + left);
 		addVelocity(dir.multiply(forward*thrust));
 	}
 
