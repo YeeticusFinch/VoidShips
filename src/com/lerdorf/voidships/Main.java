@@ -576,13 +576,13 @@ public class Main extends JavaPlugin implements Listener {
 			if (tagIndex > -1) {
 				for (SpecialEntity e : entities) {
 					if (tags[tagIndex].equals(e.tag)) {
-						Vector f = p.getEyeLocation().getDirection();
+						//Vector f = p.getEyeLocation().getDirection();
 						/*v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this teleport function to the SpecialEntity class so that it can call it asynchronously
 								v.getLocation().getY(), v.getLocation().getZ(), 
 								v.getEyeLocation().getPitch()+clamp(p.getEyeLocation().getPitch()-v.getEyeLocation().getPitch(), -e.turnSpeed, e.turnSpeed), 
 								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed)
 								));*/
-						e.setTargetDirection(f);
+						e.setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 						v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
 						p.setFallDistance(0.0F);
 						v.setFallDistance(0.0F);

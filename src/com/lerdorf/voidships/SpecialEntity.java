@@ -19,7 +19,7 @@ import org.bukkit.util.Vector;
 public class SpecialEntity implements Serializable {
 
 	public int x, y, z;
-	public int vx, vy, vz;
+	public int vx, vy, vz; // m / tick
 	// public double dirX, dirY, dirZ;
 	// public double tDirX, tDirY, tDirZ;
 	public float yaw, pitch;
@@ -48,6 +48,7 @@ public class SpecialEntity implements Serializable {
 	public double fuelMass = 0; // kg per joule
 	public int radius; // m
 	public int mass; // kg
+	public double thrust; // m / tick^2
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -84,8 +85,7 @@ public class SpecialEntity implements Serializable {
 		if (v != null) {
 			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
-			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329
-					* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
+			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
 			if (fuelNeeded < fuel) {
 				fuel -= fuelNeeded;
 				delYaw = newDelYaw;
@@ -95,6 +95,8 @@ public class SpecialEntity implements Serializable {
 			pitch += delPitch;
 			v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
 					v.getLocation().getZ(), pitch, yaw));
+			//v.setLocation(v.getLocation().setYaw(yaw));
+			//v.setPitch(pitch);
 			/*
 			 * v.teleport(new Location(v.getWorld(), v.getLocation().getX(), // Move this
 			 * teleport function to the SpecialEntity class so that it can call it
@@ -104,9 +106,23 @@ public class SpecialEntity implements Serializable {
 			 * v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.
 			 * getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed) ));
 			 */
+			
+			v.setVelocity(getVelocity());
 		}
 	}
 
+	public void addVelocity(Vector dir) {
+		dir = dir.normalize().multiply(thrust);
+		double diff = 20*getVelocity().distance(dir); // velocity is in meters per tick, there are 20 ticks in 1 second
+		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff;
+		if (fuelNeeded < fuel) {
+			fuel -= fuelNeeded;
+			vx += dir.getX();
+			vy += dir.getY();
+			vz += dir.getZ();
+		}
+	}
+	
 	public void initRefs(Spaceship ship) {
 		this.ship = ship;
 	}
