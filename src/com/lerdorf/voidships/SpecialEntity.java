@@ -149,7 +149,7 @@ public class SpecialEntity implements Serializable {
 			vy += dir.getY();
 			vz += dir.getZ();
 			Location loc = Main.standEntities.get(tag).getEyeLocation();
-			shootParticle(loc.toVector().add(getUp(loc).multiply(0.6f)).add(loc.getDirection().multiply(-2)), dir.multiply(-1), Particle.FLAME, thrust*100);
+			shootParticle(loc.toVector().add(getUp(loc).multiply(0.6f)).add(dir.multiply(-2)), dir.multiply(-1), Particle.FLAME, thrust*100);
 		} else {
 			System.out.println("Not enough fuel: " + fuelNeeded);
 		}
