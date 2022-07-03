@@ -49,7 +49,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static ArrayList<Void> voids = new ArrayList<Void>();
 	public static ArrayList<Spaceship> ships = new ArrayList<Spaceship>();
 	public static ArrayList<SpecialBlock> blocks = new ArrayList<SpecialBlock>();
-	public static HashMap<LivingEntity, SpecialEntity> entities = new HashMap<LivingEntity, SpecialEntity>();
+	public static HashMap<String, SpecialEntity> entities = new HashMap<String, SpecialEntity>();
 	public static HashMap<String, LivingEntity> livingEntities = new HashMap<String, LivingEntity>();
 	public static ArrayList<SolarSystem> systems = new ArrayList<SolarSystem>();
 	
@@ -130,6 +130,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("shiptp").setExecutor(new VoidQuery());
 		this.getCommand("shipspawn").setExecutor(new VoidQuery());
 		this.getCommand("vehicle").setExecutor(new EntityShit());
+		this.getCommand("entities").setExecutor(new EntityShit());
 		
 		loadSaves();
 
@@ -250,7 +251,7 @@ public class Main extends JavaPlugin implements Listener {
 									
 								String tag = e2.substring(7, e2.indexOf(".dat"));
 								LivingEntity le = livingEntities.get(tag);
-								entities.put(le, new SpecialEntity(e + "/VoidShips/" + e2));
+								entities.put(tag, new SpecialEntity(e + "/VoidShips/" + e2));
 								
 							} else if (e2.length() > 6 && e2.substring(0, 6).equals("system")) {
 								System.out.println("Loading " + e2);
@@ -265,6 +266,20 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		// getServer().broadcastMessage("VoidShips enabled!");
+	}
+	
+	public static SpecialEntity getSpecialEntity(Entity e) {
+		if (e.getScoreboardTags().contains("SpecialEntity")) {
+			String[] tags = new String[e.getScoreboardTags().size()];
+			tags = e.getScoreboardTags().toArray(tags);
+			for (String s : tags) {
+				if (s.contains("entity-")) {
+					System.out.println("Found tag! " + s);
+					return entities.get(s);
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -479,6 +494,17 @@ public class Main extends JavaPlugin implements Listener {
 		return item;
 	}
 	
+	public static ItemStack createItem(Material mat, String name, List<String> lore, int customModelData) {
+		ItemStack item = new ItemStack(mat);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(name);
+		if (lore != null)
+			meta.setLore(lore);
+		meta.setCustomModelData(customModelData);
+		item.setItemMeta(meta);
+		return item;
+	}
+	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Location loc = event.getBlock().getLocation();
@@ -668,7 +694,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void entityUpdate() {
 		for (Spaceship s : ships) {
-			if (s.entities.length > 0) {
+			if (s.entities != null && s.entities.length > 0) {
 				for (SpecialEntity e : s.entities) {
 					if (e != null) {
 						e.update();
@@ -676,7 +702,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
-		if (entities.size() > 0) {
+		if (entities != null && entities.size() > 0) {
 			for (SpecialEntity e : entities.values()) {
 				if (e != null) {
 					e.update();
