@@ -131,8 +131,10 @@ public class SpecialEntity implements Serializable {
 		switch (type) {
 		case TIE_FIGHTER:
 			customModelData = 1;
-			turnSpeed = 5;
+			turnSpeed = 6; // very fast maneuverability
 			mass = 10000;
+			fuelMass = 5*Math.pow(10,-8); // TIE Fighters have ion engines which run on electricity, but they still use an oxidizer
+			thrust = 2011;
 			break;
 		case MEDIUM_TURRET:
 			customModelData = 2;
@@ -164,7 +166,7 @@ public class SpecialEntity implements Serializable {
 			return "Medium Turret";
 		}
 		return "";
-	}
+	} //t = sqrt(2d/a)
 
 	public void save(String filename) {
 		try {

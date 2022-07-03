@@ -59,6 +59,8 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public static HashMap<Location[], Material> asyncFill = new HashMap<Location[], Material>();
 
+	public static HashMap<Player, Location> asyncTP = new HashMap<Player, Location>();
+	
 	ScheduledExecutorService executor;
 	
 	Ride ride;
@@ -347,13 +349,13 @@ public class Main extends JavaPlugin implements Listener {
 	            } else if (event.getView().getTitle().indexOf("Ship Selector") != -1) {
 	            	Spaceship ship = ships.get(event.getSlot());
 	            	player.sendMessage("Teleporting to " + ship.name);
-	            	player.teleport(new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz));
+	            	Location loc = new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz);
+	            	player.teleport(loc);
 	            	new java.util.Timer().schedule( 
 	            	        new java.util.TimerTask() {
 	            	            @Override
 	            	            public void run() {
-	            	                // your code here
-	            	            	player.teleport(new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz));
+	            	            	asyncTP.put(player, loc);
 	            	            }
 	            	        }, 
 	            	        500 
@@ -583,7 +585,7 @@ public class Main extends JavaPlugin implements Listener {
 								v.getEyeLocation().getYaw()+clamp(p.getEyeLocation().getYaw()-v.getEyeLocation().getYaw(), -e.turnSpeed, e.turnSpeed)
 								));*/
 						e.setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
-						v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
+						//v.setVelocity(e.getVelocity()); // Useless here, move it to the SpecialEntity class and call it when the velocity changes, that function will need to raycast to see if it crashed into a block or entity
 						p.setFallDistance(0.0F);
 						v.setFallDistance(0.0F);
 						
@@ -646,6 +648,12 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void specialBlockUpdate() {
 		if (System.currentTimeMillis()-lastBlockUpdate > 300) {
+			if (asyncTP.size() > 0) {
+				for (Player player : asyncTP.keySet()) {
+					player.teleport(asyncTP.get(player));
+					asyncTP.remove(player);
+				}
+			}
 			lastBlockUpdate = System.currentTimeMillis();
 			for (SpecialBlock b : blocks) {
 				if (b != null)
