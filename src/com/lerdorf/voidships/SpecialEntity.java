@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -93,6 +94,8 @@ public class SpecialEntity implements Serializable {
 			LivingEntity p = (LivingEntity)v.getPassenger();
 			if (p != null)
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+			else
+				slowDown();
 			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
@@ -128,6 +131,12 @@ public class SpecialEntity implements Serializable {
 			System.out.println("ERROR: LIVING ENTITY IS NULL FOR " + tag);
 		}
 	}
+	
+	 public void shootParticle(Location loc, Vector dir, Particle particle, double velocity) {
+	        //Location location = player.getEyeLocation();
+	        //Vector direction = location.getDirection();
+	        Bukkit.getWorld(world).spawnParticle(particle, loc.getX(), loc.getY(), loc.getZ(), 0, (float) dir.getX(), (float) dir.getY(), (float) dir.getZ(),velocity , null);
+	    }
 
 	public void addVelocity(Vector dir) {
 		//dir = dir.normalize().multiply(thrust);
@@ -139,6 +148,7 @@ public class SpecialEntity implements Serializable {
 			vx += dir.getX();
 			vy += dir.getY();
 			vz += dir.getZ();
+			shootParticle(Main.standEntities.get(tag).getLocation(), dir.multiply(-1), Particle.FLAME, thrust*5);
 		} else {
 			System.out.println("Not enough fuel: " + fuelNeeded);
 		}
@@ -205,6 +215,23 @@ public class SpecialEntity implements Serializable {
 		}
 	}
 
+	public void slowDown() {
+		Vector vel = getVelocity().multiply(-1);
+		if (vel.length() > 0.01) {
+			Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+			loc.setDirection(vel.normalize());
+			if (Math.abs(pitch - loc.getPitch()) > 0.01 || Math.abs(yaw - loc.getYaw()) > 0.01)
+				setTargetDirection(loc.getPitch(), loc.getYaw());
+			else {
+				doThrust(1, 0, 0);
+			}
+		} else {
+			vx = 0;
+			vy = 0;
+			vz = 0;
+		}
+	}
+	
 	public void load(String filepath) {
 		try (FileInputStream fis = new FileInputStream(filepath); ObjectInputStream ois = new ObjectInputStream(fis)) {
 
