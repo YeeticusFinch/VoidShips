@@ -56,12 +56,13 @@ Do ```/newsystem [args]``` to create a new solar system. Use ```/help newsystem`
 ### Planets
 Do ```/planets [name of system]``` to get a list of planets in the provided solar system. The name of the system is the same as the name of the star, or the id, or the knickname, whichever identifier is provided, they will (should) all work. Do ```/newplanet [args]``` to create a new planet. Same deal as for creating a new solar system, except the ```-s [name of system]``` arg is mandatory, there is no support for rogue planets (at least not yet). If you really want a rogue planet, you can use the ```-t [type]``` argument on the ```/newsystem``` to set the type as a planet, or rogue planet. For example ```/newsystem -n Look_ma,_no_star! -t Rogue_planet```
 
+## Entity-Ships
+Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship. Block-Ships will also have turrets that are similar in principle to entity-ships, except they don't fly around and are tied to a block.
+Do ```/vehicle tie_fighter``` to spawn a new tie fighter (more vehicles will be added in the future). Currently the tie fighter only has forward thrust capabilities, and it can obviously spin. I gave entity-ships newtonian physics appropriate for a vacuum, velocities can stay constant due to a lack of air resistance, and all movement requires fuel. Fuel is measured in jules, for an acceleration maneuvre the fuel required equals at least double the resulting change in kinetic energy (depending on the engine efficiency). That's right, turning counts as an acceleration, although I have approximated all entity-ships as spheres for the rotational inertia calculations.
+
 # Planned Features
 
 ToDo List: https://docs.google.com/document/d/1mwkHu0kTy9LCB7z1kaila9Fu1oxkFkfhTGh7txD13RU/edit?usp=sharing
-
-## Entity-Ships
-Tiny ships, such as escape pods and tie fighters, zip around and dogfight, or zoom around an enemy blockship and try to pierce the hull from up close, maybe even land in the dock and board the ship. Block-Ships will also have turrets that are similar in principle to entity-ships, except they don't fly around and are tied to a block.
 
 # Detailed Overview
 
