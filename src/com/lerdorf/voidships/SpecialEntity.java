@@ -16,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
@@ -103,7 +104,7 @@ public class SpecialEntity implements Serializable {
 			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
-			fuelNeeded /= (Math.max(fuelEfficiency, 0.0001f)*0.5f);
+			fuelNeeded /= (Math.max(engineEfficiency, 0.0001f)*0.5f);
 			if (vehicle) {
 				if (fuelNeeded < fuel) {
 					fuel -= fuelNeeded;
@@ -112,8 +113,8 @@ public class SpecialEntity implements Serializable {
 				}
 			} else if (turret) {
 				if (ship != null) {
-					if (fuelNeeded < ship.fuel) {
-						ship.fuel -= fuelNeeded;
+					if (fuelNeeded < ship.countFuel()) {
+						ship.removeFuel((float)fuelNeeded);
 						delYaw = newDelYaw;
 						delPitch = newDelPitch;
 					}
@@ -159,7 +160,7 @@ public class SpecialEntity implements Serializable {
 	public void addVelocity(Vector dir) {
 		//dir = dir.normalize().multiply(thrust);
 		double diff = 20*getVelocity().distance(dir); // velocity is in meters per tick, there are 20 ticks in 1 second
-		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff / (Math.max(fuelEfficiency, 0.0001f)*0.5f);
+		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff / (Math.max(engineEfficiency, 0.0001f)*0.5f);
 		//System.out.println("Adding velocity " + diff + " " + fuelNeeded + "/" + fuel + "  " + dir.getX() + " " + dir.getY() + " " + dir.getZ());
 		if (fuelNeeded < fuel) {
 			fuel -= fuelNeeded;
@@ -169,8 +170,8 @@ public class SpecialEntity implements Serializable {
 			//Location loc = Main.standEntities.get(tag).getEyeLocation();
 			//shootParticle(loc.toVector().add(getUp(loc).multiply(0.6f)).add(dir.multiply(-2)), dir.multiply(-1), Particle.FLAME, thrust*100);
 		} else {
-			Player rider = (Player)Main.standEntities.get(tag).getPassenger()
-			rider.sendMessage("Not enough fuel: " + fuelNeeded + "/" + fuel));
+			Player rider = (Player)Main.standEntities.get(tag).getPassenger();
+			rider.sendMessage("Not enough fuel: " + fuelNeeded + "/" + fuel);
 			//System.out.println("Not enough fuel: " + fuelNeeded);
 		}
 	}

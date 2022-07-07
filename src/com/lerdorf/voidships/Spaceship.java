@@ -182,13 +182,38 @@ public class Spaceship implements Serializable {
 		}
 	}
 	
-	public int countFuel() {
+	public float countFuel() {
 		int r = 0;
 		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i].type == SpecialBlock.FUEL_TANK)
 				r += blocks[i].fuel;
 		}
 		return r;
+	}
+	
+	public String displayFuel() {
+		float fuel = countFuel();
+		String pre = "";
+		if (fuel > Math.pow(10,18)) {
+			pre = "exa";
+			fuel /= Math.pow(10,18);
+		} else if (fuel > Math.pow(10,15)) {
+			pre = "peta";
+			fuel /= Math.pow(10,15);
+		} else if (fuel > Math.pow(10,12)) {
+			pre = "tera";
+			fuel /= Math.pow(10,12);
+		} else if (fuel > Math.pow(10,9)) {
+			pre = "giga";
+			fuel /= Math.pow(10,9);
+		} else if (fuel > Math.pow(10,6)) {
+			pre = "mega";
+			fuel /= Math.pow(10,6);
+		} else if (fuel > Math.pow(10,3)) {
+			pre = "kilo";
+			fuel /= Math.pow(10,3);
+		}
+		return Math.round(fuel*100)/100f + pre + " joules";
 	}
 	
 	public void addBlock(SpecialBlock block) {
