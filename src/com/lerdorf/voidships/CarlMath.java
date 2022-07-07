@@ -57,26 +57,26 @@ class CarlMath {
     if (num == 0) {
       pre = "";
     } else if (num > Math.pow(10,18)) {
-			pre = "exa";
-			num /= Math.pow(10,18);
-		} else if (num > Math.pow(10,15)) {
-			pre = "peta";
-			num /= Math.pow(10,15);
-		} else if (num > Math.pow(10,12)) {
-			pre = "tera";
-			num /= Math.pow(10,12);
-		} else if (num > Math.pow(10,9)) {
-			pre = "giga";
-			num /= Math.pow(10,9);
-		} else if (num > Math.pow(10,6)) {
-			pre = "mega";
-			num /= Math.pow(10,6);
-		} else if (num > Math.pow(10,3)) {
-			pre = "kilo";
-			num /= Math.pow(10,3);
+	pre = "exa";
+	num /= Math.pow(10,18);
+    } else if (num > Math.pow(10,15)) {
+	pre = "peta";
+	num /= Math.pow(10,15);
+    } else if (num > Math.pow(10,12)) {
+	pre = "tera";
+	num /= Math.pow(10,12);
+    } else if (num > Math.pow(10,9)) {
+	pre = "giga";
+	num /= Math.pow(10,9);
+    } else if (num > Math.pow(10,6)) {
+	pre = "mega";
+	num /= Math.pow(10,6);
+    } else if (num > Math.pow(10,3)) {
+	pre = "kilo";
+	num /= Math.pow(10,3);
     } else if (num > 0) { // Don't do anything, no prefix required
       pre = "";
-		} else if (num > Math.pow(10,-2)) {
+    } else if (num > Math.pow(10,-2)) {
       pre = "centi";
       num /= Math.pow(10,-2);
     } else if (num > Math.pow(10,-4)) {
@@ -95,7 +95,7 @@ class CarlMath {
       pre = "femto";
       num /= Math.pow(10,-15);
     }
-		return Math.round(num*10000)/10000f + " " + pre; 
+    return Math.round(num*10000)/10000f + " " + pre; 
   }
   
 }
