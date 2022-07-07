@@ -140,6 +140,7 @@ public class Spaceship implements Serializable {
 		for (int i = 0; i < airTanks.length && amount > 0; i++) {
 			airTanks[i].air -= amount;
 			amount = -airTanks[i].air;
+			airTanks[i].air = Math.min(airTanks[i].air, 0);
 		}
 	}
 
@@ -157,6 +158,35 @@ public class Spaceship implements Serializable {
 		int r = 0;
 		for (int i = 0; i < airTanks.length; i++) {
 			r += airTanks[i].air;
+		}
+		return r;
+	}
+
+	public void removeFuel(float amount) {
+		for (int i = 0; i < airTanks.length && amount > 0; i++) {
+			if (blocks[i].type != SpecialBlock.FUEL_TANK) continue;
+			blocks[i].fuel -= amount;
+			amount = -blocks[i].fuel;
+			blocks[i].fuel = Math.max(blocks[i].fuel, 0);
+		}
+	}
+
+	public void addFuel(float amount) {
+		for (int i = 0; i < airTanks.length && amount > 0; i++) {
+			if (blocks[i].type == SpecialBlock.FUEL_TANK) continue;
+			if (blocks[i].dead)
+				continue;
+			blocks[i].fuel = blocks[i].fuel + amount;
+			amount = blocks[i].fuel - (float)Math.pow(20,12);
+			blocks[i].fuel = Math.min(blocks[i].fuel, (float)Math.pow(20,12));
+		}
+	}
+	
+	public int countFuel() {
+		int r = 0;
+		for (int i = 0; i < blocks.length; i++) {
+			if (blocks[i].type == SpecialBlock.FUEL_TANK)
+				r += blocks[i].fuel;
 		}
 		return r;
 	}

@@ -35,6 +35,7 @@ public class SpecialBlock implements Serializable {
 	public int x2 = -1, y2 = -1, z2 = -1;
 
 	int air = 0;
+	float fuel = 0;
 	boolean dead = false;
 	boolean open = false;
 	boolean localMap = false;
@@ -51,6 +52,7 @@ public class SpecialBlock implements Serializable {
 	public static final int GRAVITY = 4;
 	public static final int MAP = 5;
 	public static final int TERMINAL = 6;
+	public static final int FUEL_TANK = 7;
 	// Get the CCTV plugin
 
 	String world;
@@ -72,6 +74,9 @@ public class SpecialBlock implements Serializable {
 		switch (type) {
 		case AIR_TANK:
 			air = 1000;
+			break;
+		case FUEL_TANK:
+			fuel = (float)Math.pow(20,12);
 			break;
 		}
 	}
@@ -158,6 +163,16 @@ public class SpecialBlock implements Serializable {
 				dead = true;
 			} else {
 				if (dead) Bukkit.getServer().broadcastMessage("Ship terminal repaired");
+				dead = false;
+			}
+			break;
+		case FUEL_TANK:
+			if (new Location(Bukkit.getWorld(world), x, y, z).getBlock().getType() != getMaterial()) {
+				if (!dead) Bukkit.getServer().broadcastMessage("Fuel tank destroyed, " + fuel + " joules of fuel lost.");
+				fuel = 0;
+				dead = true;
+			} else {
+				if (dead) Bukkit.getServer().broadcastMessage("Fuel tank repaired");
 				dead = false;
 			}
 			break;
@@ -323,6 +338,7 @@ public class SpecialBlock implements Serializable {
 		if (x2 != -1 && y2 != -1 && z2 != -1) r += " to " + x2 + " " + y2 + " " + z2;
 		if (type == DOOR) r += " " + ((open) ? "open" : "closed");
 		if (type == AIR_TANK) r += " air: " + air;
+		if (type == FUEL_TANK) r += " fuel: " + fuel;
 		if (type == MAP) r += localMap ? " [local map]" : " [system map]";
 		if (ship != null) r += " [" + ship.name + "]";
 		if (world != null) r += " [" + world + "]";
@@ -408,6 +424,9 @@ public class SpecialBlock implements Serializable {
 		case AIR_TANK:
 			player.sendMessage("Air: " + air);
 			break;
+		case FUEL_TANK:
+			player.sendMessage("Fuel: " + fuel);
+			break;
 		case AIR_PUMP:
 			System.out.println("Opening Air Pump menu");
 			event.setCancelled(true);
@@ -445,6 +464,8 @@ public class SpecialBlock implements Serializable {
 			return Material.SMOOTH_STONE_SLAB;
 		case TERMINAL:
 			return Material.DARK_OAK_STAIRS;
+		case FUEL_TANK:
+			return Material.DRIED_KELP_BLOCK;
 		}
 		return null;
 	}
@@ -465,6 +486,8 @@ public class SpecialBlock implements Serializable {
 			return "Map";
 		case TERMINAL:
 			return "Ship terminal";
+		case FUEL_TANK:
+			return "Fuel tank";
 		}
 		return null;
 	}
@@ -505,6 +528,7 @@ public class SpecialBlock implements Serializable {
 			openTime = yeet.openTime;
 			dead = yeet.dead;
 			localMap = yeet.localMap;
+			fuel = yeet.fuel;
 			//fastUpdate = yeet.fastUpdate;
 			fastUpdate = type == MAP;
 			

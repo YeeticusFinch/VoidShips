@@ -122,6 +122,7 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("map").setExecutor(new BlockShit());
 		this.getCommand("pump").setExecutor(new BlockShit());
 		this.getCommand("tank").setExecutor(new BlockShit());
+		this.getCommand("fuel").setExecutor(new BlockShit());
 		this.getCommand("setsystem").setExecutor(new VoidQuery());
 		this.getCommand("refuel").setExecutor(new BlockShit());
 		this.getCommand("asyncFill").setExecutor(new VoidSet());
@@ -426,7 +427,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 0) { // Main Terminal
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
-			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f")));
+			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f", "§c"+ship.countAir()+"§f cubic meters of air", "§c"+ship.countFuel()+"§f joules of fuel")));
 			inventory.setItem(2, createItem(Material.DISPENSER, "§fOxygen Control", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air", "Click to access Oxygen Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
 			inventory.setItem(3, createItem(Material.OBSERVER, "§3SecSystems", Arrays.asList("Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
 			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2WeaponDefenseSystems", Arrays.asList("Click to toggle WeaponDefenseSystems", "§7§oAutonomous defense against light weaponry")));
@@ -636,7 +637,6 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 		else if (inVoid(p.getLocation()) && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)) {
-			
 			if (System.currentTimeMillis()-lastGravUpdate > 300 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				boolean yeet = false;
 				for (Spaceship s : ships) {

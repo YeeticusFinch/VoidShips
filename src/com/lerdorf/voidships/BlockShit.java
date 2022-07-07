@@ -134,6 +134,17 @@ public class BlockShit implements CommandExecutor {
 			Spaceship s = Main.getCurrentShip(player);
 			s.addAir(999999999);
 			sender.sendMessage("Air tanks refilled");
+		} else if (cmd.getName().equalsIgnoreCase("fuel") && player != null) {
+			Block b = player.getTargetBlock(null, 200);
+			Spaceship s = Main.getCurrentShip(player);
+			SpecialBlock newBlock = new SpecialBlock(b, SpecialBlock.FUEL_TANK, s);
+			if (s != null) {
+				s.addBlock(newBlock);
+				s.save();
+			}
+			else
+				Main.blocks.add(newBlock);
+			sender.sendMessage("Successfully created new fuel tank" + ((s != null) ? " and added it to " + s.name : "."));
 		}
 		return true;
 	}

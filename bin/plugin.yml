@@ -119,7 +119,10 @@ commands:
    tank:
       description: Creates an air tank for your ship on the block you are looking at
       usage: /tank
-      permission: VoidShips.tank
+   fuel:
+      description: Creates a fuel tank for your ship on the block you are looking at
+      usage: /fuel
+      permission: VoidShips.fuel
    setsystem:
       description: Sets the current ship's system
       usage: /setsystem

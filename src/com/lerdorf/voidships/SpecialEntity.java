@@ -265,7 +265,8 @@ public class SpecialEntity implements Serializable {
 			tag = yeet.tag;
 			turret = yeet.turret;
 			vehicle = yeet.vehicle;
-			fuel = Math.pow(10, 12);
+			fuel = yeet.fuel;
+			//fuel = Math.pow(10, 12);
 			vx = 0;
 			vy = 0;
 			vz = 0;
