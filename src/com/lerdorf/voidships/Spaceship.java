@@ -192,28 +192,7 @@ public class Spaceship implements Serializable {
 	}
 	
 	public String displayFuel() {
-		float fuel = countFuel();
-		String pre = "";
-		if (fuel > Math.pow(10,18)) {
-			pre = "exa";
-			fuel /= Math.pow(10,18);
-		} else if (fuel > Math.pow(10,15)) {
-			pre = "peta";
-			fuel /= Math.pow(10,15);
-		} else if (fuel > Math.pow(10,12)) {
-			pre = "tera";
-			fuel /= Math.pow(10,12);
-		} else if (fuel > Math.pow(10,9)) {
-			pre = "giga";
-			fuel /= Math.pow(10,9);
-		} else if (fuel > Math.pow(10,6)) {
-			pre = "mega";
-			fuel /= Math.pow(10,6);
-		} else if (fuel > Math.pow(10,3)) {
-			pre = "kilo";
-			fuel /= Math.pow(10,3);
-		}
-		return Math.round(fuel*10000)/10000f + " " + pre + " joules";
+		return CarlMath.withPrefix(countFuel()) + " joules";
 	}
 	
 	public void addBlock(SpecialBlock block) {
