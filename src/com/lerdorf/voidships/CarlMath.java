@@ -47,8 +47,10 @@ class CarlMath {
   // Displays a number in scientific notation 2000000 ==> 2e+6
   public static String sciNot(double num) {
     int exp = (int)Math.log10(Math.abs(num));
-    num /= Math.pow(10,exp);
-    return Math.round(num*10000)/10000f + "e" + (exp > 0 ? "+" : "-") + Math.abs(exp);
+    if (Math.abs(exp) > 3) {
+	    num /= Math.pow(10,exp);
+	    return Math.round(num*10000)/10000f + "e" + (exp > 0 ? "+" : "-") + Math.abs(exp);
+    } else return Math.round(num*10000)/10000f + "";
   }
   
   // Displays a number with a prefix 2000000 ==> 2 mega
