@@ -213,7 +213,7 @@ public class Spaceship implements Serializable {
 			pre = "kilo";
 			fuel /= Math.pow(10,3);
 		}
-		return Math.round(fuel*100)/100f + pre + " joules";
+		return Math.round(fuel*10000)/10000f + " " + pre + " joules";
 	}
 	
 	public void addBlock(SpecialBlock block) {
