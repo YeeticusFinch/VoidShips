@@ -51,8 +51,9 @@ public class SpecialEntity implements Serializable {
 
 	public int customModelData = -1;
 
-	public double fuel = Math.pow(10, 12); // joules
+	public double fuel = 0; // joules
 	public double fuelMass = 0; // kg per joule
+	public float engineEfficiency = 0f; // 1 means exactly half of the energy spent gets converted into kinetic energy
 	public int radius; // m
 	public int mass; // kg
 	public double thrust; // m / tick^2
@@ -65,6 +66,8 @@ public class SpecialEntity implements Serializable {
 		this.ship = ship;
 		this.type = type;
 		setupShit();
+		refuel();
+		world = loc.getWorld().getName();
 	}
 
 	public SpecialEntity(Location loc, int type, Spaceship ship) {
@@ -74,6 +77,7 @@ public class SpecialEntity implements Serializable {
 		this.ship = ship;
 		this.type = type;
 		setupShit();
+		refuel();
 		world = loc.getWorld().getName();
 	}
 
@@ -94,15 +98,29 @@ public class SpecialEntity implements Serializable {
 			LivingEntity p = (LivingEntity)v.getPassenger();
 			if (p != null)
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
-			else
+			else if (vehicle)
 				slowDown();
 			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
-			if (fuelNeeded < fuel) {
-				fuel -= fuelNeeded;
-				delYaw = newDelYaw;
-				delPitch = newDelPitch;
+			fuelNeeded /= (Math.max(fuelEfficiency, 0.0001f)*0.5f);
+			if (vehicle) {
+				if (fuelNeeded < fuel) {
+					fuel -= fuelNeeded;
+					delYaw = newDelYaw;
+					delPitch = newDelPitch;
+				}
+			} else if (turret) {
+				if (ship != null) {
+					if (fuelNeeded < ship.fuel) {
+						ship.fuel -= fuelNeeded;
+						delYaw = newDelYaw;
+						delPitch = newDelPitch;
+					}
+				} else {
+					delYaw = newDelYaw;
+					delPitch = newDelPitch;
+				}
 			}
 			yaw += delYaw;
 			pitch += delPitch;
@@ -141,7 +159,7 @@ public class SpecialEntity implements Serializable {
 	public void addVelocity(Vector dir) {
 		//dir = dir.normalize().multiply(thrust);
 		double diff = 20*getVelocity().distance(dir); // velocity is in meters per tick, there are 20 ticks in 1 second
-		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff;
+		double fuelNeeded = 0.5 * (mass + fuel * fuelMass) * diff * diff / (Math.max(fuelEfficiency, 0.0001f)*0.5f);
 		//System.out.println("Adding velocity " + diff + " " + fuelNeeded + "/" + fuel + "  " + dir.getX() + " " + dir.getY() + " " + dir.getZ());
 		if (fuelNeeded < fuel) {
 			fuel -= fuelNeeded;
@@ -151,7 +169,9 @@ public class SpecialEntity implements Serializable {
 			//Location loc = Main.standEntities.get(tag).getEyeLocation();
 			//shootParticle(loc.toVector().add(getUp(loc).multiply(0.6f)).add(dir.multiply(-2)), dir.multiply(-1), Particle.FLAME, thrust*100);
 		} else {
-			System.out.println("Not enough fuel: " + fuelNeeded);
+			Player rider = (Player)Main.standEntities.get(tag).getPassenger()
+			rider.sendMessage("Not enough fuel: " + fuelNeeded + "/" + fuel));
+			//System.out.println("Not enough fuel: " + fuelNeeded);
 		}
 	}
 	
@@ -168,16 +188,22 @@ public class SpecialEntity implements Serializable {
 	public void setupShit() {
 		switch (type) {
 		case TIE_FIGHTER:
+			engineEfficiency = 0.9f;
 			customModelData = 1;
-			turnSpeed = 6; // very fast maneuverability
+			turnSpeed = 7; // very fast maneuverability
 			mass = 10000;
 			fuelMass = 5*Math.pow(10,-8); // TIE Fighters have ion engines which run on electricity, but they still use some fuel
 			thrust = 0.008;
+			vehicle = true;
+			turret = false;
 			break;
 		case MEDIUM_TURRET:
 			customModelData = 2;
 			turnSpeed = 2;
 			thrust = 0;
+			turret = true;
+			vehicle = false;
+			engineEfficiency = 1.5f;
 			break;
 		}
 	}
@@ -185,6 +211,7 @@ public class SpecialEntity implements Serializable {
 	public void refuel() {
 		switch (type) {
 		case TIE_FIGHTER:
+			fuel = Math.pow(10, 12);
 			break;
 		case MEDIUM_TURRET:
 			break;
@@ -301,7 +328,8 @@ public class SpecialEntity implements Serializable {
 	}
 
 	public void doThrust(int forward, int up, int left) {
-		// TODO Auto-generated method stub
+		if (turret)
+			return;
 		Vector dir = getDir().normalize();
 		//System.out.println("Thrusting " + forward + " " + up + " " + left);
 		addVelocity(dir.multiply(forward*thrust));
