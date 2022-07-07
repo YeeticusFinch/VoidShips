@@ -43,6 +43,33 @@ import com.sk89q.worldedit.math.BlockVector3;
 import org.bukkit.event.block.Action;
 
 class Orbit {
+  public CosmicBody body;
+  public double radius; //km
+  public double period; //hours
+  public double[] axis; // [x, y, z] unit vector
   
+  public static final int DIRECT = 0;
+  public static final int SLINGSHOT = 1;
+  public static final int HOHMANN_TRANSFER = 2;
+  public static final int HOHMANN_TRANSFER_IDEAL = 3;
   
+  public Orbit(CosmicBody body, double radius, double period, double[] axis) {
+    this.body = body;
+    this.radius = radius;
+    this.period = period;
+    this.axis = axis;
+  }
+  
+  // [deltaV, time]
+  public double[] deltaV(Orbit o, double maxAcceleration, int transferType) {
+    
+  }
+  
+  public double getNetVelocity() {
+    
+  }
+  
+  public double getEscapeVelocity() {
+    return getNetVelocity()*Math.sqrt(2);
+  }
 }
