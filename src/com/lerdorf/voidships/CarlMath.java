@@ -54,9 +54,7 @@ class CarlMath {
   // Displays a number with a prefix 2000000 ==> 2 mega
   public static String withPrefix(double num) {
     String pre = "";
-    if (num == 0) {
-      pre = "";
-    } else if (num > Math.pow(10,18)) {
+    if (num > Math.pow(10,18)) {
 	pre = "exa";
 	num /= Math.pow(10,18);
     } else if (num > Math.pow(10,15)) {
@@ -74,7 +72,7 @@ class CarlMath {
     } else if (num > Math.pow(10,3)) {
 	pre = "kilo";
 	num /= Math.pow(10,3);
-    } else if (num > 0) { // Don't do anything, no prefix required
+    } else if (num >= 0) { // Don't do anything, no prefix required
       pre = "";
     } else if (num > Math.pow(10,-2)) {
       pre = "centi";
