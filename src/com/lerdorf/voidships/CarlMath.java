@@ -43,7 +43,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import org.bukkit.event.block.Action;
 
 class CarlMath {
-  
+	
   // Displays a number in scientific notation 2000000 ==> 2e+6
   public static String sciNot(double num) {
     int exp = (int)Math.log10(Math.abs(num));
