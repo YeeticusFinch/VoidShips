@@ -203,7 +203,6 @@ public class Main extends JavaPlugin implements Listener {
 		 * e.substring(0,4)); if (e.length() > 4 && e.substring(0,4).equals("void")) {
 		 * System.out.println("Loading " + e); voids.add(new Void(e)); } } } }
 		 */
-		
 
 		for (World world : Bukkit.getWorlds()) {
 			List<Entity> mobs = world.getEntities();
@@ -259,7 +258,9 @@ public class Main extends JavaPlugin implements Listener {
 								System.out.println("Loading " + e2);
 								int n = Integer.parseInt(e2.substring(6, e2.indexOf('.')));
 								while (systems.size() <= n) systems.add(null);
-								systems.set(n, new SolarSystem(e + "/VoidShips/" + e2));
+								SolarSystem sys = new SolarSystem(e + "/VoidShips/" + e2);
+								sys.initRefs();
+								systems.set(n, sys);
 							}
 						}
 					}

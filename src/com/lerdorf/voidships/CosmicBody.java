@@ -118,7 +118,7 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit() { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
-		double time = LocalDateTime.now().toLocalTime().toSecondOfDay() / 1200;
+		double time = LocalDateTime.now().toLocalTime().toSecondOfDay() / 86400;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
 		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
@@ -128,8 +128,8 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit(long t) { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
-		double time = t / 1200;
-		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
+		double time = t / 86400;
+		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod); // the radius is just to add noise
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
 		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
 		//System.out.println(name + " " + knickname + " " + x + " " + y);
@@ -171,6 +171,11 @@ public class CosmicBody implements Serializable {
 		}
 
 		return null;
+	}
+	
+	// distance in km, returns acceleration due to gravity at such distance from this body
+	public double gravAccel(double dist) {
+		return G * mass / (dist * 1000); //  m/s^2
 	}
 
 	// Speed in m/s, distance in km

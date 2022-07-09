@@ -65,6 +65,12 @@ public class SolarSystem implements Serializable {
 	public SolarSystem(String filepath) {
 		load(filepath);
 	}
+	
+	public void initRefs() {
+		sun.orbiting = null;
+		for (CosmicBody p : planets)
+			p.orbiting = sun;
+	}
 
 	public void save(String filename) {
 		try {
