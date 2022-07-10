@@ -117,30 +117,36 @@ class Orbit {
 		return new double[] {2*w, accelTime};
 	}
 	
-	// time is in hours, speed is in km/h
-	// [total deltaV, total time, time before launch, acceleration time, cruising time, acceleration time]
-	public double[] deltaV(Orbit o, double acceleration, int transferType) { // acceleration in m/s^2
+	public double[] deltaVInterplanetary(Orbit o, double acceleration, int transferType) {
 		Orbit primaryOrbit = this;
 		Orbit secondaryOrbit = o;
-		acceleration *= 3600*3600 / 1000; // convert to km / h^2
 		if (body.orbiting != null)
 			primaryOrbit = new Orbit(body.orbiting, body.orbitDist, body.orbitPeriod*24, new double[] {0,0,1});
 		if (o.body.orbiting != null)
 			secondaryOrbit = new Orbit(o.body.orbiting, o.body.orbitDist, o.body.orbitPeriod*24, new double[] {0,0,1});
+		return deltaV(primaryOrbit, secondaryOrbit, acceleration, transferType);
+	}
+	
+	// time is in hours, speed is in km/h
+	// [total deltaV, total time, time before launch, acceleration time, cruising time, acceleration time]
+	public double[] deltaV(Orbit a, Orbit b, double acceleration, int transferType) { // acceleration in m/s^2
+		Orbit primaryOrbit = a;
+		Orbit secondaryOrbit = b;
+		acceleration *= 3600*3600 / 1000; // convert to km / h^2
 		double u = primaryOrbit.getGravParam();
 		if (transferType == HOHMANN) { // r1 = small orbit, r2 = big orbit, 
 			// dist = kilometer
 			// time = hour
 			// speed = km / h
 			// angle = radian
-			double dV1 = Math.sqrt(u/primaryOrbit.radius) * ( Math.sqrt( (2*o.body.orbitDist) / (primaryOrbit.radius+o.body.orbitDist) ) - 1 );
-			double dV2 = Math.sqrt(u/o.body.radius) * ( 1 - Math.sqrt( (2*primaryOrbit.radius) / (primaryOrbit.radius+o.body.orbitDist) ) );
-			double tH = Math.PI * Math.sqrt( Math.pow(primaryOrbit.radius + o.body.orbitDist,3) );
+			double dV1 = Math.sqrt(u/primaryOrbit.radius) * ( Math.sqrt( (2*b.body.orbitDist) / (primaryOrbit.radius+b.body.orbitDist) ) - 1 );
+			double dV2 = Math.sqrt(u/b.body.orbitDist) * ( 1 - Math.sqrt( (2*primaryOrbit.radius) / (primaryOrbit.radius+b.body.orbitDist) ) );
+			double tH = Math.PI * Math.sqrt( Math.pow(primaryOrbit.radius + b.body.orbitDist,3) );
 			
 		} else if (transferType == HOHMANN_IDEAL) {
-			double dV1 = Math.sqrt(u/primaryOrbit.radius) * ( Math.sqrt( (2*o.body.orbitDist) / (primaryOrbit.radius+o.body.orbitDist) ) - 1 );
-			double dV2 = Math.sqrt(u/o.body.radius) * ( 1 - Math.sqrt( (2*primaryOrbit.radius) / (primaryOrbit.radius+o.body.orbitDist) ) );
-			double tH = Math.PI * Math.sqrt( Math.pow(primaryOrbit.radius + o.body.orbitDist,3) );
+			double dV1 = Math.sqrt(u/primaryOrbit.radius) * ( Math.sqrt( (2*b.body.orbitDist) / (primaryOrbit.radius+b.body.orbitDist) ) - 1 );
+			double dV2 = Math.sqrt(u/b.body.orbitDist) * ( 1 - Math.sqrt( (2*primaryOrbit.radius) / (primaryOrbit.radius+b.body.orbitDist) ) );
+			double tH = Math.PI * Math.sqrt( Math.pow(primaryOrbit.radius + b.body.orbitDist,3) );
 			double timeUntilOpposite = angleDiff(Math.PI, primaryOrbit.angularDiff(secondaryOrbit)) / primaryOrbit.getAngularSpeed(secondaryOrbit);
 			double temp = 0;
 			while (tH > timeUntilOpposite + temp)
