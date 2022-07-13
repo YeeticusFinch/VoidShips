@@ -68,8 +68,10 @@ public class SolarSystem implements Serializable {
 	
 	public void initRefs() {
 		sun.orbiting = null;
-		for (CosmicBody p : planets)
-			p.orbiting = sun;
+		if (planets != null && planets.length > 0)
+			for (CosmicBody p : planets)
+				if (p != null)
+					p.orbiting = sun;
 	}
 
 	public void save(String filename) {

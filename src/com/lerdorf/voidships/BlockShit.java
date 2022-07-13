@@ -1,5 +1,6 @@
 package com.lerdorf.voidships;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -135,16 +136,46 @@ public class BlockShit implements CommandExecutor {
 			s.addAir(999999999);
 			sender.sendMessage("Air tanks refilled");
 		} else if (cmd.getName().equalsIgnoreCase("fuel") && player != null) {
-			Block b = player.getTargetBlock(null, 200);
 			Spaceship s = Main.getCurrentShip(player);
-			SpecialBlock newBlock = new SpecialBlock(b, SpecialBlock.FUEL_TANK, s);
-			if (s != null) {
-				s.addBlock(newBlock);
-				s.save();
+			if (args.length > 0 && args[0].equalsIgnoreCase("sel")) {
+				try {
+					Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
+					sender.sendMessage("Successfully aquired WorldEdit selection");
+					int c = 0;
+					for (int i = r.getMinimumPoint().getBlockX(); i<= r.getMaximumPoint().getBlockX(); i++)
+					{
+					    for (int j = r.getMinimumPoint().getBlockY(); j<= r.getMaximumPoint().getBlockY(); j++)
+					    {
+					        for (int k = r.getMinimumPoint().getBlockZ(); k<= r.getMaximumPoint().getBlockZ(); k++)
+					        {
+					            Block b = (new Location(player.getWorld(), i,j,k)).getBlock();
+								SpecialBlock newBlock = new SpecialBlock(b, SpecialBlock.FUEL_TANK, s);
+								if (s != null) {
+									s.addBlock(newBlock);
+									s.save();
+								}
+								else
+									Main.blocks.add(newBlock);
+								c++;
+					        }
+					    }
+					}
+					sender.sendMessage("Successfully created " + c + " new fuel tanks" + ((s != null) ? " and added them to " + s.name : "."));
+				} catch (IncompleteRegionException e) {
+					e.printStackTrace();
+					sender.sendMessage("Failed to get WorldEdit selection");
+				}
+			} else {
+				Block b = player.getTargetBlock(null, 200);
+				SpecialBlock newBlock = new SpecialBlock(b, SpecialBlock.FUEL_TANK, s);
+				if (s != null) {
+					s.addBlock(newBlock);
+					s.save();
+				}
+				else
+					Main.blocks.add(newBlock);
+				sender.sendMessage("Successfully created new fuel tank" + ((s != null) ? " and added it to " + s.name : "."));
 			}
-			else
-				Main.blocks.add(newBlock);
-			sender.sendMessage("Successfully created new fuel tank" + ((s != null) ? " and added it to " + s.name : "."));
 		}
 		return true;
 	}
