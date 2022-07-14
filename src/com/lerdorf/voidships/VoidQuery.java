@@ -365,6 +365,9 @@ public class VoidQuery implements CommandExecutor {
                 } else if (args[i].equals("-cdn")) {
                 	i++;
                 	ship.cdn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-nsn")) {
+                	i++;
+                	ship.nsn = args[i].replace('_', ' ');
                 }
             }
 			sender.sendMessage("Successfully modified " + ship.name);

@@ -16,7 +16,7 @@ public class Void implements Serializable {
 	public int x1, y1, z1, x2, y2, z2;
 	//public long time; // seconds
 	public String world;
-	
+	public String filepath;
 	public boolean voidWorld = false;
 
 	public Void(int x1, int y1, int z1, int x2, int y2, int z2, World world) {
@@ -47,6 +47,22 @@ public class Void implements Serializable {
 			return true;
 		return false;
 	}
+	
+
+	public void save() {
+		// TODO Auto-generated method stub
+		try {
+			
+			FileOutputStream fos = new FileOutputStream(this.filepath);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			// write object to file
+			oos.writeObject(this);
+			//this.filepath = world+"/VoidShips/" + filename;
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public void save(String filename) {
 
@@ -58,7 +74,7 @@ public class Void implements Serializable {
 
 			// write object to file
 			oos.writeObject(this);
-
+			this.filepath = world+"/VoidShips/" + filename;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -80,7 +96,7 @@ public class Void implements Serializable {
 			if (world == null)
 				world = "starships";
 			voidWorld = yeet.voidWorld;
-
+			this.filepath = filepath;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -88,5 +104,6 @@ public class Void implements Serializable {
 			e.printStackTrace();
 		}
 	}
+
 
 }

@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
@@ -306,7 +307,16 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onDisable() {
-		System.out.println("Disabling VoidShips");
+		System.out.println("Stopping VoidShips");
+		for (Spaceship ship : ships)
+			ship.save();
+		for (SpecialEntity entity : entities.values())
+			entity.save();
+		for (SolarSystem system : systems)
+			system.save();
+		for (Void v : voids)
+			v.save();
+		
 	}
 
 	@EventHandler
@@ -318,6 +328,33 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void RightClick(PlayerInteractEntityEvent event) {
 		ride.RightClick(event);
+	}
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent e){
+		Player player = e.getEntity();
+	     if(player.getScoreboardTags().contains("vac") && (e.getDeathMessage().contains("killed by magic") || e.getDeathMessage().contains("out of the world"))) {
+	    	 switch((int)(Math.random()*3)) {
+	    	 case 0: 
+	    		 e.setDeathMessage(player.getName()+" fell off the void");
+	    		 break;
+	    	 case 1:
+	    		 e.setDeathMessage(player.getName()+" was sent to Stalin");
+	    		 break;
+	    	 case 2:
+	    		 e.setDeathMessage(player.getName()+" took inspiration from Warrior24");
+	    		 break;
+	    	 case 3:
+	    		 e.setDeathMessage(player.getName()+" forgot a spacesuit");
+	    		 break;
+	    	 case 4:
+	    		 e.setDeathMessage(player.getName()+" believed nudity was the best spacesuit");
+	    		 break;
+	    	 case 5:
+	    		 e.setDeathMessage(player.getName()+" is a bald boi");
+	    		 break;
+	    	 }
+	     }
 	}
 
 	@EventHandler
@@ -447,13 +484,13 @@ public class Main extends JavaPlugin implements Listener {
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
 			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f", "§c"+ship.countAir()+"§f cubic meters of air", "§c"+ship.displayFuel()+"§f of fuel")));
-			inventory.setItem(2, createItem(Material.DISPENSER, "§fAtmosphere Control", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air", "Click to access Atmosphere Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
-			inventory.setItem(3, createItem(Material.OBSERVER, "§3Security Systems", Arrays.asList("Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
-			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2Weapon Defense Systems", Arrays.asList("Click to toggle WeaponDefenseSystems", "§7§oProtection against exterior environment", "§7§oAutonomous defense against light weaponry")));
-			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeapon Systems", Arrays.asList(ship.ssn != null ? "§4§o"+ship.wsn : "§b§oWeapon Target Systems","§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
-			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bScanning Systems", Arrays.asList(ship.ssn != null ? "§b§o"+ship.ssn : "§b§oLong-Range Mapping Scanner", "§fClick to access the Scanning Systems", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
-			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dNavigation Systems", Arrays.asList("§fClick to access PilotSystems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
-			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList("§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
+			inventory.setItem(2, createItem(Material.DISPENSER, "§fAtmosphere Control", Arrays.asList(ship.acn != null ? "§f§o"+ship.acn : "§f§oAtmosphere Systems","§c"+ship.countAir()+"§f cubic meters of air", "Click to access Atmosphere Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
+			inventory.setItem(3, createItem(Material.OBSERVER, "§3Security Systems", Arrays.asList(ship.ssn != null ? "§3§o"+ship.ssn : "§3§oSecurity Systems","Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
+			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2Defense Systems", Arrays.asList(ship.dsn != null ? "§2§o"+ship.dsn : "§2§oWeapon Defense Systems","Click to toggle WeaponDefenseSystems", "§7§oProtection against exterior environment", "§7§oAutonomous defense against light weaponry")));
+			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeapon Systems", Arrays.asList(ship.wsn != null ? "§4§o"+ship.wsn : "§b§oWeapon Target Systems","§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bScaners", Arrays.asList(ship.sn != null ? "§b§o"+ship.sn : "§b§oLong-Range Mapping Scanner", "§fClick to access the Scanning Systems", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
+			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dNavigation Systems", Arrays.asList(ship.nsn != null ? "§d§o"+ship.nsn : "§d§oBotPilot","§fClick to access Navigational Systems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
+			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList(ship.cdn != null ? "§4§o"+ship.cdn : "§b§oGarbage Collector","§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
 			
 			player.openInventory(inventory);
 		} 

@@ -17,6 +17,7 @@ public class SolarSystem implements Serializable {
 	CosmicBody sun;
 	CosmicBody[] planets;
 	String world;
+	String filepath;
 
 	double lyx; // coords in light-years
 	double lyy;
@@ -74,6 +75,20 @@ public class SolarSystem implements Serializable {
 					p.orbiting = sun;
 	}
 
+	public void save() {
+		try {
+			//(new File(world + "/VoidShips")).mkdirs();
+			//(new File(world + "/VoidShips/" + filename)).createNewFile();
+			FileOutputStream fos = new FileOutputStream(this.filepath);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			// write object to file
+			oos.writeObject(this);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public void save(String filename) {
 		try {
 			(new File(world + "/VoidShips")).mkdirs();
@@ -83,7 +98,7 @@ public class SolarSystem implements Serializable {
 
 			// write object to file
 			oos.writeObject(this);
-
+			this.filepath = world+ "/VoidShips/" + filename;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -108,6 +123,7 @@ public class SolarSystem implements Serializable {
 				whY = 57909050+1383530000*(Math.random()-0.5);
 				whZ = 57909050+1383530000*(Math.random()-0.5);
 			}
+			this.filepath = filepath;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} catch (ClassNotFoundException e) {
