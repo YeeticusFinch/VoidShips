@@ -135,6 +135,8 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("vehicle").setExecutor(new EntityShit());
 		this.getCommand("entities").setExecutor(new EntityShit());
 		this.getCommand("delentity").setExecutor(new EntityShit());
+
+		this.getCommand("modship").setExecutor(new VoidQuery());
 		
 		loadSaves();
 
@@ -276,6 +278,9 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
+		
+		for (Spaceship ship : ships)
+			ship.initRefs();
 
 		// getServer().broadcastMessage("VoidShips enabled!");
 	}
@@ -320,14 +325,14 @@ public class Main extends JavaPlugin implements Listener {
 	    if (event.getWhoClicked() instanceof Player) {
 	        Player player = (Player) event.getWhoClicked();
 	        if (event.getClickedInventory() != null) {
-	            if (event.getView().getTitle().indexOf("Ship Terminal") != -1) {
+	            if (event.getView().getTitle().indexOf("Ship Terminal") != -1) { ////////// SHIP TERMINAL
 	                if (event.isRightClick() || event.isLeftClick()) {
 	                    event.setCancelled(true);
 	                    ItemStack item = event.getCurrentItem();
 	                    if (item.getItemMeta().getDisplayName().indexOf("Atmosphere Control") != -1) {
 	                    	openMenu(player, getCurrentShip(player), 1);
 	                    	System.out.println("Opened Atmosphere Control");
-	                    } else if (item.getType() == Material.DISPENSER && event.getView().getTitle().indexOf("Atmosphere Control") != -1) {
+	                    } else if (item.getType() == Material.DISPENSER && event.getView().getTitle().indexOf("Atmosphere Control") != -1) { // Air Pumps
 	                    	Spaceship ship = getCurrentShip(player);
 	                    	SpecialBlock pump = ship.getBlocksOfType(SpecialBlock.AIR_PUMP)[event.getSlot()-9];
 	                    	openMenu(player, ship, pump, 2);
@@ -355,6 +360,9 @@ public class Main extends JavaPlugin implements Listener {
 								}
 							}
 							player.sendMessage("Deleted " + c + " blocks and " + d + " air tanks");
+	                    } else if (item.getItemMeta().getDisplayName().indexOf("Navigation Systems") != -1) {
+	                    	openMenu(player, getCurrentShip(player), 4);
+	                    	System.out.println("Opened Navigation Control");
 	                    }
 	                    //PianoManager.play(player, event.getCurrentItem(), false);
 	                }
@@ -403,6 +411,7 @@ public class Main extends JavaPlugin implements Listener {
 	            	player.sendMessage("Teleporting to " + ship.name);
 	            	Location loc = new Location(Bukkit.getWorld(ship.world), ship.sx, ship.sy, ship.sz);
 	            	player.teleport(loc);
+	            	player.setBedSpawnLocation(loc, true);
 	            	new java.util.Timer().schedule( 
 	            	        new java.util.TimerTask() {
 	            	            @Override
@@ -441,8 +450,8 @@ public class Main extends JavaPlugin implements Listener {
 			inventory.setItem(2, createItem(Material.DISPENSER, "§fAtmosphere Control", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air", "Click to access Atmosphere Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
 			inventory.setItem(3, createItem(Material.OBSERVER, "§3Security Systems", Arrays.asList("Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
 			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2Weapon Defense Systems", Arrays.asList("Click to toggle WeaponDefenseSystems", "§7§oProtection against exterior environment", "§7§oAutonomous defense against light weaponry")));
-			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeapon Target Systems", Arrays.asList("§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
-			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bLong-Range Mapping Scanner", Arrays.asList("§fClick to access the Mapping Scanner", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
+			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeapon Systems", Arrays.asList(ship.ssn != null ? "§4§o"+ship.wsn : "§b§oWeapon Target Systems","§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bScanning Systems", Arrays.asList(ship.ssn != null ? "§b§o"+ship.ssn : "§b§oLong-Range Mapping Scanner", "§fClick to access the Scanning Systems", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
 			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dNavigation Systems", Arrays.asList("§fClick to access PilotSystems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
 			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList("§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
 			
@@ -473,6 +482,11 @@ public class Main extends JavaPlugin implements Listener {
 			player.openInventory(inventory);
 		} else if (n == 4) {
 			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(ship.system.planets.length/9.0)+2)*9, "Navigation Systems");
+			inventory.setItem(4, createItem(Material.NETHER_STAR, "§6" + ship.system.getName()+"§f", Arrays.asList("§d"+ship.system.sun.type)));
+			for (int i = 0; i < ship.system.planets.length; i++)
+				inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), "§f" + ship.system.planets[i].knickname != null ? ship.system.planets[i].knickname : ship.system.planets[i].name, Arrays.asList()));
+
+			player.openInventory(inventory);
 		}
 	}
 	

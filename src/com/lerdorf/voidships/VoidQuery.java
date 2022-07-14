@@ -328,6 +328,47 @@ public class VoidQuery implements CommandExecutor {
 			ship.sz = player.getLocation().getBlockZ();
 
 			sender.sendMessage("Set spawnpoint of " + ship.name + " to " + ship.sx + " " + ship.sy + " " + ship.sz);
+		} else if (cmd.getName().equalsIgnoreCase("modship")) {
+			if (args.length < 2) {
+				sender.sendMessage("You fool, you forgot the args");
+				return false;
+			}
+			Spaceship ship = Main.getCurrentShip(player);
+			for (int i = 0; i < args.length; i++) { // -n [name], -m [mass], -nsn [nav systems name], -ssn [sec systems name], -wsn [weapon systems name], -dsn [defense systems name], -acn [atmosphere control name], -sn [scanner name], -cdn [cleanup debris name]
+                if (args[i].equals("-n")) {
+                    i++;
+                    ship.name = args[i].replace('_', ' ');
+                } else if (args[i].equals("-kn")) {
+                    i++;
+                    ship.knickname = args[i].replace('_', ' ');
+                } else if (args[i].equals("-m")) {
+                    i++;
+                    ship.mass = Double.parseDouble(args[i]);
+                } else if (args[i].equals("-psn")) {
+                	i++;
+                	ship.nsn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-ssn")) {
+                	i++;
+                	ship.ssn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-wsn")) {
+                	i++;
+                	ship.wsn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-dsn")) {
+                	i++;
+                	ship.dsn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-acn")) {
+                	i++;
+                	ship.acn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-sn")) {
+                	i++;
+                	ship.sn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-cdn")) {
+                	i++;
+                	ship.cdn = args[i].replace('_', ' ');
+                }
+            }
+			sender.sendMessage("Successfully modified " + ship.name);
+			ship.save();
 		}
 		return true;
 	}

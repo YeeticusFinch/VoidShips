@@ -3,6 +3,8 @@ package com.lerdorf.voidships;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import org.bukkit.Material;
+
 //import org.bukkit.Location;
 
 public class CosmicBody implements Serializable {
@@ -182,6 +184,27 @@ public class CosmicBody implements Serializable {
 	// Returns time in seconds
 	public double getTravelTime(double dist, double speed) {
 		return dist * 1000 / speed;
+	}
+
+	public Material getItem() {
+		// TODO Auto-generated method stub
+		if (habitable && radius < 10000)
+			return Material.SLIME_BALL;
+		else if (habitable && radius >= 10000)
+			return Material.ENDER_EYE;
+		if (radius < 2000)
+			return Material.CLAY_BALL;
+		if (radius < 3000)
+			return Material.SNOWBALL;
+		if (radius < 9000)
+			return Material.FIRE_CHARGE;
+		if (radius > 50000)
+			return Material.MAGMA_CREAM;
+		if (radius > 20000)
+			return Material.HEART_OF_THE_SEA;
+		if (radius > 10000)
+			return Material.ENDER_PEARL;
+		return Material.SNOWBALL;
 	}
 
 }

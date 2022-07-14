@@ -206,7 +206,7 @@ public class SpecialBlock implements Serializable {
 		if (localMap) {
 			SolarSystem s = ship.system;
 			double h = 1.4;
-			if (s.sun != null) {
+			if (s != null && s.sun != null) {
 				int[] rgb = s.sun.getColor();
 				Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(rgb[0], rgb[1], rgb[2]), 0.3f);
 	            Bukkit.getWorld(world).spawnParticle(Particle.REDSTONE, x+0.5, y+2*0.707*h+0.1, z+0.5, 0, 0, 0, 0, dust);

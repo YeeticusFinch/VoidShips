@@ -27,6 +27,18 @@ public class Spaceship implements Serializable {
 	SpecialEntity[] entities;
 	String filepath;
 	
+	// -n [name], -m [mass], -nsn [nav systems name], -ssn [sec systems name], -wsn [weapon systems name], -dsn [defense systems name], -acn [atmosphere control name], -sn [scanner name], -cdn [cleanup debris name]
+	double mass;
+	String knickname;
+	String nsn; // nav systems name
+	String ssn; // sec systems name
+	String wsn; // Weapon systems name
+	String dsn; // Defense systems name
+	String acn; // Atmosphere control name
+	String sn; // Scanner name
+	String cdn; // cleanup debris name
+	
+	
 	public Spaceship(String name, double x, double y, double z, Void space, CosmicBody orbiting, SolarSystem system, int sx, int sy, int sz, String world) {
 		this.x = x;
 		this.y = y;
@@ -113,7 +125,16 @@ public class Spaceship implements Serializable {
 			this.filepath = filepath;
 			entities = yeet.entities;
 			
-			initRefs();
+			mass = yeet.mass;
+			nsn = yeet.nsn; // nav systems name
+			ssn = yeet.ssn; // sec systems name
+			wsn = yeet.wsn; // Weapon systems name
+			dsn = yeet.dsn; // Defense systems name
+			acn = yeet.acn; // Atmosphere control name
+			sn = yeet.sn; // Scanner name
+			cdn = yeet.cdn; // cleanup debris name
+			
+			//initRefs();
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -266,5 +287,11 @@ public class Spaceship implements Serializable {
 				yeet[i] = entities[i];
 		}
 		entities = yeet;
+	}
+	
+	public void getDistance(CosmicBody body) {
+		//if (body.equals(orbiting))
+		//	return orbitDistance;
+		
 	}
 }

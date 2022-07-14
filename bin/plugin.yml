@@ -41,7 +41,7 @@ commands:
       usage: /newsystem [args]
       permission: VoidShips.newsystem
    newplanet:
-      description: Creates a new planet, any missing args will be randomly generated, -n [name], -kn [knickname], -d [distance from star in km], -s [star (name)], -o [orbital period (days-per-year)], -r [radius relative to earth], -m [mass (relative to earth], -h (if habitable)
+      description: Creates a new planet, any missing args will be randomly generated, -n [name], -kn [knickname], -d [distance from star in au], -s [star (name)], -o [orbital period (days-per-year)], -r [radius relative to earth], -m [mass (relative to earth], -h (if habitable)
       usage: /newplanet [args]
       permission: VoidShips.newplanet
    delship:
@@ -159,6 +159,10 @@ commands:
       description: Deletes an entity by tag
       usage: /delentity [tag]
       permission: VoidShips.delentity
+   modship:
+      description: Modifies the spaceship you are currently within. -n [name], -m [mass], -nsn [nav systems name], -ssn [sec systems name], -wsn [weapon systems name], -dsn [defense systems name], -acn [atmosphere control name], -sn [scanner name], -cdn [cleanup debris name]
+      usage: /modship [args]
+      permission: VoidShips.modship
       
       
       
