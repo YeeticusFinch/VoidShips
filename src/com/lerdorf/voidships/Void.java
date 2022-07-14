@@ -13,11 +13,13 @@ import org.bukkit.World;
 
 public class Void implements Serializable {
 
+	private static final long serialVersionUID = -6248821444512434093L; //2823073100515015763L
 	public int x1, y1, z1, x2, y2, z2;
 	//public long time; // seconds
 	public String world;
 	public String filepath;
 	public boolean voidWorld = false;
+	
 
 	public Void(int x1, int y1, int z1, int x2, int y2, int z2, World world) {
 		this.x1 = x1;
