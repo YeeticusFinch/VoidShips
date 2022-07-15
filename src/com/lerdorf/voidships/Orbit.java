@@ -2,6 +2,7 @@ package com.lerdorf.voidships;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +44,11 @@ import com.sk89q.worldedit.math.BlockVector3;
 
 import org.bukkit.event.block.Action;
 
-class Orbit {
+class Orbit implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -445295528426863004L;
 	public CosmicBody body;
 	public double radius; // km
 	public double period; // hours per year

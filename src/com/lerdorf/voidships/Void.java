@@ -15,7 +15,7 @@ public class Void implements Serializable {
 
 	private static final long serialVersionUID = -6248821444512434093L; //2823073100515015763L
 	public int x1, y1, z1, x2, y2, z2;
-	//public long time; // seconds
+	public long time; // seconds
 	public String world;
 	public String filepath;
 	public boolean voidWorld = false;
@@ -95,8 +95,9 @@ public class Void implements Serializable {
 			z1 = yeet.z1;
 			z2 = yeet.z2;
 			world = yeet.world;
+			this.time = yeet.time;
 			if (world == null)
-				world = "starships";
+				world = "Space";
 			voidWorld = yeet.voidWorld;
 			this.filepath = filepath;
 		} catch (IOException ex) {

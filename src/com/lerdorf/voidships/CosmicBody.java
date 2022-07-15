@@ -120,7 +120,7 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit() { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
-		double time = LocalDateTime.now().toLocalTime().toSecondOfDay() / 86400;
+		double time = System.currentTimeMillis() / 86400000;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
 		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);

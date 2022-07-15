@@ -27,6 +27,8 @@ public class Spaceship implements Serializable {
 	SpecialEntity[] entities;
 	String filepath;
 	
+	Orbit orbit;
+	
 	// -n [name], -m [mass], -nsn [nav systems name], -ssn [sec systems name], -wsn [weapon systems name], -dsn [defense systems name], -acn [atmosphere control name], -sn [scanner name], -cdn [cleanup debris name]
 	double mass;
 	String knickname;
@@ -124,6 +126,7 @@ public class Spaceship implements Serializable {
 			blocks = yeet.blocks;
 			this.filepath = filepath;
 			entities = yeet.entities;
+			orbit = yeet.orbit;
 			
 			mass = yeet.mass;
 			nsn = yeet.nsn; // nav systems name

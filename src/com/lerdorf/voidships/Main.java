@@ -1027,10 +1027,10 @@ public class Main extends JavaPlugin implements Listener {
 		for (Void v : voids) {
 			if (loc.getWorld().getName().equals(v.world)) {
 				if (v.voidWorld || (loc.getWorld().getName().equals(v.world) && v.within(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))) {
-					/*if (timeOffset == -1)
+					if (timeOffset == -1)
 						timeOffset = v.time - System.currentTimeMillis();
 					else
-						v.time = System.currentTimeMillis();*/
+						v.time = System.currentTimeMillis();
 					return true;
 				}
 			}
@@ -1238,7 +1238,11 @@ public class Main extends JavaPlugin implements Listener {
 		asyncFill.put(new Location[] {new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.min(x1,x2), Math.min(y1,y2), Math.min(z1,z2)), new Location(w, Math.max(x1,x2), Math.max(y1,y2), Math.max(z1,z2))}, mat);
 	}
 	
-	public static long getTime() {
-		return 0;
+	public static long getTimeMillis() {
+		return System.currentTimeMillis() + timeOffset;
+	}
+	
+	public static long getTimeSec() {
+		return (long)((System.currentTimeMillis() + timeOffset)/1000f);
 	}
 }

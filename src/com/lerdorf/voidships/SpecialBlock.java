@@ -223,7 +223,7 @@ public class SpecialBlock implements Serializable {
 				maxD /= zoom;
 				for (CosmicBody p : s.planets) {
 					for (int i = 0; i < 10; i++) {
-						p.orbit(LocalDateTime.now().toLocalTime().toSecondOfDay() - 864000*i);
+						p.orbit(System.currentTimeMillis()/1000 - 864000*i);
 						Particle.DustOptions dust = new Particle.DustOptions(Color.fromRGB(155, 155, 155), 0.1f - 0.008f*i);
 						
 						double px = x + 0.5 + (h * p.x)/(maxD);
