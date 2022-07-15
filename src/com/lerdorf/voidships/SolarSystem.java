@@ -169,4 +169,10 @@ public class SolarSystem implements Serializable {
 		planets = newPlanets;
 	}
 
+	public double getDistance(SolarSystem o) {
+		// TODO Auto-generated method stub
+		
+		return Math.sqrt( Math.pow(lyx-o.lyx, 2) + Math.pow(lyy-o.lyy, 2) + Math.pow(lyz-o.lyz, 2) );
+	}
+
 }

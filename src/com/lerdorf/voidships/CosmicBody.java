@@ -207,4 +207,51 @@ public class CosmicBody implements Serializable {
 		return Material.SNOWBALL;
 	}
 
+	public CosmicBody getRootBody() {
+		CosmicBody yeet = this;
+		int c = 0;
+		while (yeet.orbiting != null && c < 50) {
+			yeet = yeet.orbiting;
+			c++; // tee hee
+		}
+		return yeet;
+	}
+	
+	public boolean equals(CosmicBody o) {
+		if (o.name != null && name != null && !o.name.equals(name))
+			return false;
+		if (o.knickname != null && knickname != null && !o.knickname.equals(knickname))
+			return false;
+		if (o.id != null && id != null && !o.id.equals(id))
+			return false;
+		if (Math.abs(o.mass-mass) > 0.1 || Math.abs(o.radius-radius) > 0.1)
+			return false;
+		
+		return true;
+	}
+	
+	public double getDistance(CosmicBody body) {
+		// TODO Auto-generated method stub
+		CosmicBody rootBody = getRootBody();
+		CosmicBody otherRootBody = body.getRootBody();
+		if (rootBody.equals(otherRootBody)) {
+			orbit();
+			body.orbit();
+			return Math.sqrt( Math.pow(x-body.x, 2) + Math.pow(y-body.y, 2) + Math.pow(z-body.z, 2) ); 
+		}
+		return Main.getSystem(rootBody.getName()).getDistance(Main.getSystem(otherRootBody.getName()));
+		//return 0;
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		if (knickname != null)
+			return knickname;
+		if (name != null)
+			return name;
+		if (id != null)
+			return id;
+		return "UNKNOWN";
+	}
+
 }

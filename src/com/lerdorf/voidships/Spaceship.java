@@ -53,12 +53,24 @@ public class Spaceship implements Serializable {
 		this.name = name;
 		this.world = world;
 		this.system = system;
+		initOrbit();
 	}
 
 	public Spaceship(String filename) {
 		load(filename);
+		initOrbit();
 	}
 
+	public void initOrbit() {
+		if (orbit != null)
+			return;
+		if (orbiting == null)
+			orbiting = system.sun;
+		double x = orbiting.mass / (5.972 * Math.pow(10,24));
+		double stableRad = 6671.17*Math.pow(x, 0.2849) + 47.109*Math.pow(x, 47.109);
+		orbit = new Orbit(orbiting, Math.random()*Math.random()*10*stableRad, new double[] {0, 0, 1});
+	}
+	
 	public Location getSpawnLoc() {
 		return new Location(Bukkit.getWorld(world), sx, sy, sz);
 	}
@@ -292,9 +304,9 @@ public class Spaceship implements Serializable {
 		entities = yeet;
 	}
 	
-	public void getDistance(CosmicBody body) {
-		//if (body.equals(orbiting))
-		//	return orbitDistance;
-		
+	public double getDistance(CosmicBody body) {
+		if (body.equals(orbiting))
+			return orbit.radius;
+		return orbiting.getDistance(body);
 	}
 }

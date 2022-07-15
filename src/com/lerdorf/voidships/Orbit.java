@@ -66,7 +66,7 @@ class Orbit implements Serializable {
 		this.axis = axis;
 	}
 
-	public Orbit(CosmicBody body, double radius, double[] axis) {
+	public Orbit(CosmicBody body, double radius, double[] axis) { // just do [0, 0, 1] for axis for now, or [0, 0, -1]
 		this.body = body;
 		this.radius = radius;
 		this.axis = axis;

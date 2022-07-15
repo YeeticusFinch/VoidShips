@@ -483,7 +483,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 0) { // Main Terminal
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
-			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f", "§c"+ship.countAir()+"§f cubic meters of air", "§c"+ship.displayFuel()+"§f of fuel")));
+			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f", "§c"+ship.countAir()+"§f cubic meters of air", "§c"+ship.displayFuel()+"§f of fuel", "§dOrbiting " + ship.orbiting.getName())));
 			inventory.setItem(2, createItem(Material.DISPENSER, "§fAtmosphere Control", Arrays.asList(ship.acn != null ? "§f§o"+ship.acn : "§f§oAtmosphere Systems","§c"+ship.countAir()+"§f cubic meters of air", "Click to access Atmosphere Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
 			inventory.setItem(3, createItem(Material.OBSERVER, "§3Security Systems", Arrays.asList(ship.ssn != null ? "§3§o"+ship.ssn : "§3§oSecurity Systems","Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
 			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2Defense Systems", Arrays.asList(ship.dsn != null ? "§2§o"+ship.dsn : "§2§oWeapon Defense Systems","Click to toggle WeaponDefenseSystems", "§7§oProtection against exterior environment", "§7§oAutonomous defense against light weaponry")));
