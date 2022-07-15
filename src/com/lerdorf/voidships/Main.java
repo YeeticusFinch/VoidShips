@@ -1027,10 +1027,10 @@ public class Main extends JavaPlugin implements Listener {
 		for (Void v : voids) {
 			if (loc.getWorld().getName().equals(v.world)) {
 				if (v.voidWorld || (loc.getWorld().getName().equals(v.world) && v.within(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))) {
-					if (timeOffset == -1)
+					/*if (timeOffset == -1)
 						timeOffset = v.time - System.currentTimeMillis();
 					else
-						v.time = System.currentTimeMillis();
+						v.time = System.currentTimeMillis();*/
 					return true;
 				}
 			}
