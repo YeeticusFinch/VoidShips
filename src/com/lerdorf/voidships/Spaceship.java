@@ -305,6 +305,8 @@ public class Spaceship implements Serializable {
 	}
 	
 	public double getDistance(CosmicBody body) {
+		if (orbiting == null)
+			return -1;
 		if (body.equals(orbiting))
 			return orbit.radius;
 		return orbiting.getDistance(body);
