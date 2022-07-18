@@ -62,13 +62,13 @@ public class Spaceship implements Serializable {
 	}
 
 	public void initOrbit() {
-		if (orbit != null)
+		if (orbit != null && !Double.isInfinite(orbit.radius) && !Double.isNaN(orbit.radius))
 			return;
 		if (orbiting == null)
 			orbiting = system.sun;
 		double x = orbiting.mass / (5.972 * Math.pow(10,24));
-		double stableRad = 6671.17*Math.pow(x, 0.2849) + 47.109*Math.pow(x, 47.109);
-		orbit = new Orbit(orbiting, Math.random()*Math.random()*10*stableRad, new double[] {0, 0, 1});
+		double stableRad = 6671.17*Math.pow(x, 0.2849) + 47.109*Math.pow(x, 0.47);
+		orbit = new Orbit(orbiting, Math.random()*Math.random()*10d*stableRad, new double[] {0, 0, 1});
 	}
 	
 	public Location getSpawnLoc() {

@@ -45,8 +45,7 @@ public class CosmicBody implements Serializable {
 		prevTime = System.currentTimeMillis();
 	}
 
-	public CosmicBody(String name, String knickname, String type, String id, double x, double y, double z, double mass,
-			double radius, CosmicBody orbiting, double orbitDist) {
+	public CosmicBody(String name, String knickname, String type, String id, double x, double y, double z, double mass, double radius, CosmicBody orbiting, double orbitDist) {
 		this.name = name;
 		this.knickname = knickname;
 		this.type = type;
@@ -123,6 +122,7 @@ public class CosmicBody implements Serializable {
 		double time = System.currentTimeMillis() / 86400000;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
+		z = 0;
 		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
 		//System.out.println(name + " " + knickname + " " + x + " " + y);
 		//System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay() + " " + time + " " + x + " " + y);
@@ -133,6 +133,7 @@ public class CosmicBody implements Serializable {
 		double time = t / 86400;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod); // the radius is just to add noise
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
+		z = 0;
 		//System.out.println(orbitDist + " * cos(" + 2*Math.PI*(time) / orbitPeriod + ") = " + x);
 		//System.out.println(name + " " + knickname + " " + x + " " + y);
 		//System.out.println("Current time " + System.currentTimeMillis() + " " + LocalDateTime.now().toLocalTime().toSecondOfDay() + " " + time + " " + x + " " + y);
@@ -237,9 +238,10 @@ public class CosmicBody implements Serializable {
 		if (rootBody.equals(otherRootBody)) {
 			orbit();
 			body.orbit();
-			return Math.sqrt( Math.pow(x-body.x, 2) + Math.pow(y-body.y, 2) + Math.pow(z-body.z, 2) ); 
+			//return 5;
+			return Math.sqrt( Math.abs(Math.pow(x-body.x, 2) + Math.pow(y-body.y, 2) + Math.pow(z-body.z, 2)) ); // distance in km
 		}
-		return Main.getSystem(rootBody.getName()).getDistance(Main.getSystem(otherRootBody.getName()));
+		return Main.getSystem(rootBody.getName()).getDistance(Main.getSystem(otherRootBody.getName())); // distance in light years
 		//return 0;
 	}
 
