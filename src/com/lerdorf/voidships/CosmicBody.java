@@ -29,8 +29,7 @@ public class CosmicBody implements Serializable {
 	public static final float G = 0.000000000066743f; // m^3 kg^-1 s ^-2
 	public static final long LIGHT_SPEED = 300000000; // m/s
 
-	public CosmicBody(String name, String type, double x, double y, double z, double mass, double radius,
-			CosmicBody orbiting, double orbitDist) {
+	public CosmicBody(String name, String type, double x, double y, double z, double mass, double radius, CosmicBody orbiting, double orbitDist) {
 		this.name = name;
 		this.type = type;
 		this.x = x;
@@ -119,6 +118,8 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit() { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
+		if (orbiting == null || orbitDist == -1)
+			return;
 		double time = System.currentTimeMillis() / 86400000;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod);
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
@@ -130,6 +131,8 @@ public class CosmicBody implements Serializable {
 	
 	public void orbit(long t) { // 1.2 * Math.pow(10,6) milliseconds in a day
 		//double time = System.currentTimeMillis()/(1.2*Math.pow(10,1));
+		if (orbiting == null || orbitDist == -1)
+			return;
 		double time = t / 86400;
 		x = orbitDist * Math.cos(2*Math.PI*(radius+time) / orbitPeriod); // the radius is just to add noise
 		y = orbitDist * Math.sin(2*Math.PI*(radius+time) / orbitPeriod);
@@ -231,14 +234,17 @@ public class CosmicBody implements Serializable {
 		return true;
 	}
 	
-	public double getDistance(CosmicBody body) {
+	public double getDistance(CosmicBody body) { // The reason this orbit is failing is because the sun has no real position, nor period, can't call .orbit() on the sun
 		// TODO Auto-generated method stub
 		CosmicBody rootBody = getRootBody();
 		CosmicBody otherRootBody = body.getRootBody();
 		if (rootBody.equals(otherRootBody)) {
+
 			orbit();
+			//System.out.println("Calculating Orbit: " + x + " " + y + " rad= " + radius + " period= " + orbitPeriod);
 			body.orbit();
-			//return 5;
+			//System.out.println("Calculating Orbit: " + body.x + " " + body.y + " rad= " + body.radius + " period= " + body.orbitPeriod);
+			System.out.println("Distance between " + x + " " + y + " " + z + " and " + body.z + " " + body.y + " " + body.z + " is " + (Math.pow(x-body.x, 2) + Math.pow(y-body.y, 2) + Math.pow(z-body.z, 2)));
 			return Math.sqrt( Math.abs(Math.pow(x-body.x, 2) + Math.pow(y-body.y, 2) + Math.pow(z-body.z, 2)) ); // distance in km
 		}
 		return Main.getSystem(rootBody.getName()).getDistance(Main.getSystem(otherRootBody.getName())); // distance in light years
