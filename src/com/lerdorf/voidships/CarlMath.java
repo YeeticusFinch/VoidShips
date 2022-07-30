@@ -104,4 +104,10 @@ class CarlMath {
     return Math.round(num*10000)/10000f + " " + pre; 
   }
   
+  public static double minMag(double a, double b) {
+	  if (Math.abs(a) < Math.abs(b))
+		  return a;
+	  return b;
+  }
+  
 }

@@ -101,8 +101,8 @@ public class SpecialEntity implements Serializable {
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 			else if (vehicle)
 				slowDown();
-			double newDelPitch = clamp(tPitch - pitch, -turnSpeed, turnSpeed);
-			double newDelYaw = clamp(tYaw - yaw, -turnSpeed, turnSpeed);
+			double newDelPitch = clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed);
+			double newDelYaw = clamp(angleSubtract(tYaw, yaw), -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
 			fuelNeeded /= (Math.max(engineEfficiency, 0.0001f)*0.5f);
 			if (vehicle) {
@@ -149,6 +149,10 @@ public class SpecialEntity implements Serializable {
 		} else {
 			System.out.println("ERROR: LIVING ENTITY IS NULL FOR " + tag);
 		}
+	}
+	
+	public double angleSubtract(double a, double b) {
+		return CarlMath.minMag(b-a, CarlMath.minMag(b-360-a, b+360-a));
 	}
 	
 	 public void shootParticle(Vector loc, Vector dir, Particle particle, double velocity) {
