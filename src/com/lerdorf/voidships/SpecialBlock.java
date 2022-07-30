@@ -489,6 +489,8 @@ public class SpecialBlock implements Serializable {
 			return "Ship terminal";
 		case FUEL_TANK:
 			return "Fuel tank";
+		case AIR_WALL:
+			return "Air wall";
 		}
 		return null;
 	}

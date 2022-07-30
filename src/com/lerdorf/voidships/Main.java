@@ -844,6 +844,15 @@ public class Main extends JavaPlugin implements Listener {
 		if (isSomeAir(loc.getBlock())) {
 			if (air < 1)
 				return false;
+			for (Spaceship s : ships) {
+				if (s != null && s.blocks != null && s.blocks.length > 0) {
+					for (SpecialBlock b : s.blocks) {
+						if (b != null && b.dead == false && b.type == SpecialBlock.AIR_WALL && within(loc, b.world, b.x, b.y, b.z, b.x2, b.y2, b.z2)) {
+							return true;
+						}
+					}
+				}
+			}
 			loc.getWorld().spawnParticle(Particle.CLOUD, loc, 5);
 			loc.getWorld().playSound(loc, Sound.BLOCK_FIRE_EXTINGUISH, 1, 2);
 			Material ogMat = loc.getBlock().getType();
@@ -1163,6 +1172,14 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public static boolean within(Player p, String world, int x, int y, int z, int x2, int y2, int z2) {
         Location loc = p.getLocation();
+        if (!loc.getWorld().getName().equalsIgnoreCase(world)) return false;
+        if (Math.round(loc.getX()) >= Math.min(x,x2) && Math.round(loc.getX()) <= Math.max(x,x2) && Math.ceil(loc.getY()+0.5) >= Math.min(y,y2) && Math.floor(loc.getY()+0.5) <= Math.max(y,y2) && Math.round(loc.getZ()) >= Math.min(z,z2) && Math.round(loc.getZ()) <= Math.max(z,z2)) {
+        	return true;
+        }
+    	return false;
+	}
+	
+	public static boolean within(Location loc, String world, int x, int y, int z, int x2, int y2, int z2) {
         if (!loc.getWorld().getName().equalsIgnoreCase(world)) return false;
         if (Math.round(loc.getX()) >= Math.min(x,x2) && Math.round(loc.getX()) <= Math.max(x,x2) && Math.ceil(loc.getY()+0.5) >= Math.min(y,y2) && Math.floor(loc.getY()+0.5) <= Math.max(y,y2) && Math.round(loc.getZ()) >= Math.min(z,z2) && Math.round(loc.getZ()) <= Math.max(z,z2)) {
         	return true;
