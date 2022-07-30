@@ -499,7 +499,7 @@ public class Main extends JavaPlugin implements Listener {
 		else if (n == 1) {
 			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
 			
-			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(pumps.length/9.0)+2)*9, "Ship Terminal: Atmosphere Control");
+			Inventory inventory = Bukkit.createInventory(null, Math.min((int)(Math.ceil(pumps.length/9.0)+2)*9, 54), "Ship Terminal: Atmosphere Control");
 			
 			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
 			
@@ -510,7 +510,7 @@ public class Main extends JavaPlugin implements Listener {
 			player.openInventory(inventory);
 		}
 		else if (n == 3) {
-			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(ships.size()/9.0))*9, "Ship Selector");
+			Inventory inventory = Bukkit.createInventory(null, Math.min((int)(Math.ceil(ships.size()/9.0))*9, 54), "Ship Selector");
 			
 			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
 			
@@ -520,7 +520,7 @@ public class Main extends JavaPlugin implements Listener {
 			
 			player.openInventory(inventory);
 		} else if (n == 4) {
-			Inventory inventory = Bukkit.createInventory(null, (int)(ship.system == null || ship.system.planets == null ? 0 : Math.ceil(ship.system.planets.length/9.0)+2)*9, "Navigation Systems");
+			Inventory inventory = Bukkit.createInventory(null, Math.min(54, (int)(ship.system == null || ship.system.planets == null ? 1 : Math.ceil(ship.system.planets.length/9.0)+2)*9), "Navigation Systems");
 			inventory.setItem(4, createItem(Material.NETHER_STAR, "§6" + ship.system.getName()+"§f", Arrays.asList("§d"+ship.system.sun.type, ship.system.sun.equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.sun))+" km")));
 			for (int i = 0; i < ship.system.planets.length; i++)
 				inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "§2" : "§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
