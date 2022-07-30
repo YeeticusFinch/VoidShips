@@ -522,8 +522,9 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (n == 4) {
 			Inventory inventory = Bukkit.createInventory(null, Math.min(54, (int)(ship.system == null || ship.system.planets == null ? 1 : Math.ceil(ship.system.planets.length/9.0)+2)*9), "Navigation Systems");
 			inventory.setItem(4, createItem(Material.NETHER_STAR, "§6" + ship.system.getName()+"§f", Arrays.asList("§d"+ship.system.sun.type, ship.system.sun.equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.sun))+" km")));
-			for (int i = 0; i < ship.system.planets.length; i++)
-				inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "§2" : "§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
+			if (ship.system != null && ship.system.planets != null)
+				for (int i = 0; i < ship.system.planets.length; i++)
+					inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "§2" : "§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
 
 			player.openInventory(inventory);
 		}
