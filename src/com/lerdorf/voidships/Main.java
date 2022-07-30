@@ -497,11 +497,11 @@ public class Main extends JavaPlugin implements Listener {
 			player.openInventory(inventory);
 		} 
 		else if (n == 1) {
-			Inventory inventory = Bukkit.createInventory(null, 3*9, "Ship Terminal: Atmosphere Control");
+			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
+			
+			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(pumps.length/9.0)+2)*9, "Ship Terminal: Atmosphere Control");
 			
 			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
-			
-			SpecialBlock[] pumps = ship.getBlocksOfType(SpecialBlock.AIR_PUMP);
 			
 			for (int i = 0; i < pumps.length; i++) {
 				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
@@ -520,7 +520,7 @@ public class Main extends JavaPlugin implements Listener {
 			
 			player.openInventory(inventory);
 		} else if (n == 4) {
-			Inventory inventory = Bukkit.createInventory(null, (int)(Math.ceil(ship.system.planets.length/9.0)+2)*9, "Navigation Systems");
+			Inventory inventory = Bukkit.createInventory(null, (int)(ship.system == null || ship.system.planets == null ? 0 : Math.ceil(ship.system.planets.length/9.0)+2)*9, "Navigation Systems");
 			inventory.setItem(4, createItem(Material.NETHER_STAR, "§6" + ship.system.getName()+"§f", Arrays.asList("§d"+ship.system.sun.type, ship.system.sun.equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.sun))+" km")));
 			for (int i = 0; i < ship.system.planets.length; i++)
 				inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "§2" : "§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
@@ -729,13 +729,15 @@ public class Main extends JavaPlugin implements Listener {
 			
 			if (!p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
 				p.addScoreboardTag("vac");
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 8, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
 				//p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
 			} else if (!p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 8, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
 			}
 		} else if (p.getFlySpeed() != 0.1f)
@@ -743,6 +745,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (p.getScoreboardTags().contains("vac")
 				&& (isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
 			p.removeScoreboardTag("vac");
+			p.removePotionEffect(PotionEffectType.WEAKNESS);
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
 			p.removePotionEffect(PotionEffectType.WITHER);
 			p.removePotionEffect(PotionEffectType.SLOW);
@@ -1064,7 +1067,8 @@ public class Main extends JavaPlugin implements Listener {
 		 * TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 		// getServer().broadcastMessage("Creating void air!");
-		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		
+		/*ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 		Runnable task = new Runnable() {
 			public void run() {
@@ -1077,7 +1081,13 @@ public class Main extends JavaPlugin implements Listener {
 
 		int delay = 100;
 		scheduler.schedule(task, delay, TimeUnit.MILLISECONDS);
-		scheduler.shutdown();
+		scheduler.shutdown();*/
+		
+		block.setType(Material.VOID_AIR);
+		Location loc = block.getLocation();
+		loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1, 2);
+		loc.getWorld().spawnParticle(Particle.CRIT_MAGIC, loc, 5);
+		
 		// block.setBlockData(Material.valueOf("VOID_AIR").createBlockData());
 		// block.setBlockData(Bukkit.createBlockData("CraftBlockData{minecraft:void_air}"));
 		// Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "execute in " +
