@@ -176,6 +176,35 @@ public class BlockShit implements CommandExecutor {
 					Main.blocks.add(newBlock);
 				sender.sendMessage("Successfully created new fuel tank" + ((s != null) ? " and added it to " + s.name : "."));
 			}
+		} else if (cmd.getName().equalsIgnoreCase("airwall")) {
+			if (args.length != 1) {
+				sender.sendMessage("Expecting 1 argument");
+				return false;
+			}
+			try {
+				Region r = Main.getWorldEdit().getWorldEdit().getSessionManager().get(new BukkitPlayer( Main.getWorldEdit(), player)).getSelection(new BukkitWorld(player.getWorld()));
+				sender.sendMessage("Successfully aquired WorldEdit selection");
+				/*int i = 0;
+				SpecialBlock[] blocks = new SpecialBlock;
+				for (BlockVector3 e : r) {
+					i++;
+				}*/
+				Spaceship s = Main.getCurrentShip(player);
+				BlockVector3 min = r.getMinimumPoint();
+				BlockVector3 max = r.getMaximumPoint();
+				SpecialBlock newBlock = new SpecialBlock(SpecialBlock.AIR_WALL, player.getLocation().getWorld().getName(), min.getBlockX(), min.getBlockY(), min.getBlockZ(), max.getBlockX(), max.getBlockY(), max.getBlockZ());
+				newBlock.name = args[0];
+				if (s != null) {
+					s.addBlock(newBlock);
+					s.save();
+				}
+				else
+					Main.blocks.add(newBlock);
+				sender.sendMessage("Successfully created new air wall" + ((s != null) ? " and added it to " + s.name : "."));
+			} catch (IncompleteRegionException e) {
+				e.printStackTrace();
+				sender.sendMessage("Failed to get WorldEdit selection");
+			}
 		}
 		return true;
 	}

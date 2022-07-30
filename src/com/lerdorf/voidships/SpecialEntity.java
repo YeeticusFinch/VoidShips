@@ -145,13 +145,19 @@ public class SpecialEntity implements Serializable {
 			 */
 			//if (vx != 0 || vy != 0 || vz != 0)
 			//	System.out.println("Setting velocity for " + tag + " to " + vx + " " + vy + " " + vz);
+			double velMag = Math.sqrt(vx*vx + vy*vy + vz*vz);
+			if (!Main.isSomeAir((new Location(Bukkit.getWorld(world), (int)(v.getEyeLocation().getX() + radius*vx/velMag), (int)(v.getEyeLocation().getY() + radius*vy/velMag), (int)(v.getEyeLocation().getZ() + radius*vz/velMag))).getBlock())) {
+				vx = 0;
+				vy = 0; 
+				vz = 0;
+			}
 			v.setVelocity(getVelocity());
 		} else {
 			System.out.println("ERROR: LIVING ENTITY IS NULL FOR " + tag);
 		}
 	}
 	
-	public double angleSubtract(double a, double b) {
+	public double angleSubtract(double b, double a) {
 		return CarlMath.minMag(b-a, CarlMath.minMag(b-360-a, b+360-a));
 	}
 	

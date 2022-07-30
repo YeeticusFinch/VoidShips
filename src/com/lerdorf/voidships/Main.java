@@ -139,6 +139,8 @@ public class Main extends JavaPlugin implements Listener {
 
 		this.getCommand("modship").setExecutor(new VoidQuery());
 		
+		this.getCommand("airwall").setExecutor(new BlockShit());
+		
 		loadSaves();
 
 		/*BukkitRunnable mainLoop = new BukkitRunnable() {

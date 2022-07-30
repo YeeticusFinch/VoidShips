@@ -53,6 +53,7 @@ public class SpecialBlock implements Serializable {
 	public static final int MAP = 5;
 	public static final int TERMINAL = 6;
 	public static final int FUEL_TANK = 7;
+	public static final int AIR_WALL = 8;
 	// Get the CCTV plugin
 
 	String world;

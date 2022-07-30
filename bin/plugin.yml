@@ -163,6 +163,11 @@ commands:
       description: Modifies the spaceship you are currently within. -n [name], -m [mass], -nsn [nav systems name], -ssn [sec systems name], -wsn [weapon systems name], -dsn [defense systems name], -acn [atmosphere control name], -sn [scanner name], -cdn [cleanup debris name]
       usage: /modship [args]
       permission: VoidShips.modship
+   airwall:
+      description: Creates a wall of air in the current selection, must be 1 block thick, and have a border around the thicker sides
+      usage: /airwall [name]
+      permission: VoidShips.airwall
+   
       
       
       
