@@ -730,13 +730,13 @@ public class Main extends JavaPlugin implements Listener {
 			if (!p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
 				p.addScoreboardTag("vac");
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 9, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 3, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 8, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
+				//p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
 			} else if (!p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 9, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 3, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 8, false, false));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
 			}
 		} else if (p.getFlySpeed() != 0.1f)
 			p.setFlySpeed(0.1f);
@@ -746,7 +746,7 @@ public class Main extends JavaPlugin implements Listener {
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
 			p.removePotionEffect(PotionEffectType.WITHER);
 			p.removePotionEffect(PotionEffectType.SLOW);
-			p.removePotionEffect(PotionEffectType.HARM);
+			//p.removePotionEffect(PotionEffectType.HARM);
 		}
 		specialBlockUpdate();
 		fastBlockUpdate(p);
@@ -1019,7 +1019,6 @@ public class Main extends JavaPlugin implements Listener {
 			if (isAir(event.getSourceBlock()) && !isVoidAir(event.getSourceBlock()) && isCaveAir(event.getBlock())) {
 				setCaveAir(event.getSourceBlock());
 			} else if ((isAir(event.getSourceBlock()) || isCaveAir(event.getSourceBlock())) && isAir(event.getBlock())) {
-				event.getBlock().getLocation().getWorld().playSound(event.getBlock().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 2);
 				setVoidAir(event.getSourceBlock());
 			} else if (isVoidAir(event.getSourceBlock()) && isCaveAir(event.getBlock())) {
 				setVoidAir(event.getBlock());
@@ -1065,11 +1064,22 @@ public class Main extends JavaPlugin implements Listener {
 		 * TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 		// getServer().broadcastMessage("Creating void air!");
-		block.setType(Material.VOID_AIR);
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+		Runnable task = new Runnable() {
+			public void run() {
+				block.setType(Material.VOID_AIR);
+				Location loc = block.getLocation();
+				loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1, 2);
+				loc.getWorld().spawnParticle(Particle.CRIT_MAGIC, loc, 5);
+			}
+		};
+
+		int delay = 100;
+		scheduler.schedule(task, delay, TimeUnit.MILLISECONDS);
+		scheduler.shutdown();
 		// block.setBlockData(Material.valueOf("VOID_AIR").createBlockData());
 		// block.setBlockData(Bukkit.createBlockData("CraftBlockData{minecraft:void_air}"));
-		Location loc = block.getLocation();
-		loc.getWorld().spawnParticle(Particle.CRIT_MAGIC, loc, 5);
 		// Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "execute in " +
 		// loc.getWorld().getName() + " run setblock " + loc.getBlockX() + " " +
 		// loc.getBlockY() + " " + loc.getBlockZ() + " void_air");
