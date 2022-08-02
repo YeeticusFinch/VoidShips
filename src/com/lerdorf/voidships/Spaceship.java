@@ -150,6 +150,7 @@ public class Spaceship implements Serializable {
 			acn = yeet.acn; // Atmosphere control name
 			sn = yeet.sn; // Scanner name
 			cdn = yeet.cdn; // cleanup debris name
+			fastLadders = yeet.fastLadders;
 			
 			//initRefs();
 
