@@ -740,7 +740,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			
 			if (p.isFlying() == p.getScoreboardTags().contains("grav")) {
-				if (!p.getScoreboardTags().contains("grav") && p.getFlySpeed() != 0.022f)
+				if (!p.getScoreboardTags().contains("grav") && !p.getScoreboardTags().contains("flyspeed") && p.getFlySpeed() != 0.022f)
 					p.setFlySpeed(0.022f);
 				p.setAllowFlight(!p.getScoreboardTags().contains("grav"));
 				p.setFlying(!p.getScoreboardTags().contains("grav"));
@@ -760,7 +760,7 @@ public class Main extends JavaPlugin implements Listener {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
 			}
-		} else if (p.getFlySpeed() != 0.1f)
+		} else if (p.getFlySpeed() != 0.1f && !p.getScoreboardTags().contains("flyspeed"))
 			p.setFlySpeed(0.1f);
 		if (p.getScoreboardTags().contains("vac")
 				&& (spacesuit(p) >= 4 || isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {

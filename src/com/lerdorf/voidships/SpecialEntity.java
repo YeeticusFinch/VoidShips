@@ -16,6 +16,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
@@ -56,7 +57,7 @@ public class SpecialEntity implements Serializable {
 	public boolean ride = true;
 	
 	public String pilot = null;
-	public ArrayList<String> passengers = new ArrayList<String>();
+	public String[] passengers;
 
 	public int customModelData = -1;
 
@@ -67,6 +68,7 @@ public class SpecialEntity implements Serializable {
 	public int mass; // kg
 	public double thrust; // m / tick^2
 	
+	public boolean flyFlight = false;
 	public transient net.citizensnpcs.api.npc.NPC npc;
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
@@ -97,10 +99,56 @@ public class SpecialEntity implements Serializable {
 	}
 
 	public void addPassenger(Player p) {
-		if (pilot == null)
+		if (pilot == null) {
 			pilot = p.getName();
-		else
-			passengers.add(p.getName());
+			p.addScoreboardTag("flyspeed");
+			if (drone) {
+				Main.spawnFakePlayer(p.getLocation(), p.getName(), this);
+				((LivingEntity) npc.getEntity()).setHealth(p.getHealth());
+				((HumanEntity) npc).getInventory().setChestplate(p.getInventory().getChestplate());
+				((HumanEntity) npc).getInventory().setLeggings(p.getInventory().getLeggings());
+				((HumanEntity) npc).getInventory().setBoots(p.getInventory().getBoots());
+				((HumanEntity) npc).getInventory().setHelmet(p.getInventory().getHelmet());
+			}
+		}
+		else {
+			int n = 0;
+			if (passengers != null)
+				n = passengers.length;
+			n++;
+			String[] temp = new String[n];
+			if (passengers != null)
+				for (int i = 0; i < passengers.length; i++)
+					temp[i] = passengers[i];
+			temp[temp.length-1] = p.getName();
+			p.removeScoreboardTag("flyspeed");
+			//passengers.add(p.getName());
+		}
+	}
+	
+	public void removePassenger(Player p) {
+		if (pilot != null && pilot.equals(p.getName())) {
+			pilot = null;
+			p.setHealth(((LivingEntity) npc.getEntity()).getHealth());
+		}
+		else {
+			int n = 0;
+			if (passengers != null)
+				n = passengers.length;
+			n--;
+			String[] temp = new String[n];
+			boolean removed = false;
+			if (passengers != null) {
+				for (int i = 0; i < passengers.length; i++) {
+					if (!removed && passengers[i].equals(p.getName())) {
+						removed = true;
+						i++;
+					}
+					temp[removed ? i-1 : i] = passengers[i];
+				}
+			}
+			//passengers.remove(p.getName());
+		}
 	}
 	
 	double clamp(double a, double b, double c) {
@@ -109,13 +157,22 @@ public class SpecialEntity implements Serializable {
 
 	double delYaw = 0;
 	double delPitch = 0;
+	double npcHealth = 20;
 
 	public void update() {
 		ArmorStand v = Main.standEntities.get(tag);
 		if (v != null) {
 			LivingEntity p = (LivingEntity)v.getPassenger();
-			if (p != null)
-				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+			if (p != null) {
+				if (flyFlight = false)
+					setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+				if (drone) {
+					double npcHealthCurrent = ((LivingEntity)npc.getEntity()).getHealth();
+					if (npcHealth > npcHealthCurrent) {
+						((Player)p).sendMessage("§4Your physical body has taken damage! Your HP is now " + npcHealth);
+					}
+				}
+			}
 			else if (vehicle)
 				slowDown();
 			double newDelPitch = clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed);
@@ -265,6 +322,8 @@ public class SpecialEntity implements Serializable {
 			drone = true;
 			engineEfficiency = 15f;
 			ride = false;
+			mass = 3129;
+			flyFlight = true;
 			break;
 		}
 	}
@@ -363,6 +422,8 @@ public class SpecialEntity implements Serializable {
 			vx = 0;
 			vy = 0;
 			vz = 0;
+			passengers = yeet.passengers;
+			pilot = yeet.pilot;
 			setupShit();
 
 		} catch (IOException ex) {
