@@ -19,9 +19,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+
+import net.citizensnpcs.api.trait.trait.Equipment;
 
 public class SpecialEntity implements Serializable {
 
@@ -71,6 +76,8 @@ public class SpecialEntity implements Serializable {
 	
 	public boolean flyFlight = false;
 	public transient net.citizensnpcs.api.npc.NPC npc;
+	
+	public boolean lookUpAndDown = true;
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -104,12 +111,33 @@ public class SpecialEntity implements Serializable {
 			pilot = p.getName();
 			p.addScoreboardTag("flyspeed");
 			if (drone) {
+				p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 100000, 0, false, false));
 				Main.spawnFakePlayer(p.getLocation(), p.getName(), this);
-				((LivingEntity) npc.getEntity()).setHealth(p.getHealth());
-				((HumanEntity) npc).getInventory().setChestplate(p.getInventory().getChestplate());
-				((HumanEntity) npc).getInventory().setLeggings(p.getInventory().getLeggings());
-				((HumanEntity) npc).getInventory().setBoots(p.getInventory().getBoots());
-				((HumanEntity) npc).getInventory().setHelmet(p.getInventory().getHelmet());
+				LivingEntity le = ((LivingEntity) npc.getEntity());
+				le.setHealth(p.getHealth());
+				//((LivingEntity) npc.getEntity()).getEquipment().set(Equipment.EquipmentSlot.HELMET, p.getInventory().getHelmet());
+				le.getEquipment().setChestplate(p.getInventory().getChestplate());
+				le.getEquipment().setLeggings(p.getInventory().getLeggings());
+				le.getEquipment().setBoots(p.getInventory().getBoots());
+				le.getEquipment().setHelmet(p.getInventory().getHelmet());
+				new java.util.Timer().schedule( 
+            	        new java.util.TimerTask() {
+            	            @Override
+            	            public void run() {
+            	            	Main.asyncNPCEquip.put(le, new ItemStack[] {p.getInventory().getHelmet(), p.getInventory().getChestplate(), p.getInventory().getLeggings(), p.getInventory().getBoots()});
+            	            }
+            	        }, 
+            	        500 
+            	);
+				new java.util.Timer().schedule( 
+            	        new java.util.TimerTask() {
+            	            @Override
+            	            public void run() {
+            	            	Main.asyncNPCEquip.put(le, new ItemStack[] {p.getInventory().getHelmet(), p.getInventory().getChestplate(), p.getInventory().getLeggings(), p.getInventory().getBoots()});
+            	            }
+            	        }, 
+            	        2000 
+            	);
 			}
 		}
 		else {
@@ -122,7 +150,6 @@ public class SpecialEntity implements Serializable {
 				for (int i = 0; i < passengers.length; i++)
 					temp[i] = passengers[i];
 			temp[temp.length-1] = p.getName();
-			p.removeScoreboardTag("flyspeed");
 			//passengers.add(p.getName());
 		}
 	}
@@ -130,8 +157,18 @@ public class SpecialEntity implements Serializable {
 	public void removePassenger(Player p) {
 		if (pilot != null && pilot.equals(p.getName())) {
 			pilot = null;
-			p.setHealth(((LivingEntity) npc.getEntity()).getHealth());
-			p.setAllowFlight(false);
+			if (npc != null) {
+				p.teleport(npc.getStoredLocation());
+				if (npc.getEntity() != null)
+					p.setHealth(((LivingEntity) npc.getEntity()).getHealth());
+				else
+					p.setHealth(0);
+				p.setAllowFlight(false);
+				npc.destroy();
+				npc = null;
+			}
+			p.removeScoreboardTag("flyspeed");
+			p.removePotionEffect(PotionEffectType.INVISIBILITY);
 		}
 		else {
 			int n = 0;
@@ -170,8 +207,11 @@ public class SpecialEntity implements Serializable {
 			if (p != null) {
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 				if (flyFlight) {
+					v.teleport(p.getLocation().add(p.getVelocity()).toVector().toLocation(p.getLocation().getWorld()));
 					if (p.getFlySpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
 						p.setFlySpeed(flySpeed);
+					if (p.getWalkSpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
+						p.setWalkSpeed(flySpeed);
 					if (fuel > 1) 
 						p.setAllowFlight(true);
 					double fuelNeeded = 0;
@@ -182,15 +222,21 @@ public class SpecialEntity implements Serializable {
 					prevFlyVel = p.getVelocity().clone();
 				}
 				if (drone) {
-					double npcHealthCurrent = ((LivingEntity)npc.getEntity()).getHealth();
-					if (npcHealth > npcHealthCurrent) {
-						((Player)p).sendMessage("ยง4Your physical body has taken damage! Your HP is now " + npcHealth);
+					if (npc == null || npc.getEntity() == null) {
+						removePassenger(p);
+						p.damage(2000);
+					} else {
+						double npcHealthCurrent = ((LivingEntity)npc.getEntity()).getHealth();
+						if (npcHealth > npcHealthCurrent) {
+							((Player)p).sendMessage("ง4Your physical body has taken damage! Your HP is now " + npcHealthCurrent);
+							npcHealth = npcHealthCurrent;
+						}
 					}
 				}
 			}
 			else if (vehicle && !flyFlight)
 				slowDown();
-			double newDelPitch = clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed);
+			double newDelPitch = lookUpAndDown ? clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed) : 0;
 			double newDelYaw = clamp(angleSubtract(tYaw, yaw), -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
 			fuelNeeded /= (Math.max(engineEfficiency, 0.0001f)*0.5f);
@@ -340,6 +386,7 @@ public class SpecialEntity implements Serializable {
 			mass = 3129;
 			flyFlight = true;
 			flySpeed = 0.018f;
+			lookUpAndDown = false;
 			break;
 		}
 	}

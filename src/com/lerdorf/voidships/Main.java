@@ -737,11 +737,11 @@ public class Main extends JavaPlugin implements Listener {
 						if (vel.getY() > 0) {
 							vel.setY(0.5);
 							p.setVelocity(vel);
-						} else if (vel.getY() < 0) {
+						} /*else if (vel.getY() < 0) {
 							Location newLoc = p.getLocation().add(0, -1, 0);
 							if (newLoc.getBlock().getType() == Material.LADDER && newLoc.add(0, 1, 0).getBlock().getType() == Material.LADDER)
 								p.teleport(newLoc.add(0, -1, 0));
-						}
+						}*/
 					}
 				}
 			}
@@ -829,12 +829,24 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	public static HashMap<LivingEntity, ItemStack[]> asyncNPCEquip = new HashMap<LivingEntity, ItemStack[]>();
+	
 	public void specialBlockUpdate() {
 		if (System.currentTimeMillis()-lastBlockUpdate > 300) {
 			if (asyncTP.size() > 0) {
 				for (Player player : asyncTP.keySet()) {
 					player.teleport(asyncTP.get(player));
 					asyncTP.remove(player);
+				}
+			}
+			if (asyncNPCEquip.size() > 0) {
+				for (LivingEntity npc : asyncNPCEquip.keySet()) {
+					//npc.teleport(asyncNPCEquip.get(player));
+					npc.getEquipment().setHelmet(asyncNPCEquip.get(npc)[0]);
+					npc.getEquipment().setChestplate(asyncNPCEquip.get(npc)[1]);
+					npc.getEquipment().setLeggings(asyncNPCEquip.get(npc)[2]);
+					npc.getEquipment().setBoots(asyncNPCEquip.get(npc)[3]);
+					asyncNPCEquip.remove(npc);
 				}
 			}
 			lastBlockUpdate = System.currentTimeMillis();
