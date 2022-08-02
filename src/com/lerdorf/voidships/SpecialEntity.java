@@ -164,9 +164,9 @@ public class SpecialEntity implements Serializable {
 	public void update() { // Gets called 20 times per second (maybe overkill, perhaps scale that down if it shows signs of lag)
 		ArmorStand v = Main.standEntities.get(tag);
 		if (v != null) {
-			LivingEntity p = (LivingEntity)v.getPassenger();
+			Player p = (Player)v.getPassenger();
 			if (p == null && pilot != null)
-				p = Bukkit.getPlayer(pilot)
+				p = Bukkit.getPlayer(pilot);
 			if (p != null) {
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 				if (flyFlight) {
@@ -175,9 +175,9 @@ public class SpecialEntity implements Serializable {
 					if (fuel > 1) 
 						p.setAllowFlight(true);
 					double fuelNeeded = 0;
-					if (p.isFlying() && ( p.getScoreboardTags().contains("grav") || !inVoid(p.getLocation()) )
+					if (p.isFlying() && ( p.getScoreboardTags().contains("grav") || !Main.inVoid(p.getLocation()) ) )
 					    fuelNeeded += 0.5f * (mass + fuel * fuelMass) * Math.pow(9.81/20, 2); // in 1 tick a player would have gained (9.81/20) m/s downwards velocity
-					fuelNeeded += 0.5f * (mass + fuel * fuelMass) * p.getVelocity().subtract(prevFlyVel).lengthSquared()
+					fuelNeeded += 0.5f * (mass + fuel * fuelMass) * p.getVelocity().subtract(prevFlyVel).lengthSquared();
 					fuelNeeded /= (Math.max(engineEfficiency, 0.0001f)*0.5f);
 					prevFlyVel = p.getVelocity().clone();
 				}
@@ -339,7 +339,7 @@ public class SpecialEntity implements Serializable {
 			ride = false;
 			mass = 3129;
 			flyFlight = true;
-			flySpeed = 0.018;
+			flySpeed = 0.018f;
 			break;
 		}
 	}

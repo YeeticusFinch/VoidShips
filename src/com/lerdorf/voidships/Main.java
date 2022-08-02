@@ -1024,7 +1024,6 @@ public class Main extends JavaPlugin implements Listener {
 					+ countVacuum(loc.clone().add(new Vector(0, 1, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, -1, 0)), l-1)
 					+ countVacuum(loc.clone().add(new Vector(0, 0, 1)), l-1)
-					+ countVacuum(loc.clone().add(new Vector(0, 0, -1)), l-1);
 
 			//loc.getBlock().setType(Material.AIR);
 			return r;
@@ -1060,7 +1059,7 @@ public class Main extends JavaPlugin implements Listener {
 		return block.getType().name() + " - " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
 	}
 
-	public boolean inVoid(Location loc) {
+	public static boolean inVoid(Location loc) {
 		for (Void v : voids) {
 			if (loc.getWorld().getName().equals(v.world)) {
 				if (v.voidWorld || (loc.getWorld().getName().equals(v.world) && v.within(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))) {
@@ -1378,7 +1377,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
-		if (player != null && player.getInventory().getChestplate() != null) {
+		if (player != null && player.getInventory().getHelmet() != null) {
 			String name = player.getInventory().getHelmet().getItemMeta().getDisplayName();
 			for (String s : space_helmets) {
 				if (name.equalsIgnoreCase(s)) {
@@ -1387,7 +1386,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
-		if (player != null && player.getInventory().getChestplate() != null) {
+		if (player != null && player.getInventory().getBoots() != null) {
 			String name = player.getInventory().getBoots().getItemMeta().getDisplayName();
 			for (String s : space_boots) {
 				if (name.equalsIgnoreCase(s)) {
@@ -1396,7 +1395,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
-		if (player != null && player.getInventory().getChestplate() != null) {
+		if (player != null && player.getInventory().getLeggings() != null) {
 			String name = player.getInventory().getLeggings().getItemMeta().getDisplayName();
 			for (String s : space_leggings) {
 				if (name.equalsIgnoreCase(s)) {
