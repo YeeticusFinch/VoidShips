@@ -368,6 +368,9 @@ public class VoidQuery implements CommandExecutor {
                 } else if (args[i].equals("-nsn")) {
                 	i++;
                 	ship.nsn = args[i].replace('_', ' ');
+                } else if (args[i].equals("-fl") || args[i].equalsIgnoreCase("-fastladder") || args[i].equalsIgnoreCase("-fastladders")) {
+                	i++;
+                	ship.fastLadders = !ship.fastLadders;
                 }
             }
 			sender.sendMessage("Successfully modified " + ship.name);

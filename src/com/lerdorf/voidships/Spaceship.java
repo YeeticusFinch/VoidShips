@@ -40,6 +40,8 @@ public class Spaceship implements Serializable {
 	String sn; // Scanner name
 	String cdn; // cleanup debris name
 	
+	public boolean fastLadders = false;
+	
 	
 	public Spaceship(String name, double x, double y, double z, Void space, CosmicBody orbiting, SolarSystem system, int sx, int sy, int sz, String world) {
 		this.x = x;

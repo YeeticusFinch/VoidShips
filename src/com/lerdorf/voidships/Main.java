@@ -725,44 +725,63 @@ public class Main extends JavaPlugin implements Listener {
 				v.setFallDistance(0.0F);
 			}
 		}
-		else if (inVoid(p.getLocation()) && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE)) {
-			if (System.currentTimeMillis()-lastGravUpdate > 300 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-				boolean yeet = false;
-				for (Spaceship s : ships) {
-					if (s != null && s.blocks != null && s.blocks.length > 0) {
-						for (SpecialBlock b : s.blocks) {
-							if (b != null && b.type == SpecialBlock.GRAVITY && within(p, b.world, b.x, b.y, b.z, b.x2, b.y2, b.z2)) {
+		else if (inVoid(p.getLocation())) {
+			Spaceship currentShip = getCurrentShip(p);
+			if (currentShip.fastLadders) {
+				if (p.getLocation().getBlock().getType() == Material.LADDER) {
+					Vector vel = p.getVelocity();
+					vel.setY(Math.signum(vel.getY())*2);
+				}
+			}
+			if (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE) {
+				if (System.currentTimeMillis() - lastGravUpdate > 300
+						&& !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+					boolean yeet = false;
+					// for (Spaceship s : ships) {
+					if (currentShip != null && currentShip.blocks != null && currentShip.blocks.length > 0) {
+						for (SpecialBlock b : currentShip.blocks) {
+							if (b != null && b.type == SpecialBlock.GRAVITY && !b.dead
+									&& within(p, b.world, b.x, b.y, b.z, b.x2, b.y2, b.z2)) {
 								yeet = true;
 							}
 						}
 					}
+					// }
+					if (yeet)
+						p.addScoreboardTag("grav");
+					else
+						p.removeScoreboardTag("grav");
 				}
-				if (yeet)
-					p.addScoreboardTag("grav");
-				else
-					p.removeScoreboardTag("grav");
-			}
-			
-			if (p.isFlying() == p.getScoreboardTags().contains("grav") && !(p.getScoreboardTags().contains("grav") && p.getScoreboardTags().contains("flyspeed"))) {
-				if (!p.getScoreboardTags().contains("grav") && !p.getScoreboardTags().contains("flyspeed") && p.getFlySpeed() != 0.022f)
-					p.setFlySpeed(0.022f);
-				p.setAllowFlight(!p.getScoreboardTags().contains("grav"));
-				p.setFlying(!p.getScoreboardTags().contains("grav"));
-				//p.sendMessage("Setting flight to " + !p.getScoreboardTags().contains("grav"));
-			}
-			
-			if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
-				p.addScoreboardTag("vac");
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
-				//p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
-			} else if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
+
+				if (p.isFlying() == p.getScoreboardTags().contains("grav")
+						&& !(p.getScoreboardTags().contains("grav") && p.getScoreboardTags().contains("flyspeed"))) {
+					if (!p.getScoreboardTags().contains("grav") && !p.getScoreboardTags().contains("flyspeed")
+							&& p.getFlySpeed() != 0.022f)
+						p.setFlySpeed(0.022f);
+					p.setAllowFlight(!p.getScoreboardTags().contains("grav"));
+					p.setFlying(!p.getScoreboardTags().contains("grav"));
+					// p.sendMessage("Setting flight to " +
+					// !p.getScoreboardTags().contains("grav"));
+				}
+
+				if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)
+						&& !p.getScoreboardTags().contains("vac")
+						&& (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock())
+								|| isAir(p.getLocation().getBlock()))) {
+					p.addScoreboardTag("vac");
+					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
+					// p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false,
+					// false));
+				} else if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.WITHER)
+						&& p.getScoreboardTags().contains("vac")) {
+					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
+					p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
+				}
 			}
 		} else if (p.getFlySpeed() != 0.1f && !p.getScoreboardTags().contains("flyspeed"))
 			p.setFlySpeed(0.1f);
@@ -1019,11 +1038,12 @@ public class Main extends JavaPlugin implements Listener {
 
 			loc.getBlock().setType(Material.COARSE_DIRT);
 			blockTags.put(loc.getBlock(), 0);
-			int r = 1 + countVacuum(loc.clone().add(new Vector(1, 0, 0)), l-1)
-					+ countVacuum(loc.clone().add(new Vector(-1, 0, 0)), l-1)
-					+ countVacuum(loc.clone().add(new Vector(0, 1, 0)), l-1)
-					+ countVacuum(loc.clone().add(new Vector(0, -1, 0)), l-1)
-					+ countVacuum(loc.clone().add(new Vector(0, 0, 1)), l-1)
+			int r = 1 + countVacuum(loc.clone().add(new Vector(1, 0, 0)), l - 1)
+					+ countVacuum(loc.clone().add(new Vector(-1, 0, 0)), l - 1)
+					+ countVacuum(loc.clone().add(new Vector(0, 1, 0)), l - 1)
+					+ countVacuum(loc.clone().add(new Vector(0, -1, 0)), l - 1)
+					+ countVacuum(loc.clone().add(new Vector(0, 0, 1)), l - 1)
+					+ countVacuum(loc.clone().add(new Vector(0, 0, -1)), l - 1);
 
 			//loc.getBlock().setType(Material.AIR);
 			return r;
