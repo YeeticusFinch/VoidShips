@@ -67,6 +67,7 @@ public class SpecialEntity implements Serializable {
 	public int radius; // m
 	public int mass; // kg
 	public double thrust; // m / tick^2
+	public float flySpeed = 0.1f;
 	
 	public boolean flyFlight = false;
 	public transient net.citizensnpcs.api.npc.NPC npc;
@@ -130,6 +131,7 @@ public class SpecialEntity implements Serializable {
 		if (pilot != null && pilot.equals(p.getName())) {
 			pilot = null;
 			p.setHealth(((LivingEntity) npc.getEntity()).getHealth());
+			p.setAllowFlight(false);
 		}
 		else {
 			int n = 0;
@@ -157,23 +159,36 @@ public class SpecialEntity implements Serializable {
 
 	double delYaw = 0;
 	double delPitch = 0;
-	double npcHealth = 20;
-
-	public void update() {
+	private transient double npcHealth = 20;
+	private transient Vector prevFlyVel = new Vector(0, 0, 0);
+	public void update() { // Gets called 20 times per second (maybe overkill, perhaps scale that down if it shows signs of lag)
 		ArmorStand v = Main.standEntities.get(tag);
 		if (v != null) {
 			LivingEntity p = (LivingEntity)v.getPassenger();
+			if (p == null && pilot != null)
+				p = Bukkit.getPlayer(pilot)
 			if (p != null) {
-				if (flyFlight = false)
-					setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
+				if (flyFlight) {
+					if (p.getFlySpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
+						p.setFlySpeed(flySpeed);
+					if (fuel > 1) 
+						p.setAllowFlight(true);
+					double fuelNeeded = 0;
+					if (p.isFlying() && ( p.getScoreboardTags().contains("grav") || !inVoid(p.getLocation()) )
+					    fuelNeeded += 0.5f * (mass + fuel * fuelMass) * Math.pow(9.81/20, 2); // in 1 tick a player would have gained (9.81/20) m/s downwards velocity
+					fuelNeeded += 0.5f * (mass + fuel * fuelMass) * p.getVelocity().subtract(prevFlyVel).lengthSquared()
+					fuelNeeded /= (Math.max(engineEfficiency, 0.0001f)*0.5f);
+					prevFlyVel = p.getVelocity().clone();
+				}
 				if (drone) {
 					double npcHealthCurrent = ((LivingEntity)npc.getEntity()).getHealth();
 					if (npcHealth > npcHealthCurrent) {
-						((Player)p).sendMessage("ง4Your physical body has taken damage! Your HP is now " + npcHealth);
+						((Player)p).sendMessage("ยง4Your physical body has taken damage! Your HP is now " + npcHealth);
 					}
 				}
 			}
-			else if (vehicle)
+			else if (vehicle && !flyFlight)
 				slowDown();
 			double newDelPitch = clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed);
 			double newDelYaw = clamp(angleSubtract(tYaw, yaw), -turnSpeed, turnSpeed);
@@ -324,6 +339,7 @@ public class SpecialEntity implements Serializable {
 			ride = false;
 			mass = 3129;
 			flyFlight = true;
+			flySpeed = 0.018;
 			break;
 		}
 	}
@@ -341,21 +357,27 @@ public class SpecialEntity implements Serializable {
 		}
 	}
 
+	public static String[] typeNames = new String[] {
+		"Tie Fighter",
+		"Escape Pod",
+		"Escape Pod Gun",
+		"Small Turret",
+		"Medium Turret",
+		"Dalek Drone",
+	};
+	
+	public static boolean isEntityTag(String s) {
+		if (s.contains("entity-"))
+			return true;
+		for (String t : typeNames)
+			if (s.contains(t.toLowerCase().replace(' ', '_') + "-"))
+				return true;
+		return false;
+	}
+	
 	public String getName() {
-		switch (type) {
-		case TIE_FIGHTER:
-			return "Tie Fighter";
-		case ESCAPE_POD:
-			return "Escape Pod";
-		case ESCAPE_POD_GUN:
-			return "Escape Pod Gun";
-		case SMALL_TURRET:
-			return "Small Turret";
-		case MEDIUM_TURRET:
-			return "Medium Turret";
-		case DALEK_DRONE:
-			return "Dalek Drone";
-		}
+		if (type < typeNames.length)
+			return typeNames[type];
 		return "";
 	} //t = sqrt(2d/a)
 
@@ -424,6 +446,7 @@ public class SpecialEntity implements Serializable {
 			vz = 0;
 			passengers = yeet.passengers;
 			pilot = yeet.pilot;
+			flySpeed = yeet.flySpeed;
 			setupShit();
 
 		} catch (IOException ex) {
