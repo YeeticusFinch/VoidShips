@@ -15,6 +15,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.command.*;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,12 +37,25 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import com.mojang.authlib.GameProfile;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
+
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.SpawnReason;
+import net.citizensnpcs.api.npc.MemoryNPCDataStore;
+import net.citizensnpcs.api.npc.NPCRegistry;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.MinecraftServer;
+import net.minecraft.server.v1_16_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_16_R3.PlayerConnection;
+import net.minecraft.server.v1_16_R3.PlayerInteractManager;
+import net.minecraft.server.v1_16_R3.WorldServer;
 
 import org.bukkit.event.block.Action;
 
@@ -140,6 +156,9 @@ public class Main extends JavaPlugin implements Listener {
 		this.getCommand("modship").setExecutor(new VoidQuery());
 		
 		this.getCommand("airwall").setExecutor(new BlockShit());
+		
+		this.getCommand("dalek").setExecutor(new EntityShit());
+		this.getCommand("spawnplayer").setExecutor(new EntityShit());
 		
 		loadSaves();
 
@@ -728,14 +747,14 @@ public class Main extends JavaPlugin implements Listener {
 				//p.sendMessage("Setting flight to " + !p.getScoreboardTags().contains("grav"));
 			}
 			
-			if (!p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
+			if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
 				p.addScoreboardTag("vac");
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 2, false, false));
 				//p.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 100000, 0, false, false));
-			} else if (!p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
+			} else if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.WITHER) && p.getScoreboardTags().contains("vac")) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
 				p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100000, 10, false, false));
@@ -744,7 +763,7 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (p.getFlySpeed() != 0.1f)
 			p.setFlySpeed(0.1f);
 		if (p.getScoreboardTags().contains("vac")
-				&& (isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
+				&& (spacesuit(p) >= 4 || isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
 			p.removeScoreboardTag("vac");
 			p.removePotionEffect(PotionEffectType.WEAKNESS);
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
@@ -1271,6 +1290,40 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	public static void spawnFakePlayer(Location loc, String displayname, SpecialEntity entity) {
+		
+		NPCRegistry registry = CitizensAPI.createNamedNPCRegistry("myown-registry", new MemoryNPCDataStore());
+		net.citizensnpcs.api.npc.NPC npc = registry.createNPC(EntityType.PLAYER, displayname);
+		// here to can manage skin for example
+		npc.spawn(loc, SpawnReason.CREATE);
+		// now it's spawned, you can add item in hand like that :
+		// npc.getOrAddTrait(Equipment.class).set(EquipmentSlot.HAND, itemInHand);
+		npc.setProtected(false);
+		if (entity != null)
+			entity.npc = npc;
+		//npc.setUseMinecraftAI(true);
+		
+        /*MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
+       
+        Player target = Bukkit.getServer().getPlayer(displayname);
+        EntityPlayer npc;
+        if (target != null) {
+            npc = new EntityPlayer(server, world, new GameProfile(target.getUniqueId(), target.getName()), new PlayerInteractManager(world));
+        } else {
+            OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(displayname);
+            npc = new EntityPlayer(server, world, new GameProfile(op.getUniqueId(), displayname), new PlayerInteractManager(world));
+        }
+        Location loc = player.getLocation();
+        npc.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+
+        for(Player all : Bukkit.getOnlinePlayers()){
+            PlayerConnection connection = ((CraftPlayer)all).getHandle().playerConnection;
+            connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
+            connection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
+        }*/
+    }
+	
 	public static void fillAsync(String world, int x1, int y1, int z1, int x2, int y2, int z2, Material mat) {
 
 		System.out.println("Commencing asyc fill for " + (Math.abs(x1-x2)*Math.abs(y1-y2)*Math.abs(z1-z2)) + " blocks, " + Math.abs(x1-x2) + "x" + Math.abs(y1-y2) + "x" + Math.abs(z1-z2));
@@ -1285,4 +1338,72 @@ public class Main extends JavaPlugin implements Listener {
 	public static long getTimeSec() {
 		return (long)((System.currentTimeMillis() + timeOffset)/1000f);
 	}
+	
+	private String[] space_chestplates = {
+			"Stormtrooper Pilot Chestplate",
+			"Space Armor Chestplate",
+			"Apollo Chestplate"
+	};
+
+	private String[] space_helmets = {
+			"Stormtrooper Pilot Helmet",
+			"Space Armor Helmet",
+			"Apollo Helmet"
+	};
+
+	private String[] space_leggings = {
+			"Stormtrooper Pilot Leggings",
+			"Space Armor Leggings",
+			"Apollo Leggings"
+	};
+
+	private String[] space_boots = {
+			"Stormtrooper Pilot Boots",
+			"Space Armor Boots",
+			"Apollo Boots"
+	};
+	
+	public int spacesuit(Player player) {
+		int r = 0;
+		if (player != null && player.getInventory().getChestplate() != null) {
+			String name = player.getInventory().getChestplate().getItemMeta().getDisplayName();
+			for (String s : space_chestplates) {
+				if (name.equalsIgnoreCase(s)) {
+					r++;
+					break;
+				}
+			}
+		}
+		if (player != null && player.getInventory().getChestplate() != null) {
+			String name = player.getInventory().getHelmet().getItemMeta().getDisplayName();
+			for (String s : space_helmets) {
+				if (name.equalsIgnoreCase(s)) {
+					r++;
+					break;
+				}
+			}
+		}
+		if (player != null && player.getInventory().getChestplate() != null) {
+			String name = player.getInventory().getBoots().getItemMeta().getDisplayName();
+			for (String s : space_boots) {
+				if (name.equalsIgnoreCase(s)) {
+					r++;
+					break;
+				}
+			}
+		}
+		if (player != null && player.getInventory().getChestplate() != null) {
+			String name = player.getInventory().getLeggings().getItemMeta().getDisplayName();
+			for (String s : space_leggings) {
+				if (name.equalsIgnoreCase(s)) {
+					r++;
+					break;
+				}
+			}
+		}
+		//player.sendMessage("spacesuit = " + r);
+		return r;
+	}
+	
+	
 }

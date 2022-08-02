@@ -167,6 +167,14 @@ commands:
       description: Creates a wall of air in the current selection, must be 1 block thick, and have a border around the thicker sides
       usage: /airwall [name]
       permission: VoidShips.airwall
+   dalek:
+      description: Turns you into a dalek, or back into a player (if you are a dalek)
+      usage: /dalek
+      permission: VoidShips.dalek
+   spawnplayer:
+      description: Spawns a fake player
+      usage: /spawnplayer [username]
+      permission: VoidShips.spawnplayer
    
       
       

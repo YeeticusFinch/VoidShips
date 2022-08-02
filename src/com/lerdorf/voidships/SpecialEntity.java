@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
@@ -42,6 +44,7 @@ public class SpecialEntity implements Serializable {
 	public static final int ESCAPE_POD_GUN = 2;
 	public static final int SMALL_TURRET = 3;
 	public static final int MEDIUM_TURRET = 4;
+	public static final int DALEK_DRONE = 5;
 
 	String world;
 	public double turnSpeed;
@@ -49,6 +52,11 @@ public class SpecialEntity implements Serializable {
 
 	public boolean turret = false;
 	public boolean vehicle = false;
+	public boolean drone = false;
+	public boolean ride = true;
+	
+	public String pilot = null;
+	public ArrayList<String> passengers = new ArrayList<String>();
 
 	public int customModelData = -1;
 
@@ -58,6 +66,8 @@ public class SpecialEntity implements Serializable {
 	public int radius; // m
 	public int mass; // kg
 	public double thrust; // m / tick^2
+	
+	public transient net.citizensnpcs.api.npc.NPC npc;
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -86,6 +96,13 @@ public class SpecialEntity implements Serializable {
 		load(filepath);
 	}
 
+	public void addPassenger(Player p) {
+		if (pilot == null)
+			pilot = p.getName();
+		else
+			passengers.add(p.getName());
+	}
+	
 	double clamp(double a, double b, double c) {
 		return Math.min(Math.max(b, c), Math.max(a, Math.min(b, c)));
 	}
@@ -146,7 +163,7 @@ public class SpecialEntity implements Serializable {
 			//if (vx != 0 || vy != 0 || vz != 0)
 			//	System.out.println("Setting velocity for " + tag + " to " + vx + " " + vy + " " + vz);
 			double velMag = Math.sqrt(vx*vx + vy*vy + vz*vz);
-			if (!Main.isSomeAir((new Location(Bukkit.getWorld(world), (int)(v.getEyeLocation().getX() + radius*vx/velMag), (int)(v.getEyeLocation().getY() + radius*vy/velMag), (int)(v.getEyeLocation().getZ() + radius*vz/velMag))).getBlock())) {
+			if (collided(v.getEyeLocation(), radius, vx/velMag, vy/velMag, vz/velMag) || collided(v.getLocation(), radius, vx/velMag, vy/velMag, vz/velMag)) {
 				vx = 0;
 				vy = 0; 
 				vz = 0;
@@ -155,6 +172,28 @@ public class SpecialEntity implements Serializable {
 		} else {
 			System.out.println("ERROR: LIVING ENTITY IS NULL FOR " + tag);
 		}
+	}
+	
+	public boolean collided(Location startLoc, int range, double dx, double dy, double dz) {
+		for (int i = 0; i < range*2; i++) {
+
+            double x = dx * i*0.5; // How this work is that the xyz of the origin vector was timed the current loop index and increases as the loop going
+            double y = dy * i*0.5; // +1.5 to the eye location
+            double z = dz * i*0.5;
+
+            startLoc.add(x, y, z);
+            //startLoc.getWorld().spawnParticle(Particle.FLAME, startLoc, 5);
+            //System.out.println("World: " + startLoc.getWorld() + ", " + startLoc.getX() + " " + startLoc.getY() + " " + startLoc.getZ());
+
+            // Do stuff here
+    		if (!Main.isSomeAir(startLoc.getBlock())) {
+    			return true;
+    		}
+
+            startLoc.subtract(x, y, z); // VERY IMPORTANT to reset the location afterwards
+        }
+		return false;
+		
 	}
 	
 	public double angleSubtract(double b, double a) {
@@ -207,6 +246,7 @@ public class SpecialEntity implements Serializable {
 			thrust = 0.008;
 			vehicle = true;
 			turret = false;
+			radius = 4;
 			break;
 		case MEDIUM_TURRET:
 			customModelData = 2;
@@ -215,6 +255,16 @@ public class SpecialEntity implements Serializable {
 			turret = true;
 			vehicle = false;
 			engineEfficiency = 1.5f;
+			break;
+		case DALEK_DRONE:
+			customModelData = 3;
+			turnSpeed = 4;
+			thrust = 0.006;
+			turret = false;
+			vehicle = true;
+			drone = true;
+			engineEfficiency = 15f;
+			ride = false;
 			break;
 		}
 	}
@@ -225,6 +275,9 @@ public class SpecialEntity implements Serializable {
 			fuel = Math.pow(10, 12);
 			break;
 		case MEDIUM_TURRET:
+			break;
+		case DALEK_DRONE:
+			fuel = 100;
 			break;
 		}
 	}
@@ -241,6 +294,8 @@ public class SpecialEntity implements Serializable {
 			return "Small Turret";
 		case MEDIUM_TURRET:
 			return "Medium Turret";
+		case DALEK_DRONE:
+			return "Dalek Drone";
 		}
 		return "";
 	} //t = sqrt(2d/a)
@@ -265,7 +320,7 @@ public class SpecialEntity implements Serializable {
 		if (vel.length() > 0.01) {
 			Location loc = new Location(Bukkit.getWorld(world), x, y, z);
 			loc.setDirection(vel.normalize());
-			if (Math.abs(pitch - loc.getPitch()) > 0.01 || Math.abs(yaw - loc.getYaw()) > 0.01)
+			if (angleSubtract(pitch, loc.getPitch()) > 0.01 || angleSubtract(yaw, loc.getYaw()) > 0.01)
 				setTargetDirection(loc.getPitch(), loc.getYaw());
 			else {
 				doThrust(1, 0, 0);
