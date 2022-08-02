@@ -169,6 +169,7 @@ public class SpecialEntity implements Serializable {
 			}
 			p.removeScoreboardTag("flyspeed");
 			p.removePotionEffect(PotionEffectType.INVISIBILITY);
+			p.setWalkSpeed(0.1f);
 		}
 		else {
 			int n = 0;
@@ -207,11 +208,13 @@ public class SpecialEntity implements Serializable {
 			if (p != null) {
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 				if (flyFlight) {
-					v.teleport(p.getLocation().add(p.getVelocity()).toVector().toLocation(p.getLocation().getWorld()));
+					v.teleport(p.getLocation().add(0, 0.2, 0).toVector().toLocation(p.getLocation().getWorld()));
 					if (p.getFlySpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
 						p.setFlySpeed(flySpeed);
-					if (p.getWalkSpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
-						p.setWalkSpeed(flySpeed);
+					if (p.getWalkSpeed() != flySpeed*1.8f && p.getScoreboardTags().contains("flyspeed")) {
+						p.setWalkSpeed(flySpeed*1.8f);
+						//p.setJumpHeight(0);
+					}
 					if (fuel > 1) 
 						p.setAllowFlight(true);
 					double fuelNeeded = 0;
