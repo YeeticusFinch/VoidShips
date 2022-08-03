@@ -41,7 +41,7 @@ public class Spaceship implements Serializable {
 	String cdn; // cleanup debris name
 	
 	public boolean fastLadders = false;
-	
+	public boolean comms = true;
 	
 	public Spaceship(String name, double x, double y, double z, Void space, CosmicBody orbiting, SolarSystem system, int sx, int sy, int sz, String world) {
 		this.x = x;
@@ -141,6 +141,7 @@ public class Spaceship implements Serializable {
 			this.filepath = filepath;
 			entities = yeet.entities;
 			orbit = yeet.orbit;
+			comms = yeet.comms;
 			
 			mass = yeet.mass;
 			nsn = yeet.nsn; // nav systems name
