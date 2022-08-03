@@ -397,7 +397,7 @@ public class Main extends JavaPlugin implements Listener {
 	                    	SpecialBlock pump = ship.getBlocksOfType(SpecialBlock.AIR_PUMP)[event.getSlot()-9];
 	                    	openMenu(player, ship, pump, 2);
 	                    } else if (item.getItemMeta().getDisplayName().indexOf("Cleanup Debris") != -1) {
-	                    	player.sendMessage("§oDeleting broken blocks from the systems...");
+	                    	player.sendMessage("Â§oDeleting broken blocks from the systems...");
 	                    	int c = 0;
 	                    	int d = 0;
 	                    	Spaceship s = getCurrentShip(player);
@@ -508,14 +508,14 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 0) { // Main Terminal
 			Inventory inventory = Bukkit.createInventory(null, 1*9, "Ship Terminal");
 			
-			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("§6"+ship.name+"§f", "§c"+ship.countAir()+"§f cubic meters of air", "§c"+ship.displayFuel()+"§f of fuel", "§dOrbiting " + ship.orbiting.getName())));
-			inventory.setItem(2, createItem(Material.DISPENSER, "§fAtmosphere Control", Arrays.asList(ship.acn != null ? "§f§o"+ship.acn : "§f§oAtmosphere Systems","§c"+ship.countAir()+"§f cubic meters of air", "Click to access Atmosphere Control", "§7§oFill a room with oxygen,", "§7§oor turn a room into a vacuum")));
-			inventory.setItem(3, createItem(Material.OBSERVER, "§3Security Systems", Arrays.asList(ship.ssn != null ? "§3§o"+ship.ssn : "§3§oSecurity Systems","Click to access SecSystems", "§7§oAlerts and alarms regarding scans, target locks,", "§7§oand incomming attacks")));
-			inventory.setItem(4, createItem(Material.BREWING_STAND, "§2Defense Systems", Arrays.asList(ship.dsn != null ? "§2§o"+ship.dsn : "§2§oWeapon Defense Systems","Click to toggle WeaponDefenseSystems", "§7§oProtection against exterior environment", "§7§oAutonomous defense against light weaponry")));
-			inventory.setItem(5, createItem(Material.TARGET, "§4§lWeapon Systems", Arrays.asList(ship.wsn != null ? "§4§o"+ship.wsn : "§b§oWeapon Target Systems","§fClick to access WeaponTargetSystems", "§7§oTarget locking, defense against heavy weaponry")));
-			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "§bScaners", Arrays.asList(ship.sn != null ? "§b§o"+ship.sn : "§b§oLong-Range Mapping Scanner", "§fClick to access the Scanning Systems", "§7§oScan for other ships within your system,", "§7§oor send a probe to scan another system")));
-			inventory.setItem(7, createItem(Material.NETHER_STAR, "§dNavigation Systems", Arrays.asList(ship.nsn != null ? "§d§o"+ship.nsn : "§d§oBotPilot","§fClick to access Navigational Systems", "§7§oSet course for a destination,", "§7§oor pilot the ship manually")));
-			inventory.setItem(8, createItem(Material.HOPPER, "§4Cleanup Debris", Arrays.asList(ship.cdn != null ? "§4§o"+ship.cdn : "§b§oGarbage Collector","§fClick to cleanup broken modules", "§7§oAll broken special blocks will", "§7§obe deleted from the system")));
+			inventory.setItem(0, createItem(Material.IRON_BLOCK, "Ship Status", Arrays.asList("Â§6"+ship.name+"Â§f", "Â§c"+ship.countAir()+"Â§f cubic meters of air", "Â§c"+ship.displayFuel()+"Â§f of fuel", "Â§dOrbiting " + ship.orbiting.getName())));
+			inventory.setItem(2, createItem(Material.DISPENSER, "Â§fAtmosphere Control", Arrays.asList(ship.acn != null ? "Â§fÂ§o"+ship.acn : "Â§fÂ§oAtmosphere Systems","Â§c"+ship.countAir()+"Â§f cubic meters of air", "Click to access Atmosphere Control", "Â§7Â§oFill a room with oxygen,", "Â§7Â§oor turn a room into a vacuum")));
+			inventory.setItem(3, createItem(Material.OBSERVER, "Â§3Security Systems", Arrays.asList(ship.ssn != null ? "Â§3Â§o"+ship.ssn : "Â§3Â§oSecurity Systems","Click to access SecSystems", "Â§7Â§oAlerts and alarms regarding scans, target locks,", "Â§7Â§oand incomming attacks")));
+			inventory.setItem(4, createItem(Material.BREWING_STAND, "Â§2Defense Systems", Arrays.asList(ship.dsn != null ? "Â§2Â§o"+ship.dsn : "Â§2Â§oWeapon Defense Systems","Click to toggle WeaponDefenseSystems", "Â§7Â§oProtection against exterior environment", "Â§7Â§oAutonomous defense against light weaponry")));
+			inventory.setItem(5, createItem(Material.TARGET, "Â§4Â§lWeapon Systems", Arrays.asList(ship.wsn != null ? "Â§4Â§o"+ship.wsn : "Â§bÂ§oWeapon Target Systems","Â§fClick to access WeaponTargetSystems", "Â§7Â§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(6, createItem(Material.DAYLIGHT_DETECTOR, "Â§bScaners", Arrays.asList(ship.sn != null ? "Â§bÂ§o"+ship.sn : "Â§bÂ§oLong-Range Mapping Scanner", "Â§fClick to access the Scanning Systems", "Â§7Â§oScan for other ships within your system,", "Â§7Â§oor send a probe to scan another system")));
+			inventory.setItem(7, createItem(Material.NETHER_STAR, "Â§dNavigation Systems", Arrays.asList(ship.nsn != null ? "Â§dÂ§o"+ship.nsn : "Â§dÂ§oBotPilot","Â§fClick to access Navigational Systems", "Â§7Â§oSet course for a destination,", "Â§7Â§oor pilot the ship manually")));
+			inventory.setItem(8, createItem(Material.HOPPER, "Â§4Cleanup Debris", Arrays.asList(ship.cdn != null ? "Â§4Â§o"+ship.cdn : "Â§bÂ§oGarbage Collector","Â§fClick to cleanup broken modules", "Â§7Â§oAll broken special blocks will", "Â§7Â§obe deleted from the system")));
 			
 			player.openInventory(inventory);
 		} 
@@ -524,10 +524,10 @@ public class Main extends JavaPlugin implements Listener {
 			
 			Inventory inventory = Bukkit.createInventory(null, Math.min((int)(Math.ceil(pumps.length/9.0)+2)*9, 54), "Ship Terminal: Atmosphere Control");
 			
-			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
 			
 			for (int i = 0; i < pumps.length; i++) {
-				inventory.setItem(9+i, createItem(Material.DISPENSER, "§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
+				inventory.setItem(9+i, createItem(Material.DISPENSER, "Â§b"+pumps[i].name, Arrays.asList("pump:" + i, "Click to open pump controls")));
 			}
 			
 			player.openInventory(inventory);
@@ -535,20 +535,48 @@ public class Main extends JavaPlugin implements Listener {
 		else if (n == 3) {
 			Inventory inventory = Bukkit.createInventory(null, Math.min((int)(Math.ceil(ships.size()/9.0))*9, 54), "Ship Selector");
 			
-			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
+			//inventory.setItem(4, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
 			
 			for (int i = 0; i < ships.size(); i++) {
-				inventory.setItem(i, createItem(Material.DRAGON_HEAD, "§6"+ships.get(i).name, Arrays.asList("§7§oClick to teleport")));
+				inventory.setItem(i, createItem(Material.DRAGON_HEAD, "Â§6"+ships.get(i).name, Arrays.asList("Â§7Â§oClick to teleport")));
 			}
 			
 			player.openInventory(inventory);
 		} else if (n == 4) {
 			Inventory inventory = Bukkit.createInventory(null, Math.min(54, (int)(ship.system == null || ship.system.planets == null ? 1 : Math.ceil(ship.system.planets.length/9.0)+2)*9), "Navigation Systems");
-			inventory.setItem(4, createItem(Material.NETHER_STAR, "§6" + ship.system.getName()+"§f", Arrays.asList("§d"+ship.system.sun.type, ship.system.sun.equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.sun))+" km")));
+			inventory.setItem(4, createItem(Material.NETHER_STAR, "Â§6" + ship.system.getName()+"Â§f", Arrays.asList("Â§d"+ship.system.sun.type, ship.system.sun.equals(ship.orbiting) ? "Â§dÂ§oORBITING" : "", "Â§dÂ§o"+CarlMath.withPrefix(ship.getDistance(ship.system.sun))+" km")));
 			if (ship.system != null && ship.system.planets != null)
 				for (int i = 0; i < ship.system.planets.length; i++)
-					inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "§2" : "§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "§d§oORBITING" : "", "§d§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
+					inventory.setItem(9+i, createItem(ship.system.planets[i].getItem(), (ship.system.planets[i].habitable ? "Â§2" : "Â§f") + ship.system.planets[i].getName(), Arrays.asList(ship.system.planets[i].equals(ship.orbiting) ? "Â§dÂ§oORBITING" : "", "Â§dÂ§o"+CarlMath.withPrefix(ship.getDistance(ship.system.planets[i]))+" km")));
 
+			player.openInventory(inventory);
+		}
+	}
+	
+	public static void openMenu(Player player, Spaceship ship, SpecialEntity e, int n) {
+		Spaceship nearestShip = getCurrentShip(player);
+		if (n == 5) {
+			Inventory inventory = Bukkit.createInventory(null, 1*9, "Flight Control");
+			
+			if (!e.comms) {
+				inventory.setItem(0, createItem(Material.REDSTONE_BLOCK, "Mothership", Arrays.asList("Can't connect to Â§6"+ship.name+"Â§f", "Â§fYour comms are disabled")));
+				inventory.setItem(1, createItem(Material.REDSTONE_BLOCK, "Nearest Ship", Arrays.asList("Can't connect to Â§6"+nearestShip.name+"Â§f", "Â§fYour comms are disabled")));
+			} else if (!ship.comms)
+				inventory.setItem(0, createItem(Material.REDSTONE_BLOCK, "Mothership", Arrays.asList("Can't connect to Â§6"+ship.name+"Â§f", "Â§6"+ship.name+"Â§f's comms are disabled")));
+			else
+				inventory.setItem(0, createItem(Material.IRON_BLOCK, "Mothership", Arrays.asList("Â§6"+ship.name+"Â§f", "Â§c"+ship.countAir()+"Â§f cubic meters of air", "Â§c"+ship.displayFuel()+"Â§f of fuel", "Â§dOrbiting " + ship.orbiting.getName(), "Â§fClick to access Mothership Terminal")));
+			if (e.comms && !nearestShip.comms)
+				inventory.setItem(1, createItem(Material.REDSTONE_BLOCK, "Nearest Ship", Arrays.asList("Can't connect to Â§6"+nearestShip.name+"Â§f", "Â§6"+nearestShip.name+"Â§'s comms are disabled")));
+			else if (e.comms && nearestShip.comms)
+				inventory.setItem(1, createItem(Material.GOLD_BLOCK, "Nearest Ship", Arrays.asList("Â§6"+nearestShip.name+"Â§f", "Â§c"+nearestShip.countAir()+"Â§f cubic meters of air", "Â§c"+nearestShip.displayFuel()+"Â§f of fuel", "Â§dOrbiting " + nearestShip.orbiting.getName(), "Â§fClick to hack "Â§6"+nearestShip.name+"Â§'s terminal")));
+			inventory.setItem(2, createItem(Material.DIAMOND_BLOCK, "Â§fShip Status", Arrays.asList("Â§6"+e.type+"Â§f", "Â§3"+e.tag, "Â§c"+e.air+"Â§f cubic meters of air", "Â§c"+ship.fuel+"Â§f joules of fuel", "Â§dOrbiting " + e.orbiting.getName())));
+			inventory.setItem(3, createItem(Material.BREWING_STAND, "Â§2Defense Systems", Arrays.asList(ship.dsn != null ? "Â§2Â§o"+ship.dsn : "Â§2Â§oWeapon Defense Systems","Click to toggle WeaponDefenseSystems", "Â§7Â§oProtection against exterior environment", "Â§7Â§oAutonomous defense against light weaponry")));
+			inventory.setItem(4, createItem(Material.TARGET, "Â§4Â§lWeapon Systems", Arrays.asList(ship.wsn != null ? "Â§4Â§o"+ship.wsn : "Â§bÂ§oWeapon Target Systems","Â§fClick to access WeaponTargetSystems", "Â§7Â§oTarget locking, defense against heavy weaponry")));
+			inventory.setItem(5, createItem(Material.DAYLIGHT_DETECTOR, "Â§bScaners", Arrays.asList(ship.sn != null ? "Â§bÂ§o"+ship.sn : "Â§bÂ§oLong-Range Mapping Scanner", "Â§fClick to access the Scanning Systems", "Â§7Â§oScan for other ships within your system,", "Â§7Â§oor send a probe to scan another system")));
+			inventory.setItem(6, createItem(Material.NETHER_STAR, "Â§dNavigation Systems", Arrays.asList(e.nsn != null ? "Â§dÂ§o"+e.nsn : "Â§dÂ§oBotPilot","Â§fClick to access Navigational Systems", "Â§7Â§oSet course for a destination,", "Â§7Â§oor pilot the ship manually")));
+			inventory.setItem(7, createItem(Material.IRON_DOOR, "Â§4Eject", Arrays.asList("Â§fClick to leave ship")));
+			inventory.setItem(8, createItem(Material.BARRIER, "Â§4Â§lScuttle Ship", Arrays.asList("Â§fClick to self destruct", "Â§7Â§oChoose whether or not", "Â§7Â§othe ship should explode")));
+			
 			player.openInventory(inventory);
 		}
 	}
@@ -562,9 +590,9 @@ public class Main extends JavaPlugin implements Listener {
 		if (n == 2) {
 			Inventory inventory = Bukkit.createInventory(null, 1*9, b.name + " Air Pump");
 			
-			inventory.setItem(0, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("§c"+ship.countAir()+"§f cubic meters of air")));
-			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "§4Depressurize", Arrays.asList("§7§oClick to turn the room into a vacuum")));
-			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "§2Pressurize", Arrays.asList("§7§oClick to fill the room with air")));
+			inventory.setItem(0, createItem(Material.POLISHED_BASALT, Math.max(1,ship.airTanks.length), "Oxygen Tanks", Arrays.asList("Â§c"+ship.countAir()+"Â§f cubic meters of air")));
+			inventory.setItem(3, createItem(Material.RED_STAINED_GLASS, "Â§4Depressurize", Arrays.asList("Â§7Â§oClick to turn the room into a vacuum")));
+			inventory.setItem(5, createItem(Material.LIME_STAINED_GLASS, "Â§2Pressurize", Arrays.asList("Â§7Â§oClick to fill the room with air")));
 			
 			player.openInventory(inventory);
 		}
