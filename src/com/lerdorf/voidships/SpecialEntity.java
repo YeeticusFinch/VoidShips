@@ -60,6 +60,7 @@ public class SpecialEntity implements Serializable {
 	public boolean vehicle = false;
 	public boolean drone = false;
 	public boolean ride = true;
+	public boolean comms = true;
 	
 	public String pilot = null;
 	public String[] passengers;
@@ -235,7 +236,7 @@ public class SpecialEntity implements Serializable {
 					} else {
 						double npcHealthCurrent = ((LivingEntity)npc.getEntity()).getHealth();
 						if (npcHealth > npcHealthCurrent) {
-							((Player)p).sendMessage("ง4Your physical body has taken damage! Your HP is now " + npcHealthCurrent);
+							((Player)p).sendMessage("ยง4Your physical body has taken damage! Your HP is now " + npcHealthCurrent);
 							npcHealth = npcHealthCurrent;
 						}
 					}
@@ -497,6 +498,7 @@ public class SpecialEntity implements Serializable {
 			turret = yeet.turret;
 			vehicle = yeet.vehicle;
 			fuel = yeet.fuel;
+			comms = yeet.comms;
 			//fuel = Math.pow(10, 12);
 			vx = 0;
 			vy = 0;
