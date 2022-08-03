@@ -64,6 +64,14 @@ Do ```/vehicle tie_fighter``` to spawn a new tie fighter (more vehicles will be 
 
 ToDo List: https://docs.google.com/document/d/1mwkHu0kTy9LCB7z1kaila9Fu1oxkFkfhTGh7txD13RU/edit?usp=sharing
 
+# Crazy Bugs
+
+## Entity-ship Rotation
+
+An entity-ship is a tiny ship not made out of blocks, but made out of invisible armorstands carrying 3d models on their heads. Players can ride them around, use them to board or attack other ships, or defend their own ships... My first entity ship was the tie-fighter, the second one being a Dalek (a remote controllable drone). Each entity ship would be facing towards positive Z upon spawning, at the location of the player that spawned the ship. Take the tie fighter as an example, it always seeks to point in the direction the player is facing, though it can't turn as fast as the player can turn, it uses attitude thrusters to accelerate rotation, then decelerate. The first issue was that whenever the pilot looked directly towards the negative Z direction, the tie fighter would do a full 360 spin in the opposite direction. This is because minecraft's yaw values go from -180 to 180, meaning if you pass the negative Z mark your yaw direction jumps from 180 to -180. My ship rotation code orriginaly spun the ship in the direction corresponding to the numerically-shortest path to the target. The solution was to substitute that for the numerically-shortest path to the sum of the target and a multiple of 360.
+
+The next issue was that the rotation didn't work for all ships. A ship's rotation could be 'broken' upon spawning. It would always rotate with the player, in the correct direction too, but to the wrong spot, as if it didn't know where the "front" of the ship was. The issue was that it was just the armorstand's head that was rotating, and not the body. But the Location object carries a rotation, so the initial spawning of the armorstand would carry rotation. Of course the head's rotation is relative to the entity's rotation, meaning that if the entity were rotated it would throw off the head's rotation.
+
 # Detailed Overview
 
 When battling another ship, the first step is to find that ship. Scans can only travel at the speed of light, so if you're tracking a ship on the opposite side of the solar system, the signal might take 15 minutes to get there, and then 15 minutes to return, so a 30 minute round trip, which would be 25 seconds in-game.
