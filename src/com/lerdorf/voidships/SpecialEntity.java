@@ -108,6 +108,7 @@ public class SpecialEntity implements Serializable {
 
 	public void addPassenger(Player p) {
 		if (pilot == null) {
+			p.teleport(Main.standEntities.get(tag).getLocation());
 			pilot = p.getName();
 			p.addScoreboardTag("flyspeed");
 			if (drone) {
@@ -169,7 +170,7 @@ public class SpecialEntity implements Serializable {
 			}
 			p.removeScoreboardTag("flyspeed");
 			p.removePotionEffect(PotionEffectType.INVISIBILITY);
-			p.setWalkSpeed(0.1f);
+			p.setWalkSpeed(0.2f);
 		}
 		else {
 			int n = 0;
@@ -208,7 +209,10 @@ public class SpecialEntity implements Serializable {
 			if (p != null) {
 				setTargetDirection(p.getEyeLocation().getPitch(), p.getEyeLocation().getYaw());
 				if (flyFlight) {
-					v.teleport(p.getLocation().add(0, 0.2, 0).toVector().toLocation(p.getLocation().getWorld()));
+					if (!p.isFlying() && p.getLocation().getY() > v.getLocation().getY() + 0.2) {
+						p.teleport(v.getLocation().add(0, -0.2, 0));
+					} else
+						v.teleport(p.getLocation().add(0, 0.2, 0).toVector().toLocation(p.getLocation().getWorld()));
 					if (p.getFlySpeed() != flySpeed && p.getScoreboardTags().contains("flyspeed"))
 						p.setFlySpeed(flySpeed);
 					if (p.getWalkSpeed() != flySpeed*1.8f && p.getScoreboardTags().contains("flyspeed")) {
@@ -239,6 +243,8 @@ public class SpecialEntity implements Serializable {
 			}
 			else if (vehicle && !flyFlight)
 				slowDown();
+			//pitch = (float)v.getHeadPose().getX() / 0.01745329f;
+			//yaw = (float)v.getHeadPose().getY() / 0.01745329f;
 			double newDelPitch = lookUpAndDown ? clamp(angleSubtract(tPitch, pitch), -turnSpeed, turnSpeed) : 0;
 			double newDelYaw = clamp(angleSubtract(tYaw, yaw), -turnSpeed, turnSpeed);
 			double fuelNeeded = 0.5 * (0.4 * (mass + fuel * fuelMass) * radius * radius) * 0.01745329* Math.pow(Math.abs(newDelPitch - delPitch) + Math.abs(newDelYaw - delYaw), 2);
@@ -263,7 +269,8 @@ public class SpecialEntity implements Serializable {
 			}
 			yaw += delYaw;
 			pitch += delPitch;
-			v.setHeadPose(new EulerAngle((float)(pitch*0.01745329f), (float)(yaw*0.01745329f), 0));
+			v.setHeadPose(new EulerAngle((float)(pitch*0.01745329f), 0, 0));
+			v.getLocation().setYaw((float)(yaw*0.01745329f));
 			//v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
 			//		v.getLocation().getZ(), (float)yaw, (float)pitch));
 			//System.out.println(tag + " pitch = " + pitch + "  yaw = " + yaw);
