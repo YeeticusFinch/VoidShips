@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -76,6 +78,7 @@ public class SpecialEntity implements Serializable {
 	
 	public boolean flyFlight = false;
 	public transient net.citizensnpcs.api.npc.NPC npc;
+	public transient ItemStack[] inventory;
 	
 	public boolean lookUpAndDown = true;
 
@@ -106,9 +109,21 @@ public class SpecialEntity implements Serializable {
 		load(filepath);
 	}
 
+	public void setup(Player p, int seat) {
+		if (seat == 0) {
+			inventory = Main.saveInventory(p);
+			switch (type) {
+				case TIE_FIGHTER:
+					break;
+			}
+		}
+		
+	}
+	
 	public void addPassenger(Player p) {
 		if (pilot == null) {
-			p.teleport(Main.standEntities.get(tag).getLocation());
+			if (flyFlight)
+				p.teleport(Main.standEntities.get(tag).getLocation());
 			pilot = p.getName();
 			p.addScoreboardTag("flyspeed");
 			if (drone) {
@@ -140,6 +155,8 @@ public class SpecialEntity implements Serializable {
             	        2000 
             	);
 			}
+			inventory = Main.saveInventory(p);
+		    p.getInventory().clear();
 		}
 		else {
 			int n = 0;
@@ -157,6 +174,7 @@ public class SpecialEntity implements Serializable {
 	
 	public void removePassenger(Player p) {
 		if (pilot != null && pilot.equals(p.getName())) {
+			Main.loadInventory(p, inventory);
 			pilot = null;
 			if (npc != null) {
 				p.teleport(npc.getStoredLocation());
@@ -171,6 +189,7 @@ public class SpecialEntity implements Serializable {
 			p.removeScoreboardTag("flyspeed");
 			p.removePotionEffect(PotionEffectType.INVISIBILITY);
 			p.setWalkSpeed(0.2f);
+			p.setFlySpeed(0.1f);
 		}
 		else {
 			int n = 0;
@@ -269,8 +288,7 @@ public class SpecialEntity implements Serializable {
 			}
 			yaw += delYaw;
 			pitch += delPitch;
-			v.setHeadPose(new EulerAngle((float)(pitch*0.01745329f), 0, 0));
-			v.getLocation().setYaw((float)(yaw*0.01745329f));
+			v.setHeadPose(new EulerAngle((float)(pitch*0.01745329f), (float)(yaw*0.01745329f), 0));
 			//v.teleport(new Location(v.getWorld(), v.getLocation().getX(), v.getLocation().getY(),
 			//		v.getLocation().getZ(), (float)yaw, (float)pitch));
 			//System.out.println(tag + " pitch = " + pitch + "  yaw = " + yaw);

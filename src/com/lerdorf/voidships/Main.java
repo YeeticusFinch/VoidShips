@@ -601,6 +601,20 @@ public class Main extends JavaPlugin implements Listener {
 		return item;
 	}
 	
+	public static ItemStack[] saveInventory(Player p) {
+        return p.getInventory().getContents();
+       
+    }
+   
+	public static void loadInventory(Player p, ItemStack[] items) {
+       p.getInventory().clear();
+    	for (ItemStack item : items) {
+    		if (item != null)
+    			p.getInventory().addItem(item);
+    	}
+
+    }
+	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Location loc = event.getBlock().getLocation();
@@ -765,8 +779,7 @@ public class Main extends JavaPlugin implements Listener {
 						p.removeScoreboardTag("grav");
 				}
 
-				if (p.isFlying() == p.getScoreboardTags().contains("grav")
-						&& !(p.getScoreboardTags().contains("grav") && p.getScoreboardTags().contains("flyspeed"))) {
+				if (p.isFlying() == p.getScoreboardTags().contains("grav") && !(p.getScoreboardTags().contains("grav") && p.getScoreboardTags().contains("flyspeed"))) {
 					if (!p.getScoreboardTags().contains("grav") && !p.getScoreboardTags().contains("flyspeed")
 							&& p.getFlySpeed() != 0.022f)
 						p.setFlySpeed(0.022f);
@@ -776,10 +789,7 @@ public class Main extends JavaPlugin implements Listener {
 					// !p.getScoreboardTags().contains("grav"));
 				}
 
-				if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)
-						&& !p.getScoreboardTags().contains("vac")
-						&& (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock())
-								|| isAir(p.getLocation().getBlock()))) {
+				if (spacesuit(p) < 4 && !p.hasPotionEffect(PotionEffectType.INVISIBILITY) && !p.getScoreboardTags().contains("vac") && (isAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || isAir(p.getLocation().getBlock()))) {
 					p.addScoreboardTag("vac");
 					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100000, 1, false, false));
 					p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 0, false, false));
@@ -797,8 +807,7 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		} else if (p.getFlySpeed() != 0.1f && !p.getScoreboardTags().contains("flyspeed"))
 			p.setFlySpeed(0.1f);
-		if (p.getScoreboardTags().contains("vac")
-				&& (spacesuit(p) >= 4 || isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
+		if (p.getScoreboardTags().contains("vac") && (spacesuit(p) >= 4 || isCaveAir(p.getLocation().getBlock()) || isCaveAir(p.getLocation().clone().add(new Vector(0, 1, 0)).getBlock()) || !inVoid(p.getLocation()))) {
 			p.removeScoreboardTag("vac");
 			p.removePotionEffect(PotionEffectType.WEAKNESS);
 			p.removePotionEffect(PotionEffectType.BLINDNESS);
