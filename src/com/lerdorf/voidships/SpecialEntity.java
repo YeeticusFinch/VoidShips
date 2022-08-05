@@ -80,8 +80,10 @@ public class SpecialEntity implements Serializable {
 	public boolean flyFlight = false;
 	public transient net.citizensnpcs.api.npc.NPC npc;
 	public transient ItemStack[] inventory;
+	public int air;
 	
 	public boolean lookUpAndDown = true;
+	public String nsn; // navigational systems name
 
 	public SpecialEntity(Entity entity, int type, Spaceship ship) {
 		Location loc = entity.getLocation();
@@ -220,6 +222,7 @@ public class SpecialEntity implements Serializable {
 	double delPitch = 0;
 	private transient double npcHealth = 20;
 	private transient Vector prevFlyVel = new Vector(0, 0, 0);
+	public Orbit orbit;
 	public void update() { // Gets called 20 times per second (maybe overkill, perhaps scale that down if it shows signs of lag)
 		ArmorStand v = Main.standEntities.get(tag);
 		if (v != null) {
@@ -424,6 +427,7 @@ public class SpecialEntity implements Serializable {
 		switch (type) {
 		case TIE_FIGHTER:
 			fuel = Math.pow(10, 12);
+			air = 0;
 			break;
 		case MEDIUM_TURRET:
 			break;
@@ -524,6 +528,7 @@ public class SpecialEntity implements Serializable {
 			passengers = yeet.passengers;
 			pilot = yeet.pilot;
 			flySpeed = yeet.flySpeed;
+			air = yeet.air;
 			setupShit();
 
 		} catch (IOException ex) {

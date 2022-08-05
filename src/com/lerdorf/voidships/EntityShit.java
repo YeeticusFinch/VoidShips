@@ -42,7 +42,10 @@ public class EntityShit implements CommandExecutor {
 				return false;
 			} 
 			
-			ArmorStand stand = (ArmorStand)((Player)sender).getWorld().spawnEntity(((Player)sender).getLocation(), EntityType.ARMOR_STAND);
+			Location loc = player.getLocation();
+			loc.setYaw(0);
+			loc.setPitch(0);
+			ArmorStand stand = (ArmorStand)((Player)sender).getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
 			
 			if (args[0].equalsIgnoreCase("tie_fighter")) {
 				type = SpecialEntity.TIE_FIGHTER;
@@ -62,9 +65,6 @@ public class EntityShit implements CommandExecutor {
 				stand.setMarker(true);
 			}
 			
-			Location loc = player.getLocation();
-			loc.setYaw(0);
-			loc.setPitch(0);
 			SpecialEntity newEntity = new SpecialEntity(loc, type, ship);
 			/*Zombie zombieEntity = (Zombie)((Player)sender).getWorld().spawnEntity(((Player)sender).getLocation(), EntityType.ZOMBIE);
 			zombieEntity.setCustomName(newEntity.getName());
@@ -116,7 +116,7 @@ public class EntityShit implements CommandExecutor {
 			loc.setPitch(0);
 			SpecialEntity newEntity = new SpecialEntity(loc, type, null);
 
-			ArmorStand stand = (ArmorStand)((Player)sender).getWorld().spawnEntity(((Player)sender).getLocation(), EntityType.ARMOR_STAND);
+			ArmorStand stand = (ArmorStand)((Player)sender).getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
 			stand.setCustomName(newEntity.getName());
 			stand.setCustomNameVisible(false);
 			stand.setGravity(true);
