@@ -2,6 +2,7 @@ package com.lerdorf.voidships;
 
 import java.io.File;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -61,7 +62,10 @@ public class EntityShit implements CommandExecutor {
 				stand.setMarker(true);
 			}
 			
-			SpecialEntity newEntity = new SpecialEntity(player.getLocation(), type, ship);
+			Location loc = player.getLocation();
+			loc.setYaw(0);
+			loc.setPitch(0);
+			SpecialEntity newEntity = new SpecialEntity(loc, type, ship);
 			/*Zombie zombieEntity = (Zombie)((Player)sender).getWorld().spawnEntity(((Player)sender).getLocation(), EntityType.ZOMBIE);
 			zombieEntity.setCustomName(newEntity.getName());
 			zombieEntity.setCustomNameVisible(false);
@@ -107,7 +111,10 @@ public class EntityShit implements CommandExecutor {
 		} else if (cmd.getName().equalsIgnoreCase("dalek") && player != null) {
 			int type = SpecialEntity.DALEK_DRONE;
 			
-			SpecialEntity newEntity = new SpecialEntity(player.getLocation(), type, null);
+			Location loc = player.getLocation();
+			loc.setYaw(0);
+			loc.setPitch(0);
+			SpecialEntity newEntity = new SpecialEntity(loc, type, null);
 
 			ArmorStand stand = (ArmorStand)((Player)sender).getWorld().spawnEntity(((Player)sender).getLocation(), EntityType.ARMOR_STAND);
 			stand.setCustomName(newEntity.getName());
