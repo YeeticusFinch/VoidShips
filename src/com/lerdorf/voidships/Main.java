@@ -355,7 +355,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onDeath(PlayerDeathEvent e){
 		Player player = e.getEntity();
 	     if(player.getScoreboardTags().contains("vac") && (e.getDeathMessage().contains("killed by magic") || e.getDeathMessage().contains("out of the world"))) {
-	    	 switch((int)(Math.random()*7)) {
+	    	 switch((int)(Math.random()*8)) {
 	    	 case 0: 
 	    		 e.setDeathMessage(player.getName()+" fell off the void");
 	    		 break;
@@ -374,8 +374,11 @@ public class Main extends JavaPlugin implements Listener {
 	    	 case 5:
 	    		 e.setDeathMessage(player.getName()+" is a bald boi");
 	    		 break;
-		 case 6:
-			 e.setDeathMessage(player.getName()+" got spaced"); 
+			 case 6:
+				 e.setDeathMessage(player.getName()+" got spaced"); 
+				 break;
+			 case 7:
+				 e.setDeathMessage(player.getName()+" thought this was spelljammer"); 
 	    	 }
 	     }
 	}
